@@ -217,7 +217,10 @@ th { font-size: 13px; color: var(--muted); font-weight: 400; }
 .scen .sh { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; justify-content: space-between; }
 .stars { color: var(--gold); letter-spacing: 1px; font-size: 15px; white-space: nowrap; }
 .stars i { font-style: normal; color: var(--line); }
-.tag { justify-self: start; font-size: 13px; font-weight: 700; padding: 0 8px; border-radius: 999px; border: 1px solid currentColor; }
+.scen { align-content: start; }
+.scen .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.scen .tags:empty { display: none; }
+.tag { justify-self: start; align-self: start; display: inline-flex; align-items: center; font-size: 13px; font-weight: 700; line-height: 1.5; padding: 1px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
 .tag.war { color: var(--bad); }
 .tag.good { color: var(--good); }
 .scen .mini { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -3522,7 +3525,7 @@ details.real[open] summary { margin-bottom: 8px; }
       ${[["우리 역사 속 나라 · 지도와 함께", (v) => v.real], ["상상 속 나라 · 이름 없는 왕국", (v) => !v.world && !v.real], ["세계사 속 나라", (v) => v.world]].map(([gname, gf]) => `<h3 class="sgroup">${gname}</h3>
       <div class="scens">${Object.entries(SCEN).filter(([, v]) => gf(v)).sort((x, y) => (x[1].year || 0) - (y[1].year || 0)).map(([k, v]) => `<button type="button" class="scen ${v.war || k === "F" ? "warlike" : ""}" data-scen="${k}" aria-pressed="${S.scen === k}">
         <span class="sh"><b>${esc(v.name)}</b>${stars(v.star)}</span>
-        ${v.strong ? `<span class="tag good">처음부터 강한 나라</span>` : ""}${v.war ? `<span class="tag war">전쟁 중</span>` : ""}${k === "F" ? `<span class="tag war">전쟁 직전</span>` : ""}${k === "G" ? `<span class="tag world">정복과 통일</span>` : ""}${k === "H" ? `<span class="tag war">혁명 직전</span>` : ""}${v.tag ? `<span class="tag ${v.tag[0]}">${esc(v.tag[1])}</span>` : ""}
+        <span class="tags">${v.strong ? `<span class="tag good">처음부터 강한 나라</span>` : ""}${v.war ? `<span class="tag war">전쟁 중</span>` : ""}${k === "F" ? `<span class="tag war">전쟁 직전</span>` : ""}${k === "G" ? `<span class="tag world">정복과 통일</span>` : ""}${k === "H" ? `<span class="tag war">혁명 직전</span>` : ""}${v.tag ? `<span class="tag ${v.tag[0]}">${esc(v.tag[1])}</span>` : ""}</span>
         <span>${esc(v.text)}</span>
         <span class="mini">${ST.map((x) => `<i>${x.h}<b>${v.st[x.k]}</b></i>`).join("")}</span>
         <small>${esc(v.like)}${v.done.length ? ` · 이미 있는 제도: ${v.done.map((d) => P[d].name).join(", ")}` : ""}</small></button>`).join("")}</div>`).join("")}</section>
