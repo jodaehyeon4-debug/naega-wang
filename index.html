@@ -2968,7 +2968,7 @@ details.real[open] summary { margin-bottom: 8px; }
   Object.assign(MAPS, {
     G: { geo: "mongol", view: [84, 30, 136, 55], wide: { ids: ["kara", "khwarazm", "rus", "abbasid"], view: [24, 22, 140, 61] }, start: ["mg_core"], me: "몽골",
       others: [["xixia", "서하"], ["jin", "금"], ["song", "송", "far"], ["goryeo", "고려"], ["kara", "서요"], ["khwarazm", "호라즘"], ["rus", "루스", "far"], ["abbasid", "아바스", "far"]],
-      labels: [["금", [123, 44], "jin"], ["서하", [101, 38.2], "xixia"], ["남송", [112, 27]], ["고려", [127.5, 37.5]], ["서요", [80, 42.5], "kara"], ["호라즘", [60, 40], "khwarazm"], ["루스", [38, 55], "rus"], ["고비 사막", [105, 43.2]]],
+      labels: [["금", [123, 44], "jin"], ["서하", [101, 38.2], "xixia"], ["남송", [112, 27]], ["고려", [127.5, 37.5]], ["서요", [80, 42.5], "kara"], ["호라즘", [60, 40], "khwarazm"], ["루스", [38, 55], "rus"], ["고비 사막", [105, 43.6]]],
       cities: [["카라코룸", [102.8, 47.2], true], ["중도(베이징)", [116.4, 39.9]], ["사마르칸트", [67, 39.6]], ["개경", [126.55, 37.97]], ["바그다드", [44.4, 33.3]], ["키예프", [30.5, 50.45]]] },
     L: { geo: "america", view: [-126, 24, -64, 51], start: ["l_east", "l_ohio", "l_plains", "l_south", "l_west"], me: "부족 연합",
       others: [["us13", "미국"], ["l_east", "미국"], ["l_ohio", "미국"], ["l_south", "미국"], ["l_plains", "미국"], ["l_west", "미국"], ["spain_mx", "스페인", "far"], ["canada", "영국", "far"]],
@@ -2993,6 +2993,24 @@ details.real[open] summary { margin-bottom: 8px; }
       if (f.reservation) { dropTerr("l_plains"); dropTerr("l_west"); }
     }
   }
+  // 사건마다 지도 화살표 (어디서 와서 어디로 가는지)
+  const WARR = {
+    g1: [{ from: [96, 49], to: [102.8, 47.2], kind: "ours", label: "부족장들이 모임" }, { from: [112, 48.5], to: [102.8, 47.2], kind: "ours" }],
+    g2: [{ from: [102.8, 47.2], to: [67, 39.6], kind: "plan", label: "비단길", bend: 0.1 }],
+    g3: [{ from: [102.8, 47.2], to: [62, 40], kind: "plan", label: "호라즘으로", bend: 0.12 }],
+    g5: [{ from: [67, 39.6], to: [30.5, 50.45], kind: "plan", label: "서쪽 원정" }, { from: [62, 37], to: [44.4, 33.3], kind: "plan", label: "바그다드로" }],
+    g7: [{ from: [116.4, 39.9], to: [102.8, 47.2], kind: "ours", label: "학자·기술자" }, { from: [67, 39.6], to: [102.8, 47.2], kind: "ours" }],
+    g9: [{ from: [116.4, 39.9], to: [126.4, 37.7], kind: "plan", label: "고려로" }],
+    l1: [{ from: [-60, 38], to: [-75, 38], kind: "enemy", label: "유럽의 배", bend: 0.05 }],
+    l2: [{ from: [-75, 39], to: [-88, 38], kind: "enemy", label: "천연두" }],
+    l3: [{ from: [-106, 24.5], to: [-102, 34], kind: "enemy", label: "스페인의 말과 총" }],
+    l4: [{ from: [-77, 38.9], to: [-85, 35.5], kind: "enemy", label: "땅을 팔라는 종이" }],
+    l5: [{ from: [-87, 41], to: [-85, 35.5], kind: "ours", label: "부족 연합" }, { from: [-97, 40], to: [-89, 38.5], kind: "ours" }],
+    l7: [{ from: [-84.9, 34.5], to: [-96, 35.8], kind: "enemy", label: "눈물의 길", bend: 0.08 }],
+    l8: [{ from: [-90, 41], to: [-100, 42.5], kind: "enemy", label: "철도와 사냥꾼" }],
+    l9: [{ from: [-96, 42], to: [-103.5, 44], kind: "enemy", label: "미국 기병대" }],
+  };
+  for (const [id, a] of Object.entries(WARR)) if (EV[id] && !EV[id].arrows) EV[id].arrows = () => a;
 
   // ================= 실제 역사 속 나라 (지도와 함께) =================
   // 고구려(P) · 백제(Q) · 신라(R) · 고려(T) · 조선 세종(U) · 조선 영조(V)
