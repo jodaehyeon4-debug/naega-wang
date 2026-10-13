@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="초등 5학년 역사 의사결정 게임 - 내가 왕이라면">
-<title>내가 왕이라면</title>
+<meta name="description" content="초등 5학년 역사 의사결정 게임 - 왕BTI, 내가 왕이라면 나는 어떤 왕일까?">
+<title>왕BTI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700;800&family=Gowun+Dodum&display=swap">
@@ -2775,7 +2775,7 @@ details.real[open] summary { margin-bottom: 8px; }
     g.strokeStyle = CARD.red; g.lineWidth = 3; g.strokeRect(46, 46, W - 92, H - 92);
     g.textBaseline = "alphabetic";
     // 머리
-    g.fillStyle = CARD.red; g.font = `800 30px ${FD}`; g.fillText("내가 왕이라면", 76, 104);
+    g.fillStyle = CARD.red; g.font = `800 30px ${FD}`; g.fillText("왕BTI · 나는 어떤 왕일까?", 76, 104);
     g.fillStyle = CARD.muted; g.font = `24px ${FB}`; g.textAlign = "right";
     g.fillText(`${NATION()} · ${KING()} · ${SCEN[S.scen].name}`, W - 76, 104); g.textAlign = "left";
     // 나라의 운명
@@ -3004,8 +3004,8 @@ details.real[open] summary { margin-bottom: 8px; }
       <select id="goal${i}" data-goal="${i}">${ST.map((x) => `<option value="${x.k}" ${S.goals[i] === x.k ? "selected" : ""}>${x.h} ${x.n} — ${esc(x.d)}</option>`).join("")}</select><b class="bonus">즉위 교서 +${GOAL_BONUS[i]}</b></label>`;
     return `<section class="hero">
       ${irworobongdo()}
-      <h1>내가 왕이라면</h1>
-      <p class="lead">왕의 의자 뒤에는 해와 달, 다섯 봉우리를 그린 병풍(일월오봉도)이 놓였어요. 오늘부터 여러분이 그 앞에 앉아 30년 동안 나라를 다스려요. 어떤 정책을 먼저 펼칠지, 무엇을 미룰지에 따라 나라의 운명이 바뀌어요. 다스림이 끝나면 역사 속 어떤 왕과 가장 닮았는지 공개돼요.</p>
+      <h1>왕BTI</h1>
+      <p class="lead"><b>내가 왕이라면, 나는 어떤 왕일까?</b> 왕의 의자 뒤에는 해와 달, 다섯 봉우리를 그린 병풍(일월오봉도)이 놓였어요. 오늘부터 여러분이 그 앞에 앉아 30년 동안 나라를 다스려요. 어떤 정책을 먼저 펼칠지, 무엇을 미룰지에 따라 나라의 운명이 바뀌어요. 다스림이 끝나면 역사 속 어떤 왕과 가장 닮았는지 공개돼요.</p>
     </section>
     <section class="panel"><h2>1. 왕과 나라의 이름</h2>
       <div class="row"><label class="field"><span class="sub">왕의 이름</span><input id="kingName" maxlength="10" placeholder="예: 해솔" value="${esc(S.king)}"></label>
