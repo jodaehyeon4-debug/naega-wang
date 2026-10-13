@@ -2951,7 +2951,7 @@ details.real[open] summary { margin-bottom: 8px; }
       st: { kp: 42, har: 28, ppl: 36, gold: 44, def: 40, cul: 52 }, done: ["law", "rank", "school", "exam", "local", "hangeul", "coin", "daedong"], hide: ["conquest", "hwarang", "buddhism", "capital", "voyage", "slaves"] },
   });
   for (const k of ["E", "F", "K", "J"]) SCEN[k].real = true;
-  Object.assign(SCEN.E, { nation: "조선", year: 1592 }); Object.assign(SCEN.F, { nation: "조선", year: 1627 }); Object.assign(SCEN.K, { nation: "조선", year: 1670 }); Object.assign(SCEN.J, { nation: "대한 제국", year: 1897 });
+  Object.assign(SCEN.E, { nation: "조선", year: 1592, name: "조선 (1592년)", tag: ["war", "임진왜란"] }); Object.assign(SCEN.F, { nation: "조선", year: 1627, name: "조선 (1627년)", tag: ["war", "병자호란을 앞두고"] }); Object.assign(SCEN.K, { nation: "조선", year: 1670, name: "조선 (1670년)", tag: ["war", "경신 대기근"] }); Object.assign(SCEN.J, { nation: "대한 제국", year: 1897, name: "대한 제국 (1897년)", tag: ["war", "국권 위기"] });
   Object.assign(ERAS, { P: yrs(371), Q: yrs(346), R: yrs(514), T: yrs(918), U: yrs(1418), V: yrs(1724) });
 
   // ---------- 고구려 ----------
@@ -3256,7 +3256,17 @@ details.real[open] summary { margin-bottom: 8px; }
 
   // 확률 = 기본 + 갖춘 조건마다 더하기 (최대값까지)
   function IfPol(o) {
-    if (o.ultra) { o.cost = 4; o.bonus = o.bonus.map(([l, c, add]) => [l, c, add + 0.01]); o.max = o.max + o.bonus.length * 0.01; }
+    // 확률 등급: 초모험 20%대 · 모험 30~35% · 쉬운 모험 55%까지 (기본, 최고)
+    const TG = { p_china: [0.02, 0.22], r_manchu: [0.03, 0.24], u_manchu: [0.03, 0.25], t_liao: [0.03, 0.26],
+      p_unify: [0.1, 0.32], p_yoseo: [0.12, 0.35], q_sd: [0.1, 0.32], r_unify: [0.12, 0.35], r_tang: [0.12, 0.35], u_tsu2: [0.12, 0.33],
+      q_wa: [0.22, 0.5], q_sea: [0.25, 0.55], t_hub: [0.28, 0.55], t_seohee: [0.25, 0.55] }[o.id];
+    if (TG) {
+      const [b, t] = TG, extra = o.ultra ? 0.01 : 0, sum = o.bonus.reduce((a, x) => a + x[2], 0);
+      const k = (t - b - extra * o.bonus.length) / sum;
+      o.bonus = o.bonus.map(([l, c, add]) => [l, c, Math.max(1, Math.round(add * k * 100)) / 100 + extra]);
+      o.base = b; o.max = Math.round((b + o.bonus.reduce((a, x) => a + x[2], 0)) * 100) / 100;
+    }
+    if (o.ultra) o.cost = 4;
     const chance = () => Math.min(o.max, o.base + o.bonus.reduce((acc, [, c, add]) => acc + (c() ? add : 0), 0));
     PP({ id: o.id, scen: [o.scen], cat: o.cat || "mil", name: o.name, sub: o.sub, kings: o.kings || "실제 역사와 다른 길", cost: o.cost, eff: o.eff, fail: o.fail, inc: o.inc, gamble: true, risky: true, strong: true, ifs: true, ultra: o.ultra, tags: o.tags || [0.6, 1, 0], dir: o.dir,
       chance,
