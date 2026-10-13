@@ -448,6 +448,28 @@ details.real[open] summary { margin-bottom: 8px; }
 
 .ifb { display: inline-block; font-size: 12px; font-weight: 800; color: var(--plum); border: 1.5px solid var(--plum); border-radius: 999px; padding: 0 8px; margin-bottom: 3px; }
 .ifb.ultra { color: var(--paper); background: var(--plum); }
+/* 티어표 */
+.tierpanel { display: grid; gap: 12px; }
+.tierhead { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: end; justify-content: space-between; }
+.tierhead h2 { display: flex; align-items: center; gap: 10px; margin: 2px 0; }
+.tbig { display: inline-grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; font-size: 30px; font-weight: 800; color: #fff; font-family: var(--font-display); }
+.tscore { font-size: 20px; color: var(--ink); }
+.tnote { max-width: 46ch; font-size: 13px; }
+.tierlist { display: grid; gap: 4px; }
+.trow { display: grid; grid-template-columns: 52px 1fr; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: var(--bg); }
+.trow .tg { display: grid; place-items: center; font-size: 24px; font-weight: 800; color: #fff; font-family: var(--font-display); }
+.trow .tbody { padding: 8px 12px; display: grid; gap: 4px; }
+.trow.on { outline: 3px solid var(--sun); outline-offset: 1px; }
+.tchips { display: flex; flex-wrap: wrap; gap: 5px; }
+.tchip { font-size: 13px; padding: 1px 9px; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); }
+.tchip.me { background: var(--sun); color: #fff; border-color: var(--sun); font-weight: 800; }
+.tS .tg, .tbig.tS { background: #C9372C; } .tA .tg, .tbig.tA { background: #D9822B; } .tB .tg, .tbig.tB { background: #C7A12A; }
+.tC .tg, .tbig.tC { background: #4F9A5E; } .tD .tg, .tbig.tD { background: #3F7FB0; } .tE .tg, .tbig.tE { background: #7A6AA8; } .tF .tg, .tbig.tF { background: #6B6B6B; }
+.hof ol { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 4px; }
+.hof li { display: grid; grid-template-columns: 28px auto 1fr auto; gap: 8px; align-items: baseline; padding: 4px 8px; border-radius: 8px; background: var(--bg); }
+.hof li:first-child { background: color-mix(in srgb, #D9A72B 22%, var(--bg)); }
+.hof .rk { font-weight: 800; font-family: var(--font-display); }
+.hof .rs { font-weight: 700; }
 </style>
 </head>
 <body>
@@ -1682,6 +1704,7 @@ details.real[open] summary { margin-bottom: 8px; }
     const rec = worldize(record(f));
     if (S.scen === "H" && (S.over || S.flags.fled || S.flags.traitor)) rec.special = [].concat(rec.special || [], "louis16");
     S.end = { rec };
+    tierSave();
     S.phase = "end"; S.revealed = false; save(); render(); window.scrollTo({ top: 0 });
     startReveal();
   }
@@ -3233,7 +3256,7 @@ details.real[open] summary { margin-bottom: 8px; }
 
   // 확률 = 기본 + 갖춘 조건마다 더하기 (최대값까지)
   function IfPol(o) {
-    if (o.ultra) { o.cost = 4; o.bonus = o.bonus.map(([l, c]) => [l, c, 0.01]); o.max = o.base + o.bonus.length * 0.01; }
+    if (o.ultra) { o.cost = 4; o.bonus = o.bonus.map(([l, c, add]) => [l, c, add + 0.01]); o.max = o.max + o.bonus.length * 0.01; }
     const chance = () => Math.min(o.max, o.base + o.bonus.reduce((acc, [, c, add]) => acc + (c() ? add : 0), 0));
     PP({ id: o.id, scen: [o.scen], cat: o.cat || "mil", name: o.name, sub: o.sub, kings: o.kings || "실제 역사와 다른 길", cost: o.cost, eff: o.eff, fail: o.fail, inc: o.inc, gamble: true, risky: true, strong: true, ifs: true, ultra: o.ultra, tags: o.tags || [0.6, 1, 0], dir: o.dir,
       chance,
@@ -3420,6 +3443,70 @@ details.real[open] summary { margin-bottom: 8px; }
     text: "신분과 집안을 가리지 않고 숨은 인재를 널리 뽑았어요. 새 사람들이 나라에 새 바람을 불어넣었어요.", sl: ["숨은 인재를 뽑으니, 시골 서당 훈장님이 갓을 고쳐 쓰고 도읍으로 올라왔다.", "또 인재를 뽑으니, 시험장에 붓 씻는 물이 모자랐다.", "인재 뽑기가 거듭되니, 마을마다 '다음엔 우리 차례'라며 책을 펼쳤다."] });
   LatePol({ id: "late_bridge", cat: "ppl", name: "길과 다리 놓기", sub: "백성의 길 넓히기", kings: "여러 왕", cost: 2, eff: { ppl: 5, gold: -4, cul: 2 }, inc: 1, tags: [0, 0, 0.5],
     text: "강마다 다리를 놓고 고개마다 길을 넓혔어요. 장사꾼과 백성이 편하게 오가게 되었어요.", onRun: () => addInc(1), sl: ["새 다리가 놓이니, 나룻배 사공이 처음으로 다리를 걸어서 건넜다.", "길이 넓어지니, 장꾼들이 소달구지 두 대를 나란히 몰았다.", "길과 다리가 늘어나니, 이웃 고을 소식이 하루 만에 닿았다."] });
+
+  // ================= 화합을 키우는 정책 =================
+  PP({ id: "har_council", cat: "men", name: "신하·호족과 함께 정하는 큰 회의", sub: "화백 회의 · 도병마사 · 비변사처럼", kings: "신라 · 고려 · 조선", cost: 1, repeat: 3, eff: { har: 9, kp: -2, cul: 1 }, tags: [-0.8, -0.2, 0],
+    get note() { return `다툼이 심할수록(화합 35 미만) 효과가 커져요(화합 +4). 3시기마다 다시 열 수 있지만, 되풀이하면 효과가 줄어요.${S.st.har < 35 ? " 지금 효과가 커요!" : ""}`; },
+    run() { const n = S.done.filter((d) => d.id === "har_council").length, k = n === 0 ? 1 : n === 1 ? 0.75 : 0.5, big = S.st.har < 35;
+      return R({ har: Math.round((9 + (big ? 4 : 0)) * k), kp: -2, cul: 1 }, (big ? "다툼에 지친 신하들이 오랜만에 한자리에 모여 마음을 풀었어요! " : "") + "나랏일을 왕 혼자 정하지 않고 신하·호족과 함께 의논해 정했어요.", this.tags,
+        { sl: ["큰 회의가 열리니, 서로 등 돌렸던 신하들이 같은 상에서 국밥을 먹었다.", "또 회의가 열리니, 신하들이 이번엔 자리 다툼 없이 앉았다.", "회의가 거듭되니, 신하들이 서로의 버릇을 다 알게 되었다."][Math.min(n, 2)] }); } });
+  PP({ id: "har_hunt", cat: "men", name: "신하들과 함께하는 큰 사냥 대회", sub: "강무 · 사냥 대회", kings: "고구려 · 조선", cost: 1, repeat: 4, gamble: true, risky: true, eff: { har: 12, kp: 3, def: 2 }, fail: { har: -3, gold: -4 }, tags: [-0.4, 0.4, 0],
+    chance() { return Math.min(0.85, 0.6 + (S.st.def >= 50 ? 0.1 : 0) + (S.st.kp >= 50 ? 0.1 : 0)); },
+    note: "모험! 잘되면 신하들과 크게 가까워져요(고구려는 해마다 낙랑 언덕에서 사냥 대회를 열어 인재를 뽑았어요). 국방·왕권이 50 이상이면 확률이 올라요. 4시기마다 다시 열 수 있어요.",
+    run() { if (Math.random() < this.chance()) return R({ har: 12, kp: 3, def: 2 }, "왕과 신하들이 함께 말을 달리고 활을 쏘며 하루를 보냈어요. 사냥감보다 웃음이 더 많았어요!", this.tags, { sl: "사냥 대회가 열리니, 왕이 잡은 꿩 한 마리를 신하들이 서로 자기 화살이라 우겼다." });
+      return R({ har: -3, gold: -4 }, "하루 종일 비가 내려 사냥은커녕 모두 감기에 걸렸어요.", this.tags, { ok: false, sl: "사냥 대회 날 장대비가 내리니, 신하들이 천막 안에서 재채기만 하였다." }); } });
+
+  // ================= 왕BTI 티어표: 그래서 1등이 누구야? =================
+  const TIERS = [
+    { g: "S", n: "천하제일 대왕", min: 82, d: "역사책 첫 장에 실릴 왕" },
+    { g: "A", n: "역사에 빛나는 성군", min: 72, d: "오래도록 본받을 왕" },
+    { g: "B", n: "이름을 떨친 군주", min: 63, d: "자기만의 색깔이 뚜렷한 왕" },
+    { g: "C", n: "나라를 지켜 낸 임금", min: 54, d: "무난하게 나라를 이끈 왕" },
+    { g: "D", n: "고생 많았던 임금", min: 45, d: "어려움 속에서 버틴 왕" },
+    { g: "E", n: "아슬아슬 버틴 임금", min: 30, d: "나라가 무너질 뻔한 왕" },
+    { g: "F", n: "무너진 나라의 왕", min: -1, d: "나라가 무너졌거나 폭군으로 기록된 왕" },
+  ];
+  const HOF_KEY = "king-hof-v1";
+  const hofLoad = () => { try { const r = JSON.parse(localStorage.getItem(HOF_KEY) || "[]"); return Array.isArray(r) ? r : []; } catch (e) { return []; } };
+  function kingScore() {
+    const s = S.st, avg = avgOf(s), min = Math.min(...statVals());
+    const gained = S.terr && S.terr0 ? S.terr.filter((x) => !S.terr0.includes(x)).length : 0;
+    const dream = ["china", "manchu", "liaoBack", "seaKing", "kept", "stayed"].filter((f) => S.flags[f]).length;
+    const star = (SCEN[S.scen] && SCEN[S.scen].star) || 3;
+    let sc = avg + Math.min(6, achievements().length) * 1.5 + (min >= 45 ? 3 : 0) + (agreeCount() >= 2 ? 3 : 0) + Math.min(8, gained * 2) + dream * 8 + (S.flags.warWon ? 2 : 0) + (star - 3) * 3 - S.tyr * 3;
+    if (S.over) sc = Math.min(sc, 40) - 10 + (S.overAt ? S.overAt.turn * 2 : 0);
+    // 무너졌거나 폭군으로 기록되면 F 등급이라, 버텨 낸 왕보다 점수가 높지 않게 해요
+    if (S.over || (S.end && S.end.rec && S.end.rec.kind === "tyrant")) sc = Math.min(sc, 29); else sc = Math.max(sc, 30);
+    return Math.max(0, Math.min(100, Math.round(sc)));
+  }
+  function tierOf(score, rec) {
+    if (S.over || (rec && rec.kind === "tyrant")) return TIERS[6];
+    return TIERS.find((t) => t.min >= 0 && score >= t.min) || TIERS[5];
+  }
+  function tierSave() {
+    const score = kingScore(), t = tierOf(score, S.end.rec);
+    S.end.score = score; S.end.tier = t.g;
+    const list = hofLoad();
+    list.push({ name: S.king.trim() || "이름 없는 왕", nation: NATION(), scen: SCEN[S.scen] ? SCEN[S.scen].name : "", score, tier: t.g, style: S.end.rec.stamp, at: Date.now() });
+    list.sort((a, b) => b.score - a.score);
+    try { localStorage.setItem(HOF_KEY, JSON.stringify(list.slice(0, 60))); } catch (e) { /* 저장 안 됨 */ }
+  }
+  function tierPanel() {
+    if (!S.end) return "";
+    const score = S.end.score ?? kingScore(), me = S.end.tier || tierOf(score, S.end.rec).g;
+    const hof = hofLoad(), mine = (h) => h.at && S.end && Math.abs(h.score - score) < 0.5 && h.name === (S.king.trim() || "이름 없는 왕") && h.tier === me;
+    let meShown = false;
+    const rows = TIERS.map((t) => {
+      const ppl = hof.filter((h) => h.tier === t.g).slice(0, 8).map((h) => { const isMe = !meShown && mine(h); if (isMe) meShown = true; return `<span class="tchip ${isMe ? "me" : ""}" title="${esc(h.nation)} · ${esc(h.scen)}">${esc(h.name)} <b>${h.score}</b></span>`; }).join("");
+      return `<div class="trow t${t.g} ${t.g === me ? "on" : ""}"><span class="tg">${t.g}</span><div class="tbody"><b>${esc(t.n)}</b> <span class="sub">${esc(t.d)}${t.min > 0 ? ` · ${t.min}점 이상` : ""}</span><div class="tchips">${ppl}</div></div></div>`;
+    }).join("");
+    const top = hof.slice(0, 5).map((h, i) => `<li><span class="rk">${i + 1}</span><b>${esc(h.name)}</b><span class="sub">${esc(h.nation)} · ${esc(h.style || "")}</span><span class="rs">${h.tier} · ${h.score}점</span></li>`).join("");
+    const T = TIERS.find((t) => t.g === me);
+    return `<section class="panel tierpanel"><div class="tierhead"><div><p class="sub">왕BTI 티어표 · 그래서 몇 등급일까?</p><h2><span class="tbig t${me}">${me}</span> ${esc(T.n)}</h2><p class="sub">왕력 점수 <b class="tscore">${score}점</b> · ${esc(S.end.rec.stamp)}</p></div>
+      <p class="sub tnote">왕력 점수 = 여섯 능력치 평균 + 업적 + 고르게 키운 정도 + 처음 다짐 지키기 + 넓힌 땅 + '만약에?' 성공 + 나라의 어려움(★) − 폭정</p></div>
+      <div class="tierlist">${rows}</div>
+      ${top ? `<div class="hof"><b>이 기기 명예의 전당</b><ol>${top}</ol><p class="sub">이 기기에서 다스림을 마친 왕들의 기록이에요. 같은 기기로 플레이한 친구들끼리 비교할 수 있어요.</p></div>` : ""}</section>`;
+  }
 
   // ================= 소리 (북 · 징 · 편경 느낌) =================
   const SND_KEY = "king-sound";
@@ -3944,6 +4031,7 @@ details.real[open] summary { margin-bottom: 8px; }
       ${O ? `<p class="sub">${esc(S.overAt.where)} ${esc(jo(SN[S.over], "이", "가"))} 0이 되었어요.</p><div class="histbox"><b>역사 속에서 실제로 있었던 일</b><p>${esc(O.hist)}</p></div>` : ""}
       <div class="stats">${ST.map((x) => statBox(x, S.st[x.k])).join("")}</div>
       <div class="row exportrow"><button type="button" class="btn go" id="btnCard">결과 카드 사진으로 저장</button><button type="button" class="btn" id="btnPdf">실록까지 PDF로 저장</button><span class="sub">사진(PNG)은 결과 카드 한 장, PDF는 결과 카드·실록·생각 적기 쪽이 함께 들어 있어요.</span></div></section>
+    ${tierPanel()}
     ${hasMap() && S.terr0 ? `<section class="panel"><h2>${esc(NATION())}의 땅은 어떻게 바뀌었을까?</h2><div class="mapduo"><figure>${mapSVG({ terr: S.terr0 })}<figcaption>처음 (${esc(era(1))})</figcaption></figure><figure>${mapSVG({ terr: S.terr, gain: S.terr.filter((x) => !S.terr0.includes(x)) })}<figcaption>${S.over ? "무너질 때" : "다스림을 마칠 때"}${S.terr.length > S.terr0.length ? ` · 새로 얻은 땅 ${S.terr.length - S.terr0.length}곳` : ""}</figcaption></figure></div><p class="sub">지도의 경계는 교과서 지도를 바탕으로 한 대략적인 모습이에요.</p></section>` : ""}
     <section class="two">
       <div class="record ${r.kind}"><p class="sub">후대의 역사책은 이렇게 적었어요</p><span class="stamp">${esc(r.stamp)}</span>
