@@ -7,7 +7,7 @@
     sl: [["첨성대", "과학", "선덕 여왕 때 세운 별을 보는 대"], ["황룡사 9층 목탑", "탑", "높이 80m에 이르렀다는 나무 탑"], ["천마총 금관", "공예", "나뭇가지·사슴뿔 모양의 신라 금관"], ["천마도", "그림", "말다래에 그린 하늘을 나는 말"], ["성덕대왕 신종", "종", "'에밀레종'으로도 불리는 큰 종"], ["석굴암 본존불", "불상", "돌을 깎아 만든 동굴 사원의 부처"], ["불국사 다보탑", "탑", "화려한 모양의 돌탑"], ["『국사』", "역사서", "진흥왕 때 거칠부가 쓴 역사책"]],
     gr: [["상감 청자", "공예", "무늬를 파고 흙을 메워 구운 비취색 도자기"], ["팔만대장경", "책", "몽골 침입 때 8만 장이 넘는 나무판에 새긴 불경"], ["『직지심체요절』", "책", "현재 남아 있는 가장 오래된 금속 활자 책"], ["『삼국사기』", "역사서", "김부식이 쓴 삼국의 역사책"], ["부석사 무량수전", "건축", "배흘림기둥이 아름다운 나무 건물"], ["나전칠기 경함", "공예", "자개를 붙여 만든 반짝이는 상자"], ["수월관음도", "그림", "고려 불화의 대표 작품"]],
     js1: [["『훈민정음 해례본』", "책", "새 글자를 만든 까닭과 원리를 풀어 쓴 책"], ["『조선왕조실록』", "역사서", "왕마다 날마다 일어난 일을 적은 기록"], ["자격루", "과학", "종과 북이 저절로 울리는 물시계"], ["앙부일구", "과학", "솥 모양의 해시계"], ["혼천의", "과학", "해·달·별의 움직임을 재는 기구"], ["측우기", "과학", "비의 양을 재는 기구"], ["『농사직설』", "책", "우리 땅에 맞는 농사법 책"], ["종묘 제례악", "음악", "왕실 조상에게 올리는 제사 음악"]],
-    js2: [["『동의보감』", "책", "허준이 쓴 우리 의학 백과사전(1610)"], ["백자 달항아리", "공예", "보름달처럼 둥근 흰 항아리"], ["정선의 「인왕제색도」", "그림", "우리 산천을 직접 보고 그린 진경산수화(1751)"], ["『징비록』", "역사서", "류성룡이 임진왜란을 돌아보며 쓴 기록"], ["『반계수록』", "책", "유형원이 나라를 바꿀 방법을 쓴 실학 책"], ["『속대전』", "책", "영조 때 새로 고친 법전"], ["판소리 춘향가", "음악", "소리꾼이 북장단에 맞춰 부르는 이야기 노래"], ["대동여지도의 밑그림", "지도", "온 나라를 걸어 그린 지도의 시작"]],
+    js2: [["『동의보감』", "책", "허준이 쓴 우리 의학 백과사전(1610)"], ["백자 달항아리", "공예", "보름달처럼 둥근 흰 항아리"], ["정선의 「인왕제색도」", "그림", "우리 산천을 직접 보고 그린 진경산수화(1751)"], ["『징비록』", "역사서", "류성룡이 임진왜란을 돌아보며 쓴 기록"], ["『반계수록』", "책", "유형원이 나라를 바꿀 방법을 쓴 실학 책"], ["『속대전』", "책", "영조 때 새로 고친 법전"], ["판소리 춘향가", "음악", "소리꾼이 북장단에 맞춰 부르는 이야기 노래"], ["대동여지도의 밑그림", "지도", "앞선 지도를 모으고 고쳐 만든 가장 정확한 지도의 시작"]],
     dh: [["독립문", "건축", "'우리는 독립국'이라는 뜻을 담은 문(1897)"], ["『독립신문』", "책", "한글로 펴낸 첫 민간 신문(1896)"], ["덕수궁 석조전", "건축", "대한 제국의 서양식 궁궐 건물"], ["환구단", "건축", "황제가 하늘에 제사 지내던 곳"], ["대한 제국 애국가", "음악", "1902년에 만든 나라의 노래"], ["『조선말 큰사전』 원고", "책", "조선어 학회가 지켜 낸 우리말 사전"]],
     mg: [["『몽골비사』", "역사서", "칭기즈 칸의 이야기를 담은 몽골의 역사책"], ["파이자(통행증)", "공예", "제국 어디든 지나갈 수 있는 금패"], ["카라코룸 은나무 분수", "공예", "음료가 흘러나오는 은으로 만든 나무"], ["역참 지도", "지도", "말을 갈아타는 길을 그린 지도"]],
     fr: [["『인권 선언』", "책", "사람은 자유롭고 평등하다는 선언(1789)"], ["『백과전서』", "책", "세상의 지식을 모은 큰 사전"], ["『나폴레옹 법전』", "책", "모든 시민이 법 앞에 평등한 법전"], ["루브르 박물관", "건축", "왕궁을 모두의 박물관으로 바꾸다"]],
@@ -25,7 +25,7 @@
     const pick = left[Math.floor(Math.random() * left.length)];
     const pl = 0.1 + (has("scholars") ? 0.05 : 0) + (S.st.cul >= 60 ? 0.05 : 0) + (boost || 0), pr = 0.3;
     const x = Math.random(), rk = x < pl ? TR_RANK[0] : x < pl + pr ? TR_RANK[1] : TR_RANK[2];
-    const t = { n: pick[0], k: pick[1], d: pick[2], r: rk.r, c: rk.c, turn: S.turn };
+    const t = { n: pick[0], k: pick[1], d: pick[2], r: rk.r, c: rk.c, turn: S.turn, img: `${TR_OF[S.scen] || "gr"}_${trList().indexOf(pick)}` };
     S.treasures.push(t);
     return { t, d: rk.d };
   }
@@ -44,12 +44,89 @@
   function treasureDrift(drift, parts) { const n = Math.min(3, trCount()); if (n) { drift.cul = (drift.cul || 0) + n; parts.push(`걸작을 보러 사람들이 모여듦 (문화 +${n})`); } }
   const CHEST = `<svg class="chest" viewBox="0 0 120 100" aria-hidden="true"><g class="lid"><path d="M10 40 Q60 6 110 40 L110 46 L10 46 Z" fill="#8E2219"/><rect x="54" y="30" width="12" height="16" rx="2" fill="#F2C14E"/></g><rect x="10" y="46" width="100" height="46" rx="4" fill="#A8432B"/><rect x="10" y="58" width="100" height="6" fill="#F2C14E"/><rect x="52" y="52" width="16" height="18" rx="3" fill="#F2C14E"/><circle cx="60" cy="61" r="3" fill="#8E2219"/></svg>`;
   function treasureEntries(L) {
-    return (L.res || []).filter((r) => r.treasure).map((r) => { const t = r.treasure; return `<div class="trbox ${t.c}"><div class="trchest">${CHEST}<span class="glow"></span></div><div class="tritem"><span class="trr">${esc(t.r)} 걸작</span><b>${esc(t.n)}</b><span class="sub">${esc(t.k)} · ${esc(t.d)}</span></div></div>`; }).join("");
+    return (L.res || []).filter((r) => r.treasure).map((r) => { const t = r.treasure; return `<div class="trbox ${t.c}">${trPhoto(t, "mini")}<div class="tritem"><span class="trr">${esc(t.r)} 걸작</span><b>${esc(t.n)}</b><span class="sub">${esc(trInfo(t.n).g || t.k)} · ${esc(t.d)}</span><span class="row"><button type="button" class="btn" data-trview="${esc(t.n)}">도감 보기</button><button type="button" class="btn" data-tropen="${esc(t.n)}">상자 다시 열기</button></span></div></div>`; }).join("");
   }
   function treasurePanel() {
     const ts = S.treasures || []; const all = trList();
     if (!ts.length) return "";
-    return `<section class="panel trpanel"><h2>${esc(NATION())}의 보물 창고 <span class="sub">${ts.length}/${all.length}</span></h2>
-      <div class="trgrid">${all.map((x) => { const t = ts.find((y) => y.n === x[0]); return t ? `<div class="trcard ${t.c}"><span class="trr">${esc(t.r)}</span><b>${esc(t.n)}</b><span class="sub">${esc(t.k)} · ${t.turn}시기</span></div>` : `<div class="trcard locked"><span class="trr">?</span><b>아직 만들지 못한 걸작</b><span class="sub">${esc(x[1])}</span></div>`; }).join("")}</div></section>`;
+    return `<section class="panel trpanel"><h2>${esc(NATION())}의 보물 창고 <span class="sub">${ts.length}/${all.length} · 눌러서 도감 보기</span></h2>
+      <div class="trgrid">${all.map((x) => { const t = ts.find((y) => y.n === x[0]); return t ? `<button type="button" class="trcard ${t.c}" data-trview="${esc(t.n)}">${trPhoto(t, "thumb")}<span class="trr">${esc(t.r)}</span><b>${esc(t.n)}</b><span class="sub">${esc(trInfo(t.n).g || t.k)} · ${t.turn}시기</span></button>` : `<div class="trcard locked"><div class="trph thumb"><span class="trph-fb" aria-hidden="true"><b>?</b><i>${esc(x[1])}</i></span></div><span class="trr">?</span><b>아직 만들지 못한 걸작</b><span class="sub">${esc(x[1])}</span></div>`; }).join("")}</div></section>`;
   }
+  const trFind = (n) => (S.treasures || []).find((t) => t.n === n);
+  // ---------- 걸작 도감(정지 화면) ----------
+  function trView(n) {
+    const t = trFind(n); if (!t) return;
+    $("layer").innerHTML = `<div class="overlay trview" role="dialog" aria-modal="true" aria-label="${esc(t.n)} 도감"><div class="modal wide trmodal ${t.c}">
+      <div class="tr-case">${trPhoto(t, "big")}</div>${trCardHTML(t)}
+      <div class="row"><button type="button" class="btn go" id="btnSaveClose">닫기</button></div></div></div>`;
+    $("btnSaveClose").focus();
+  }
+  // ---------- 보물 상자 개봉 연출 ----------
+  let TO = null;
+  function trStop() { if (!TO) return; TO.timers.forEach(clearTimeout); if (TO.fx) TO.fx.stop(); TO = null; }
+  function trAuto() {
+    if (window.__FAST || S.phase !== "result" || TO || (typeof RV !== "undefined" && RV)) return;
+    const L = S.log[S.log.length - 1]; if (!L) return;
+    S.trSeen = S.trSeen || [];
+    const q = (L.res || []).filter((r) => r.treasure && !S.trSeen.includes(r.treasure.n)).map((r) => r.treasure.n);
+    if (!q.length) return;
+    q.forEach((n) => S.trSeen.push(n)); save();
+    setTimeout(() => trOpen(q), 350);
+  }
+  function trOpen(queue) {
+    trStop();
+    const n = queue[0], t = trFind(n); if (!t) return;
+    const rest = queue.slice(1);
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const RK = { legend: "전설 걸작!", rare: "희귀 걸작!", common: "걸작 완성!" }[t.c] || "걸작 완성!";
+    $("layer").innerHTML = `<div class="tropen ${t.c}" id="tropen" role="dialog" aria-modal="true" aria-labelledby="toName">
+      <canvas class="fx" id="trfx" aria-hidden="true"></canvas><div class="rays" aria-hidden="true"></div><div class="beam" aria-hidden="true"></div>
+      <div class="rv-tools"><button type="button" class="rv-btn" id="btnSound" aria-pressed="${soundOn}">${soundOn ? "소리 켬" : "소리 끔"}</button><button type="button" class="rv-btn" id="btnTrSkip">건너뛰기</button></div>
+      <div class="to-stage">
+        <p class="to-top">${esc(NATION())}의 장인들이 상자를 가져왔어요…</p>
+        <button type="button" class="to-chest" id="btnChest" aria-label="보물 상자 열기">${CHEST}<span class="leak" aria-hidden="true"></span></button>
+        <p class="to-hint">상자를 눌러 열어 보세요</p>
+        <div class="to-card"><div class="to-flip"><div class="to-back" aria-hidden="true"><b>寶</b></div><div class="to-front">${trPhoto(t, "big")}<span class="to-rib">${RK}</span></div></div></div>
+        <div class="to-name"><span class="to-g">${esc(trInfo(t.n).g || t.k)}</span><b id="toName">${esc(t.n)}</b></div>
+        <div class="to-more">${trCardHTML(t)}<button type="button" class="btn go" id="btnTrDone">${rest.length ? "다음 상자 열기" : "보물 창고에 넣기"}</button></div>
+      </div></div>`;
+    const el = $("tropen");
+    TO = { timers: [], fx: null, rest, opened: false };
+    const at = (ms, fn) => TO.timers.push(setTimeout(fn, ms));
+    const fin = () => { el.classList.add("p1", "p2", "p3", "p4"); const d = $("btnTrDone"); if (d) d.focus({ preventScroll: true }); };
+    TO.final = () => { TO.timers.forEach(clearTimeout); TO.timers = []; TO.opened = true; fin(); if (!TO.fx) { TO.fx = fxStart($("trfx")); if (t.c !== "common") TO.fx.paper(t.c === "legend" ? 120 : 50); } };
+    if (reduce) { TO.opened = true; el.classList.add("instant"); fin(); return; }
+    const open = () => {
+      if (TO.opened) return; TO.opened = true; TO.timers.forEach(clearTimeout); TO.timers = [];
+      el.classList.add("p1"); drum(0, 0.9);
+      TO.fx = fxStart($("trfx")); const fx = TO.fx;
+      const col = t.c === "legend" ? 140 : t.c === "rare" ? 80 : 40;
+      fx.burst(fx.W * 0.5, fx.H * 0.42, col);
+      at(650, () => { el.classList.add("p2"); chime(0); });
+      at(1500, () => {
+        el.classList.add("p3"); drum(0, 0.8);
+        if (t.c === "legend") { gong(0.05); fx.burst(fx.W * 0.2, fx.H * 0.3, 70); at(300, () => fx.burst(fx.W * 0.8, fx.H * 0.3, 70)); fx.paper(160); }
+        else if (t.c === "rare") { chime(0.1); fx.paper(60); }
+      });
+      at(2500, fin);
+    };
+    TO.open = open;
+    $("btnChest").focus({ preventScroll: true });
+    // 상자가 점점 세게 흔들리고(북소리), 틈으로 빛이 새어 나와요. 누르지 않아도 2.4초 뒤 저절로 열려요.
+    drumRoll(2.2); at(2400, open);
+  }
+  function trDone() {
+    const rest = TO ? TO.rest : [];
+    trStop(); closeLayer();
+    if (rest.length) trOpen(rest);
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-trview],[data-tropen],#btnChest,#btnTrSkip,#btnTrDone");
+    if (!b) return;
+    if (b.dataset.trview) return trView(b.dataset.trview);
+    if (b.dataset.tropen) return trOpen([b.dataset.tropen]);
+    if (b.id === "btnChest") return TO && TO.open && TO.open();
+    if (b.id === "btnTrSkip") return TO && TO.final && TO.final();
+    if (b.id === "btnTrDone") return trDone();
+  });
   const treasureScore = () => { const ts = S.treasures || []; return Math.min(4, ts.length) + ts.filter((t) => t.c === "legend").length * 2; };

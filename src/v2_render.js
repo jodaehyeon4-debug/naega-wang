@@ -233,7 +233,7 @@
     if (S.phase === "start") app.innerHTML = renderStart();
     else if (S.phase === "event") app.innerHTML = renderEvent();
     else if (S.phase === "policy") app.innerHTML = renderPolicy();
-    else if (S.phase === "result") app.innerHTML = renderResult();
+    else if (S.phase === "result") { app.innerHTML = renderResult(); trAuto(); }
     else app.innerHTML = renderEnd();
   }
 
@@ -302,7 +302,7 @@
   });
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape" || !$("layer").innerHTML) return;
-    if ($("reveal")) closeReveal(); else closeLayer();
+    if ($("reveal")) closeReveal(); else if ($("tropen")) trDone(); else closeLayer();
   });
   document.addEventListener("input", (e) => {
     if (e.target.id === "kingName") { S.king = e.target.value; save(); }
