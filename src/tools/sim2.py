@@ -1,6 +1,6 @@
 import json, sys, collections
 from playwright.sync_api import sync_playwright
-BASE = "file:///tmp/claude-0/-home-claude/a3d432b7-bc61-5468-8412-2938cd20ead8/scratchpad/king/test.html"
+BASE = "file:///home/claude/naega-wang/src/test.html"
 GAME = r"""
 ([st, scen, N]) => {
   window.__FAST = true;
@@ -100,7 +100,7 @@ names = sys.argv[1].split(",") if len(sys.argv) > 1 else list(S)
 N = int(sys.argv[2]) if len(sys.argv) > 2 else 20
 scens = sys.argv[3] if len(sys.argv) > 3 else "ABCDEF"
 with sync_playwright() as p:
-    b = p.chromium.launch(); pg = b.new_page(); errs = []
+    b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium"); pg = b.new_page(); errs = []
     pg.on("pageerror", lambda e: errs.append(str(e)))
     pg.goto(BASE); pg.evaluate("localStorage.clear()"); pg.reload(); pg.wait_for_timeout(300)
     for name in names:

@@ -34,8 +34,16 @@
   }
   const usedPoints = () => S.picks.reduce((a, x) => a + P[x].cost, 0);
   // 되풀이할 수 있는 정책은 몇 시기가 지나면 다시 할 수 있어요
+  // 성공 확률이 50%를 넘던 도전에 실패하면, 다음 시기부터 한 번 더 도전할 수 있어요(왕마다 1회)
+  function retryState(p) {
+    if (!p.gamble || p.repeat) return null;
+    const tries = S.done.filter((d) => d.id === p.id);
+    if (tries.length !== 1 || tries[0].ok !== false || !(tries[0].ch > 0.5)) return null;
+    return tries[0].turn >= S.turn ? "wait" : "open";
+  }
   function usedUp(p) {
     if (!tried(p.id)) return null;
+    { const rs = retryState(p); if (rs === "open") return null; if (rs === "wait") return "아깝게 실패! 다음 시기에 한 번 더 도전할 수 있어요"; }
     if (!p.repeat) return "이미 했어요";
     const last = Math.max(...S.done.filter((d) => d.id === p.id).map((d) => d.turn));
     const left = p.repeat - (S.turn - last);
@@ -97,10 +105,12 @@
     // 2) 정책을 차례로
     for (const id of S.picks) {
       const p = P[id];
+      const ch = p.gamble && p.chance ? p.chance() : undefined;
       const r = p.run();
       const delta = apply(r.d);
       const ok = r.ok !== false;
-      S.done.push({ id, turn: S.turn, ok });
+      S.done.push(ch === undefined ? { id, turn: S.turn, ok } : { id, turn: S.turn, ok, ch: Math.round(ch * 100) / 100 });
+      if (retryState(p) === "wait") r.text += " 성공 확률이 50%를 넘던 도전이라, 다음 시기에 딱 한 번 더 도전할 수 있어요!";
       if (p.tyr) S.tyr += p.tyr;
       S.tags.push({ v: r.tags, w: 1 });
       L.res.push({ id, text: r.text, delta, ok, sl: r.sl || null, treasure: r.treasure || null });
@@ -232,8 +242,9 @@
       if (S.flags.submit) return { t: "굴욕을 견디며 지킨 평화", l: "자존심을 굽혀 전쟁을 피했어요. 백성은 살았지만, 선비들은 오래도록 그날을 부끄러워했어요.", h: "忍" };
     }
     if (S.scen === "G") {
-      if (S.flags.conquered && S.flags.warWon && avg >= 50) return { t: "세상에서 가장 넓은 제국", l: "말발굽이 닿는 곳마다 깃발이 꽂혔어요. 동쪽 바다에서 서쪽 유럽 가까이까지, 세상에서 가장 넓은 나라가 되었어요.", h: "帝", big: true };
-      if (S.flags.yam && avg >= 50) return { t: "비단길을 다스린 초원의 제국", l: "역참과 비단길로 동쪽과 서쪽이 이어졌어요. 상인과 학자, 기술자들이 제국을 가로질러 오갔어요.", h: "驛", big: true };
+      if (S.flags.conquered && S.flags.warWon && avg >= 50 && terrCount() >= 3) return { t: "세상에서 가장 넓은 제국", l: "말발굽이 닿는 곳마다 깃발이 꽂혔어요. 동쪽 바다에서 서쪽 유럽 가까이까지, 세상에서 가장 넓은 나라가 되었어요.", h: "帝", big: true };
+      if (S.flags.conquered && S.flags.warWon && avg >= 48 && terrCount() >= 1) return { t: "초원 밖으로 뻗어 나간 칸의 나라", l: "말 탄 군대가 초원을 넘어 이웃 나라를 굴복시켰어요. 세상에서 가장 넓은 제국이 되려면 원정을 더 이어 가야 해요(서하 → 금, 서요 → 호라즘 → 루스·바그다드).", h: "騎" };
+      if (S.flags.yam && avg >= 52 && terrCount() >= 1) return { t: "비단길을 다스린 초원의 제국", l: "역참과 비단길로 동쪽과 서쪽이 이어졌어요. 상인과 학자, 기술자들이 제국을 가로질러 오갔어요.", h: "驛", big: true };
       if (s.har < 30) return { t: "다시 갈라질 듯한 초원", l: "칸이 살아 있는 동안은 버텼지만, 부족장들은 벌써 저마다 딴생각을 하고 있어요.", h: "散", bad: true };
     }
     if (S.scen === "H") {

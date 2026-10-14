@@ -404,3 +404,5 @@ button.trcard:hover { transform: translateY(-2px); }
 .trbox .tritem { opacity: 1; animation: none; }
 .to-more .tr-g { color: var(--trc); }
 .to-more .tr-n, .to-more .tr-g { display: none; }
+.ifb.retry { background: #C8332B; color: #fff; border-color: #C8332B; animation: retryPulse 1.2s ease-in-out 3; }
+@keyframes retryPulse { 50% { transform: scale(1.08); } }

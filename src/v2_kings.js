@@ -78,9 +78,12 @@
     if (S.flags.conquered) m.add("conquest");
     return m;
   }
+  // 한국사 나라에서는 한국의 왕만, 세계사 나라(촉한 포함)에서는 모든 왕이 후보예요
+  const kingPool = (k) => WORLD() || S.scen === "Y" || !k.world;
   function matchKings(a) {
     const mine = mineSet();
-    return KINGS.map((k) => {
+    // 한국사 나라에서는 한국의 왕만 닮은 왕 후보가 돼요
+    return KINGS.filter(kingPool).map((k) => {
       const dist = Math.sqrt(k.v.reduce((s, v, i) => s + (v - a[i]) ** 2, 0));
       const axisSim = 1 - dist / 4;
       const same = k.sig.filter((x) => mine.has(x));

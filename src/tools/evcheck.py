@@ -1,6 +1,6 @@
 import json, collections
 from playwright.sync_api import sync_playwright
-BASE = "file:///tmp/claude-0/-home-claude/a3d432b7-bc61-5468-8412-2938cd20ead8/scratchpad/king/test.html"
+BASE = "file:///home/claude/naega-wang/src/test.html"
 JS = r"""
 (N) => {
   window.__FAST = true; const K = window.__K; const used = {}; const errs = []; const generic = {};
@@ -23,7 +23,7 @@ JS = r"""
 }
 """
 with sync_playwright() as p:
-    b = p.chromium.launch(); pg = b.new_page(); pe = []
+    b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium"); pg = b.new_page(); pe = []
     pg.on("pageerror", lambda e: pe.append(str(e)))
     pg.goto(BASE); pg.wait_for_timeout(300)
     r = pg.evaluate(JS, 60)
