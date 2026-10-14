@@ -7,7 +7,7 @@
 <title>왕BTI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700;800&family=Gowun+Dodum&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700;800&family=Gowun+Dodum&display=swap" media="print" onload="this.media='all'">
 <style>
 /* 어좌 뒤 일월오봉도: 해(주홍)·달·다섯 봉우리(석록)·물결(군청). 위에는 늘 보이는 나라 살림판, 아래는 시기마다 바뀌는 국정 화면. 닮은 왕 공개 장면은 밤의 궁궐(늘 어두운 배경)에 오방색 꽃가루. */
 :root {
@@ -280,7 +280,7 @@ th { font-size: 13px; color: var(--muted); font-weight: 400; }
 /* ===== 닮은 왕 공개 ===== */
 .reveal { position: fixed; inset: 0; z-index: 30; overflow-y: auto; background: radial-gradient(circle at 50% 35%, var(--rv-glow), var(--rv-bg) 70%); color: var(--rv-ink); display: flex; flex-direction: column; align-items: center; padding: 52px 16px 24px; }
 .reveal .fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
-.rays { position: fixed; left: 50%; top: 38%; width: 160vmax; height: 160vmax; margin: -80vmax 0 0 -80vmax; background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rv-gold) 22%, transparent) 0deg 8deg, transparent 8deg 20deg); opacity: 0; transform: scale(.4); transition: opacity 1s ease, transform 1.2s ease; pointer-events: none; z-index: 0; }
+.rays { position: fixed; left: 50%; top: 38%; width: 130vmax; height: 130vmax; margin: -65vmax 0 0 -65vmax; will-change: transform, rotate; background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rv-gold) 22%, transparent) 0deg 8deg, transparent 8deg 20deg); opacity: 0; transform: scale(.4); transition: opacity 1s ease, transform 1.2s ease; pointer-events: none; z-index: 0; }
 .reveal.p2 .rays { opacity: 1; transform: scale(1); animation: spin 26s linear infinite; }
 @keyframes spin { to { rotate: 360deg; } }
 .rv-tools { position: fixed; top: 10px; right: 12px; z-index: 4; display: flex; gap: 8px; }
@@ -330,10 +330,9 @@ th { font-size: 13px; color: var(--muted); font-weight: 400; }
 .reveal.instant *, .reveal.instant { animation: none !important; transition: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .stat.danger, .bigseal.alarm, .record .stamp { animation: none; }
-  .reveal *, .reveal { animation: none !important; transition: none !important; }
 }
+/* 닮은 왕 공개·보물 상자 연출은 학교 PC의 '애니메이션 끄기' 설정과 상관없이 재생해요(건너뛰기 단추로 멈출 수 있음). */
 .reveal.instant .rv-twist, .reveal.instant .rv-name { opacity: 1; }
-@media (prefers-reduced-motion: reduce) { .reveal .rv-twist { opacity: 1; } }
 h1, h2, h3, .card h4, .rv-stamp { word-break: keep-all; }
 @media (max-width: 480px) {
   .fate .stat { padding: 5px 6px; gap: 2px 5px; }
@@ -567,7 +566,7 @@ button.trcard:hover { transform: translateY(-2px); }
 .tropen.p1 .rays { opacity: 1; transform: scale(1); animation: spin 26s linear infinite; }
 .tropen.common .rays { display: none; }
 .tropen .rays { background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--trc) 24%, transparent) 0deg 8deg, transparent 8deg 20deg); }
-.beam { position: fixed; left: 50%; top: 0; bottom: 30%; width: 220px; margin-left: -110px; background: linear-gradient(to top, color-mix(in srgb, var(--trc) 75%, #fff), transparent); filter: blur(18px); opacity: 0; transform: scaleX(.2); transform-origin: bottom; pointer-events: none; z-index: 1; transition: opacity .5s ease, transform .5s ease; }
+.beam { position: fixed; left: 50%; top: 0; bottom: 30%; width: 220px; margin-left: -110px; background: radial-gradient(ellipse 50% 100% at 50% 100%, color-mix(in srgb, var(--trc) 75%, #fff) 0%, color-mix(in srgb, var(--trc) 35%, transparent) 45%, transparent 75%); opacity: 0; will-change: opacity, transform; transform: scaleX(.2); transform-origin: bottom; pointer-events: none; z-index: 1; transition: opacity .5s ease, transform .5s ease; }
 .tropen.p1 .beam { opacity: .85; transform: scaleX(1); }
 .tropen.p3 .beam { opacity: .25; }
 .to-stage { position: relative; z-index: 3; margin: auto 0; width: min(520px, 100%); display: grid; gap: 10px; justify-items: center; text-align: center; }
@@ -608,7 +607,6 @@ button.trcard:hover { transform: translateY(-2px); }
 .tropen.instant *, .tropen.instant { animation: none !important; transition: none !important; }
 .tropen.instant .to-name, .tropen.instant .to-rib { opacity: 1; }
 .tropen.p4 .to-chest { display: none; }
-@media (prefers-reduced-motion: reduce) { .tropen *, .tropen { animation: none !important; transition: none !important; } .tropen .to-name, .tropen .to-rib { opacity: 1; } }
 .to-chest:focus-visible { outline: 3px dashed var(--trc); outline-offset: 6px; }
 .trbox .tritem { opacity: 1; animation: none; }
 .to-more .tr-g { color: var(--trc); }
@@ -4391,7 +4389,7 @@ button.trcard:hover { transform: translateY(-2px); }
     trStop();
     const n = queue[0], t = trFind(n); if (!t) return;
     const rest = queue.slice(1);
-    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = false; // 연출은 늘 재생(건너뛰기 가능)
     const RK = { legend: "전설 걸작!", rare: "희귀 걸작!", common: "걸작 완성!" }[t.c] || "걸작 완성!";
     $("layer").innerHTML = `<div class="tropen ${t.c}" id="tropen" role="dialog" aria-modal="true" aria-labelledby="toName">
       <canvas class="fx" id="trfx" aria-hidden="true"></canvas><div class="rays" aria-hidden="true"></div><div class="beam" aria-hidden="true"></div>
@@ -4425,7 +4423,6 @@ button.trcard:hover { transform: translateY(-2px); }
       at(2500, fin);
     };
     TO.open = open;
-    $("btnChest").focus({ preventScroll: true });
     // 상자가 점점 세게 흔들리고(북소리), 틈으로 빛이 새어 나와요. 누르지 않아도 2.4초 뒤 저절로 열려요.
     drumRoll(2.2); at(2400, open);
   }
@@ -4523,7 +4520,7 @@ button.trcard:hover { transform: translateY(-2px); }
     // ---------- 잉글랜드 ----------
     "『캔터베리 이야기』": { g: "위대한 저술", w: "잉글랜드 · 1387~1400년 무렵 · 제프리 초서", m: "이야기 시 모음", t: "기사, 방앗간 주인, 수녀원장, 요리사 등 온갖 사람들이 캔터베리 대성당으로 순례를 떠나요. 가는 길에 돌아가며 이야기를 들려주고 누가 더 재미있게 하나 겨뤄요. 귀족들이 프랑스어와 라틴어를 쓰던 때, 백성의 말인 영어로 쓴 걸작이에요. 그래서 '영문학의 아버지'라는 이름을 얻었어요.", q: "Whan that Aprill with his shoures soote… — 4월의 단비가 3월의 가뭄을 뿌리까지 적시면…", qs: "『캔터베리 이야기』 첫 구절", ph: "사진은 1400년 무렵의 엘즈미어 필사본 — 말 탄 사람이 초서" },
     "고딕 대성당": { g: "건축 걸작", w: "유럽 · 12~16세기", m: "돌 건축", t: "끝이 뾰족한 아치와 건물 밖에서 벽을 받치는 버팀벽 덕분에 벽을 얇게 할 수 있었어요. 그래서 높이 쌓으면서도 커다란 창을 낼 수 있었어요. 그 창을 채운 스테인드글라스로 빛이 쏟아져 들어와요. 글을 모르는 사람도 창의 그림으로 성경 이야기를 읽었어요. 짓는 데 100년이 넘게 걸린 성당도 많아요." },
-    "채색 필사본": { g: "위대한 미술품", w: "잉글랜드 · 8세기 무렵(『린디스판 복음서』)", m: "양피지에 금박과 물감", t: "인쇄술이 없던 때 수도사들이 양가죽 종이에 한 글자씩 손으로 베껴 쓴 책이에요. 첫 글자를 크게 장식하고 금박과 귀한 물감으로 그림을 그려 넣었어요. 그래서 책장이 빛나는 것처럼 보여요. 책 한 권을 만드는 데 몇 년씩 걸려서, 책 자체가 보물이었어요." },
+    "채색 필사본": { g: "위대한 미술품", w: "잉글랜드 · 8~15세기", m: "양피지에 금박과 물감", ph: "사진은 1400년 무렵의 엘즈미어 필사본", t: "인쇄술이 없던 때 수도사들이 양가죽 종이에 한 글자씩 손으로 베껴 쓴 책이에요. 첫 글자를 크게 장식하고 금박과 귀한 물감으로 그림을 그려 넣었어요. 그래서 책장이 빛나는 것처럼 보여요. 책 한 권을 만드는 데 몇 년씩 걸려서, 책 자체가 보물이었어요." },
     "장궁(긴 활)": { g: "위대한 유물", w: "잉글랜드 · 14~15세기", m: "주목 나무 · 길이 약 1.8m", t: "사람 키만큼 긴 나무 활이에요. 숙련된 궁수는 1분에 10발 넘게 쏠 수 있었어요. 1346년 크레시 전투에서 잉글랜드 궁수들이 훨씬 많은 프랑스 기사들을 물리쳤어요. 왕은 백성들이 일요일마다 활쏘기를 연습하도록 법으로 정할 만큼 장궁을 중요하게 여겼어요." },
     // ---------- 촉한 ----------
     "「출사표」": { g: "위대한 저술", w: "촉한 · 227년 · 제갈량", m: "상소문", t: "유비가 세상을 떠난 뒤 승상 제갈량이 위나라를 치러 떠나며 어린 황제 유선에게 올린 글이에요. 선제 유비에게 입은 은혜와 나라를 향한 충성, 황제가 지켜야 할 일을 간곡하게 적었어요. 예부터 '이 글을 읽고 울지 않는 사람은 충신이 아니다'라는 말이 전해요.", q: "신 량이 아룁니다. 선제께서 나라를 세우는 일을 절반도 이루지 못하시고 중도에 돌아가셨습니다.", qs: "「출사표」 첫머리" },
@@ -4534,7 +4531,7 @@ button.trcard:hover { transform: translateY(-2px); }
   const TR_GLYPH = { 비석: "碑", 벽화: "畵", 그림: "畵", 불상: "佛", 역사서: "史", 책: "書", 공예: "工", 탑: "塔", 건축: "殿", 과학: "天", 종: "鐘", 음악: "樂", 지도: "圖" };
   function trInfo(n) { return TRI[n] || {}; }
   // 사진 파일: tr/<나라키>_<번호>.jpg — 없으면 갈래 글자 그림으로 대신해요
-  const TR_NOIMG = new Set(["en_2"]);
+  const TR_NOIMG = new Set([]);
   function trImgId(n) { for (const k in TR) { const i = TR[k].findIndex((x) => x[0] === n); if (i >= 0) return `${k}_${i}`; } return ""; }
   function trPhoto(t, cls) {
     const id = t.img || trImgId(t.n), g = TR_GLYPH[t.k] || "寶";
@@ -4984,7 +4981,7 @@ button.trcard:hover { transform: translateY(-2px); }
     if (window.__FAST || !S.end) return;
     stopReveal();
     const m = endData(), k = m.top.k;
-    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = false; // 학교 PC는 '애니메이션 끄기'가 켜진 경우가 많아, 연출은 늘 재생해요(건너뛰기 가능)
     const names = KINGS.map((x) => x.n);
     $("layer").innerHTML = `<div class="reveal" id="reveal" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
       <canvas class="fx" id="fx" aria-hidden="true"></canvas><div class="rays" aria-hidden="true"></div>

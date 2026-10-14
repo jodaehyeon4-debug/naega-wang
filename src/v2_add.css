@@ -73,7 +73,7 @@
 /* ===== 닮은 왕 공개 ===== */
 .reveal { position: fixed; inset: 0; z-index: 30; overflow-y: auto; background: radial-gradient(circle at 50% 35%, var(--rv-glow), var(--rv-bg) 70%); color: var(--rv-ink); display: flex; flex-direction: column; align-items: center; padding: 52px 16px 24px; }
 .reveal .fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
-.rays { position: fixed; left: 50%; top: 38%; width: 160vmax; height: 160vmax; margin: -80vmax 0 0 -80vmax; background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rv-gold) 22%, transparent) 0deg 8deg, transparent 8deg 20deg); opacity: 0; transform: scale(.4); transition: opacity 1s ease, transform 1.2s ease; pointer-events: none; z-index: 0; }
+.rays { position: fixed; left: 50%; top: 38%; width: 130vmax; height: 130vmax; margin: -65vmax 0 0 -65vmax; will-change: transform, rotate; background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rv-gold) 22%, transparent) 0deg 8deg, transparent 8deg 20deg); opacity: 0; transform: scale(.4); transition: opacity 1s ease, transform 1.2s ease; pointer-events: none; z-index: 0; }
 .reveal.p2 .rays { opacity: 1; transform: scale(1); animation: spin 26s linear infinite; }
 @keyframes spin { to { rotate: 360deg; } }
 .rv-tools { position: fixed; top: 10px; right: 12px; z-index: 4; display: flex; gap: 8px; }
@@ -123,10 +123,9 @@
 .reveal.instant *, .reveal.instant { animation: none !important; transition: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .stat.danger, .bigseal.alarm, .record .stamp { animation: none; }
-  .reveal *, .reveal { animation: none !important; transition: none !important; }
 }
+/* 닮은 왕 공개·보물 상자 연출은 학교 PC의 '애니메이션 끄기' 설정과 상관없이 재생해요(건너뛰기 단추로 멈출 수 있음). */
 .reveal.instant .rv-twist, .reveal.instant .rv-name { opacity: 1; }
-@media (prefers-reduced-motion: reduce) { .reveal .rv-twist { opacity: 1; } }
 h1, h2, h3, .card h4, .rv-stamp { word-break: keep-all; }
 @media (max-width: 480px) {
   .fate .stat { padding: 5px 6px; gap: 2px 5px; }
@@ -360,7 +359,7 @@ button.trcard:hover { transform: translateY(-2px); }
 .tropen.p1 .rays { opacity: 1; transform: scale(1); animation: spin 26s linear infinite; }
 .tropen.common .rays { display: none; }
 .tropen .rays { background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--trc) 24%, transparent) 0deg 8deg, transparent 8deg 20deg); }
-.beam { position: fixed; left: 50%; top: 0; bottom: 30%; width: 220px; margin-left: -110px; background: linear-gradient(to top, color-mix(in srgb, var(--trc) 75%, #fff), transparent); filter: blur(18px); opacity: 0; transform: scaleX(.2); transform-origin: bottom; pointer-events: none; z-index: 1; transition: opacity .5s ease, transform .5s ease; }
+.beam { position: fixed; left: 50%; top: 0; bottom: 30%; width: 220px; margin-left: -110px; background: radial-gradient(ellipse 50% 100% at 50% 100%, color-mix(in srgb, var(--trc) 75%, #fff) 0%, color-mix(in srgb, var(--trc) 35%, transparent) 45%, transparent 75%); opacity: 0; will-change: opacity, transform; transform: scaleX(.2); transform-origin: bottom; pointer-events: none; z-index: 1; transition: opacity .5s ease, transform .5s ease; }
 .tropen.p1 .beam { opacity: .85; transform: scaleX(1); }
 .tropen.p3 .beam { opacity: .25; }
 .to-stage { position: relative; z-index: 3; margin: auto 0; width: min(520px, 100%); display: grid; gap: 10px; justify-items: center; text-align: center; }
@@ -401,7 +400,6 @@ button.trcard:hover { transform: translateY(-2px); }
 .tropen.instant *, .tropen.instant { animation: none !important; transition: none !important; }
 .tropen.instant .to-name, .tropen.instant .to-rib { opacity: 1; }
 .tropen.p4 .to-chest { display: none; }
-@media (prefers-reduced-motion: reduce) { .tropen *, .tropen { animation: none !important; transition: none !important; } .tropen .to-name, .tropen .to-rib { opacity: 1; } }
 .to-chest:focus-visible { outline: 3px dashed var(--trc); outline-offset: 6px; }
 .trbox .tritem { opacity: 1; animation: none; }
 .to-more .tr-g { color: var(--trc); }

@@ -77,7 +77,7 @@
     trStop();
     const n = queue[0], t = trFind(n); if (!t) return;
     const rest = queue.slice(1);
-    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = false; // 연출은 늘 재생(건너뛰기 가능)
     const RK = { legend: "전설 걸작!", rare: "희귀 걸작!", common: "걸작 완성!" }[t.c] || "걸작 완성!";
     $("layer").innerHTML = `<div class="tropen ${t.c}" id="tropen" role="dialog" aria-modal="true" aria-labelledby="toName">
       <canvas class="fx" id="trfx" aria-hidden="true"></canvas><div class="rays" aria-hidden="true"></div><div class="beam" aria-hidden="true"></div>
@@ -111,7 +111,6 @@
       at(2500, fin);
     };
     TO.open = open;
-    $("btnChest").focus({ preventScroll: true });
     // 상자가 점점 세게 흔들리고(북소리), 틈으로 빛이 새어 나와요. 누르지 않아도 2.4초 뒤 저절로 열려요.
     drumRoll(2.2); at(2400, open);
   }

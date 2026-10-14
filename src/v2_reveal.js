@@ -69,7 +69,7 @@
     if (window.__FAST || !S.end) return;
     stopReveal();
     const m = endData(), k = m.top.k;
-    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = false; // 학교 PC는 '애니메이션 끄기'가 켜진 경우가 많아, 연출은 늘 재생해요(건너뛰기 가능)
     const names = KINGS.map((x) => x.n);
     $("layer").innerHTML = `<div class="reveal" id="reveal" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
       <canvas class="fx" id="fx" aria-hidden="true"></canvas><div class="rays" aria-hidden="true"></div>

@@ -17,7 +17,7 @@ js = "\n".join([r("v2_data.js"), r("v2_main1.js"), r("v2_pol.js"), r("v2_ev.js")
 head = '''<title>왕BTI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700;800&family=Gowun+Dodum&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700;800&family=Gowun+Dodum&display=swap" media="print" onload="this.media='all'">
 '''
 body = '''
 <div class="wrap">
