@@ -412,8 +412,8 @@ details.real[open] summary { margin-bottom: 8px; }
 .mappanel:not([open]) summary::before { content: "▸"; }
 .map { display: block; width: 100%; max-width: 620px; height: auto; margin: 8px auto 0; border-radius: 10px; border: 1px solid var(--line); }
 .map .mine { fill: color-mix(in srgb, var(--map-mine) 40%, var(--map-land)); stroke: color-mix(in srgb, var(--map-mine) 40%, var(--map-land)); stroke-width: 1.6; stroke-linejoin: round; }
-.map .mine-edge path { fill: none; stroke: var(--map-mine); stroke-width: 5; stroke-linejoin: round; }
-.map .nbline path { fill: none; stroke: color-mix(in srgb, var(--map-ink) 35%, transparent); stroke-width: 1.2; stroke-dasharray: 5 4; stroke-linejoin: round; }
+.map .mine-edge path { fill: none; stroke: var(--map-mine); stroke-width: calc(5 * var(--mk, 1)); stroke-linejoin: round; }
+.map .nbline path { fill: none; stroke: color-mix(in srgb, var(--map-ink) 35%, transparent); stroke-width: calc(1.2 * var(--mk, 1)); stroke-dasharray: calc(5 * var(--mk, 1)) calc(4 * var(--mk, 1)); stroke-linejoin: round; }
 .map .mrange { fill: none; stroke: color-mix(in srgb, var(--map-coast) 75%, transparent); stroke-width: 1.4; stroke-linejoin: round; }
 .map .mpeak { fill: color-mix(in srgb, var(--map-coast) 55%, var(--map-land)); stroke: var(--map-coast); stroke-width: 1.2; }
 .map .ml.sea { fill: color-mix(in srgb, var(--map-river) 80%, var(--map-ink)); font-style: italic; font-weight: 600; letter-spacing: .06em; stroke-width: 0; }
@@ -421,17 +421,17 @@ details.real[open] summary { margin-bottom: 8px; }
 .map .mine.gain { fill: color-mix(in srgb, var(--map-mine) 62%, var(--map-land)); stroke: color-mix(in srgb, var(--map-mine) 62%, var(--map-land)); animation: gainpulse 1.6s ease-in-out 3; }
 @keyframes gainpulse { 50% { opacity: .55; } }
 @media (prefers-reduced-motion: reduce) { .map .mine.gain { animation: none; } }
-.map .ml { font-family: var(--font-body); font-weight: 700; fill: var(--map-ink); paint-order: stroke; stroke: var(--map-halo); stroke-width: 4px; stroke-linejoin: round; text-anchor: middle; }
+.map .ml { font-family: var(--font-body); font-weight: 700; fill: var(--map-ink); paint-order: stroke; stroke: var(--map-halo); stroke-width: calc(4px * var(--mk, 1)); stroke-linejoin: round; text-anchor: middle; }
 .map .ml.sm { font-weight: 600; text-anchor: start; }
 .map .ml.me { fill: var(--map-mine); font-weight: 800; }
 .map .ml.arl.en { fill: var(--map-enemy); }
 .map .ml.arl.ou { fill: var(--map-ours); }
-.map .mcap { fill: var(--map-halo); stroke: var(--map-ink); stroke-width: 2.5; }
+.map .mcap { fill: var(--map-halo); stroke: var(--map-ink); stroke-width: calc(2.5 * var(--mk, 1)); }
 .map .mcity { fill: var(--map-ink); }
-.map .marrow { fill: none; stroke-width: 6; stroke-linecap: round; }
+.map .marrow { fill: none; stroke-width: calc(6 * var(--mk, 1)); stroke-linecap: round; }
 .map .marrow.enemy { stroke: var(--map-enemy); }
 .map .marrow.ours, .map .marrow.plan { stroke: var(--map-ours); }
-.map .marrow.plan { stroke-dasharray: 12 8; }
+.map .marrow.plan { stroke-dasharray: calc(12 * var(--mk, 1)) calc(8 * var(--mk, 1)); }
 .mleg { display: inline-flex; align-items: center; gap: 4px; margin-right: 10px; font-size: 13px; }
 .mleg i { display: inline-block; width: 16px; height: 10px; border-radius: 3px; }
 .mleg .lg-me { background: color-mix(in srgb, var(--map-mine) 50%, transparent); border: 1.5px solid var(--map-mine); }
@@ -497,6 +497,11 @@ details.real[open] summary { margin-bottom: 8px; }
 .watch p.low { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 10%, var(--paper)); }
 .watch b { color: var(--warn); } .watch p.low b { color: var(--bad); }
 @media (max-width: 640px) { .watch { left: 16px; right: 16px; max-width: none; bottom: 10px; } }
+.stars.hell { color: var(--bad); letter-spacing: -1px; font-size: 13px; }
+.scen.hellcard { border: 2px solid var(--bad); background: color-mix(in srgb, var(--bad) 7%, var(--paper)); }
+.hellwarn { display: block; color: var(--bad); font-weight: 800; font-size: 14px; background: color-mix(in srgb, var(--bad) 12%, var(--paper)); border-radius: 8px; padding: 6px 10px; }
+.morebox { border: 2px solid var(--gold); display: grid; gap: 8px; justify-items: start; }
+.inp { width: 100%; padding: 10px 12px; font-size: 17px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); margin: 6px 0 10px; }
 </style>
 </head>
 <body>
@@ -528,7 +533,7 @@ details.real[open] summary { margin-bottom: 8px; }
     eco: { n: "곳간 채우기", h: "財", c: "var(--bronze)" },
     cul: { n: "학문과 문화", h: "文", c: "var(--plum)" },
   };
-  const TURNS = 10;
+  let TURNS = 10;
   const eraText = (t) => `재위 ${t * 3 - 2}~${t * 3}년`;
 
   // ================= 시작하는 나라 6가지 =================
@@ -593,7 +598,7 @@ details.real[open] summary { margin-bottom: 8px; }
   const ERA_E = ["1592년 4월", "1592년 여름", "1592년 가을", "1593년", "1597년", "1598년 겨울", "1600~1605년", "1606~1610년", "1611~1615년", "1616~1620년"];
   const ERA_F = ["1625년 무렵", "1630년 무렵", "1636년 봄", "1636년 겨울", "1637~1640년", "1641~1645년", "1646~1650년", "1651~1655년", "1656~1660년", "1661~1665년"];
   const ERA_H = ["1789년 봄", "1789년 5월", "1789년 7월", "1792년", "1795년", "1797년", "1799년", "1802년", "1805년", "1808년"];
-  const era = (t) => (ERAS[S.scen] ? ERAS[S.scen][t - 1] : S.scen === "E" ? ERA_E[t - 1] : S.scen === "F" ? ERA_F[t - 1] : S.scen === "G" ? `${1206 + (t - 1) * 3}년 무렵` : S.scen === "H" ? ERA_H[t - 1] : eraText(t));
+  const era = (t) => (t > 10 ? extEra(t) : ERAS[S.scen] ? ERAS[S.scen][t - 1] : S.scen === "E" ? ERA_E[t - 1] : S.scen === "F" ? ERA_F[t - 1] : S.scen === "G" ? `${1206 + (t - 1) * 3}년 무렵` : S.scen === "H" ? ERA_H[t - 1] : eraText(t));
   const WORLD = () => "GHLM".includes(S.scen);
 
   function apply(d) {
@@ -1112,6 +1117,7 @@ details.real[open] summary { margin-bottom: 8px; }
   const POOL = ["famine", "plague", "harvest", "goldmine", "merchants", "palace", "pirates", "luxury", "general", "talent", "envoy", "comet", "castaway", "drum", "tiger", "bribe", "spy", "maskdance"];
   function pickEvent() {
     const t = S.turn, u = (id) => S.used.includes(id);
+    if (t > 10) return extEvent();
     if (SCRIPT5[S.scen]) { const x = SCRIPT5[S.scen](t); if (x) return x; }
     if (t === TURNS) return "heir";
     if (t === 1) return { E: "e1", F: "f1", G: "g1", H: "h1" }[S.scen] || "open" + S.scen;
@@ -1410,7 +1416,7 @@ details.real[open] summary { margin-bottom: 8px; }
     save(); render(before);
   }
   function apPoints() {
-    return Math.max(1, 2 + (S.turn === 1 ? 1 : 0) + S.saved + (S.st.gold >= 75 ? 1 : 0) - (S.st.gold < 10 ? 1 : 0));
+    return Math.max(1, 2 + (S.ext && S.turn > 10 ? 1 : 0) + (S.turn === 1 ? 1 : 0) + S.saved + (S.st.gold >= 75 ? 1 : 0) - (S.st.gold < 10 ? 1 : 0));
   }
   const usedPoints = () => S.picks.reduce((a, x) => a + P[x].cost, 0);
   // 되풀이할 수 있는 정책은 몇 시기가 지나면 다시 할 수 있어요
@@ -1503,6 +1509,7 @@ details.real[open] summary { margin-bottom: 8px; }
     if (DRIFT5[S.scen]) DRIFT5[S.scen](drift, parts, L);
     if (has("school")) { drift.cul = (drift.cul || 0) + 1; parts.push("나라 학교에서 인재가 자람 (문화 +1)"); }
     watchDrift(drift, parts);
+    if (S.ext && S.turn > 10) { drift.def -= 1; drift.ppl -= 1; drift.har -= 1; parts.push("오래된 나라의 피로 (국방·민심·화합 -1)"); }
     if (S.flags.debt) { drift.gold -= 2; parts.push("빌린 돈의 이자 -2"); }
     if (S.scen === "E" && S.turn <= 5) {
       const strong = S.st.def >= 55;
@@ -2210,6 +2217,7 @@ details.real[open] summary { margin-bottom: 8px; }
   const BASE_ST = ST.map((x) => ({ n: x.n, h: x.h, d: x.d }));
   const BASE_ECON = ECON.map((e) => ({ name: e.name, text: e.text, failText: e.failText }));
   function relabel() {
+    TURNS = S && S.ext ? 20 : 10;
     const sc = SCEN[S.scen] || {};
     const lab = sc.labels ? sc.labels() : null;
     ST.forEach((x, i) => { const L = lab && lab[x.k]; x.n = L ? L[0] : BASE_ST[i].n; x.h = L ? L[1] : BASE_ST[i].h; x.d = L ? L[2] : BASE_ST[i].d; SN[x.k] = x.n; });
@@ -2884,9 +2892,9 @@ details.real[open] summary { margin-bottom: 8px; }
     const [lo0, la0, lo1, la1] = wide ? M.wide.view : M.view, a = PJ([lo0, la1]), b = PJ([lo1, la0]);
     const vb = [a[0], a[1], b[0] - a[0], b[1] - a[1]].map((v) => v.toFixed(0)).join(" ");
     const terr = o.terr || S.terr || M.start, gain = o.gain || [];
-    const fs = Math.max(13, (b[0] - a[0]) / 34);
+    const fs = M.geo ? (b[0] - a[0]) / 30 : Math.max(13, (b[0] - a[0]) / 34), msc = M.geo ? Math.min(1, (b[0] - a[0]) / 400) : 1;
     const lab = (t, p, cls) => { const [x, y] = PJ(p); return `<text class="ml ${cls || ""}" x="${x.toFixed(0)}" y="${y.toFixed(0)}" font-size="${(cls === "big" ? fs * 1.25 : cls === "sm" ? fs * 0.82 : fs).toFixed(0)}">${esc(t)}</text>`; };
-    let s = `<svg class="map" viewBox="${vb}" role="img" aria-label="${esc(M.me)} 주변 지도"><defs><clipPath id="${id}c"><path d="${LAND}"/></clipPath>
+    let s = `<svg class="map" style="--mk:${msc.toFixed(2)}" viewBox="${vb}" role="img" aria-label="${esc(M.me)} 주변 지도"><defs><clipPath id="${id}c"><path d="${LAND}"/></clipPath>
       <marker id="${id}e" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--map-enemy)"/></marker>
       <marker id="${id}o" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--map-ours)"/></marker></defs>
       <rect x="${a[0]}" y="${a[1]}" width="${b[0] - a[0]}" height="${b[1] - a[1]}" fill="var(--map-sea)"/><path d="${LAND}" fill="var(--map-land)"/><g clip-path="url(#${id}c)">`;
@@ -3456,13 +3464,13 @@ details.real[open] summary { margin-bottom: 8px; }
       o.base = b; o.max = Math.round((b + o.bonus.reduce((a, x) => a + x[2], 0)) * 100) / 100;
     }
     if (o.ultra) o.cost = 4;
-    const chance = () => Math.min(o.max, o.base + o.bonus.reduce((acc, [, c, add]) => acc + (c() ? add : 0), 0));
+    const chance = () => Math.min(o.max + extBonus(o.ultra), o.base + extBonus(o.ultra) + o.bonus.reduce((acc, [, c, add]) => acc + (c() ? add : 0), 0));
     PP({ id: o.id, scen: [o.scen], cat: o.cat || "mil", name: o.name, sub: o.sub, kings: o.kings || "실제 역사와 다른 길", cost: o.cost, eff: o.eff, fail: o.fail, inc: o.inc, gamble: true, risky: true, strong: true, ifs: true, ultra: o.ultra, tags: o.tags || [0.6, 1, 0], dir: o.dir,
       chance,
       lockIf: () => { if (o.regions && o.regions.every(ownsTerr)) return "이미 이루었어요"; return o.need ? o.need() : null; },
       get note() {
         const pct = (v) => `${Math.round(v * 100)}%`;
-        return `${o.note} 성공 확률은 기본 ${pct(o.base)}` + o.bonus.map(([lab, c, add]) => ` · ${lab} +${pct(add)}${c() ? "✓" : ""}`).join("") + ` (가장 높아도 ${pct(o.max)}). ✓는 이미 갖춘 조건이에요.`;
+        return `${o.note} 성공 확률은 기본 ${pct(o.base)}` + o.bonus.map(([lab, c, add]) => ` · ${lab} +${pct(add)}${c() ? "✓" : ""}`).join("") + ` (가장 높아도 ${pct(o.max)}). ✓는 이미 갖춘 조건이에요.` + (extBonus(o.ultra) ? ` 조금만 더 보너스 +${pct(extBonus(o.ultra))}!` : "");
       },
       run() {
         if (Math.random() < chance()) {
@@ -3928,10 +3936,275 @@ details.real[open] summary { margin-bottom: 8px; }
   LEG({ id: "lg_j", scen: "J", cat: "mil", name: "대한 제국 비행선 함대", sub: "경성 하늘의 비행선", need: () => ["jrail", "jarmy", "jbank"].every(has) && S.st.gold >= 55, eff: { def: 25, kp: 10, cul: 10 },
     note: "철도·신식 군대·우리 은행이 모두 갖추어지자 전설의 함대가 하늘에 떴어요!", text: "우리 은행의 돈과 철도 기술로 거대한 비행선을 띄웠어요. 하늘에서 국경을 지키니 어느 나라도 함부로 넘보지 못했어요.", sl: "비행선이 경성 하늘에 뜨니, 장터 사람들이 고개를 들다 갓이 모두 뒤로 넘어갔다." });
 
+  // ================= 지옥급 난이도(★10): 실제로 나라가 무너진 길 =================
+  const HELL_WARN = "주의! 이 게임은 매우 어려워요. 제대로 다스리지 않으면 2~3시기 안에 나라가 무너져요. 실제 역사에서 나라가 멸망한 바로 그 순간에서 시작해요.";
+  Object.assign(SCEN, {
+    W: { name: "백제 (656년)", nation: "백제", year: 656, real: true, star: 10, warn: HELL_WARN, tag: ["war", "멸망 직전"], like: "의자왕 말년의 백제예요. 실제로는 660년 나당 연합군에 사비성이 무너졌어요.", text: "왕이 잔치와 사치에 빠져 바른말 하는 신하를 옥에 가두었어요. 바다 건너 당나라와 동쪽의 신라가 손을 잡고 백제를 노리고 있어요. 4년 뒤, 18만 대군이 몰려와요.",
+      st: { kp: 46, har: 20, ppl: 26, gold: 24, def: 26, cul: 50 }, done: ["law", "rank", "local", "school", "buddhism", "history"], hide: ANCIENT_HIDE.concat(["slaves", "disband", "hostage", "capital"]) },
+    Y: { name: "촉한 (221년)", nation: "촉한", year: 221, world: true, star: 10, title: "황제", warn: HELL_WARN, tag: ["war", "삼국지"], like: "삼국지의 유비가 황제가 된 해예요. 실제로 촉한은 이릉 전투에서 크게 지고, 263년 위나라에 무너졌어요.", text: "의형제 관우가 오나라에 목숨을 잃고 형주 땅까지 빼앗겼어요. 북쪽의 위나라는 촉보다 몇 배나 강해요. 복수냐, 나라냐? 황제의 첫 선택이 나라의 운명을 정해요.",
+      st: { kp: 56, har: 26, ppl: 28, gold: 20, def: 32, cul: 40 }, done: ["law", "rank", "local"], hide: ["hangeul", "hwarang", "daedong", "military_tax", "survey", "exam", "buddhism", "slaves", "voyage", "tangpyeong", "festival", "capital", "conquest", "hostage"] },
+  });
+  ERAS.W = ["656년", "660년 봄", "660년 7월 9일 (황산벌)", "660년 7월 (사비성)", "661~663년", "664~670년", "671~680년", "681~690년", "691~700년", "701~710년"];
+  ERAS.Y = ["221년", "222년 (이릉)", "223년 (백제성)", "225년 (남만)", "228년 (북벌)", "231년", "234년 (오장원)", "240년대", "250년대", "263년"];
+  SCRIPT5.W = (t) => ({ 1: "w1", 2: "w2", 3: "w3", 4: "w4", 5: S.flags.kept ? "w5" : null })[t] || null;
+  SCRIPT5.Y = (t) => ({ 1: "y1", 2: "y2", 3: "y3", 4: "y4", 5: "y5", 7: "y7", 10: "y10" })[t] || null;
+  DRIFT5.W = (dr, parts) => { if (S.turn <= 4 && !S.flags.kept) { dr.def -= 5; dr.ppl -= 4; dr.har -= 3; parts.push("나당 연합군의 압박 (국방 -5, 민심 -4, 화합 -3)"); } };
+  DRIFT5.Y = (dr, parts) => { if (S.turn <= 4) { dr.gold -= 4; dr.ppl -= 4; dr.def -= 3; parts.push("형주를 잃어 군량과 군사가 모자람 (재정 -4, 민심 -4, 국방 -3)"); } if (S.turn >= 8 && !S.flags.ywise) { dr.kp -= 2; parts.push("환관 황호가 권력을 쥐기 시작함 (왕권 -2)"); } };
+  const CW = { 사비: [126.91, 36.28], 웅진: [127.12, 36.46], 탄현: [127.45, 36.2], 기벌포: [126.7, 36.0], 황산벌: [127.13, 36.2], 금성: [129.21, 35.84] };
+  Object.assign(EV, {
+    w1: { h: "忠", title: "충신 성충의 마지막 글", text: () => "왕이 잔치에 빠지자 바른말을 한 좌평 성충이 옥에 갇혔어요. 성충이 옥에서 마지막 글을 올렸어요. '적이 쳐들어오면 육지에서는 탄현을, 바다에서는 기벌포를 막으소서.'",
+      choices: () => [
+        C("성충을 풀어 주고 그 말을 새겨 둔다", () => { S.flags.advice = true; return SR({ har: 8, kp: -3, def: 4 }, "성충이 옥에서 풀려나 나라를 지킬 계책을 함께 세웠어요. 실제로 성충은 옥에서 굶어 죽었어요.", [-0.4, 0.3, 0.2], "성충이 옥문을 나서니, 기다리던 신하들이 그 손을 잡고 울었다."); }),
+        C("잔치를 이어 가며 듣기 싫은 말을 막는다", () => { tyrUp(1); return SR({ kp: 3, har: -10, ppl: -8 }, "실제 의자왕처럼 신하들의 말을 막았어요. 궁궐의 잔치는 밤새 이어졌지만 나라는 조용히 기울어 갔어요.", [0.8, 0, -0.6], "궁궐 잔치 소리가 밤새 들리니, 성충이 옥에서 붓을 내려놓았다.", FAILX); }),
+        C("사치를 멈추고 곳간을 열어 백성을 돌본다", () => SR({ ppl: 10, gold: -8, har: 2 }, "잔치를 멈추고 곳간을 열었어요. 백성들의 얼굴에 다시 웃음이 돌았어요.", [-0.2, 0, 0.9], "궁궐 잔칫상의 떡이 백성들에게 나눠지니, 사비 아이들이 떡을 들고 춤을 추었다.")),
+        GB("왜와 고구려에 사신을 보내 동맹을 다진다", 0.5, () => { S.flags.ally = true; return SR({ def: 6, gold: -4 }, "왜와 고구려가 '백제가 위험하면 돕겠다'고 약속했어요!", [-0.2, 0.5, 0], "왜왕이 백제 사신의 손을 잡고 '형제의 나라'라 하였다."); }, () => SR({ gold: -6, har: -2 }, "사신들이 빈손으로 돌아왔어요.", [-0.2, 0.5, 0], "사신이 바다에서 길을 잃어 엉뚱한 섬에 내렸다.", FAILX), "성공하면 동맹이 생겨 우리 힘이 커져요."),
+      ] },
+    w2: { h: "軍", title: "나당 연합군이 온다", arrows: () => [{ from: [124.5, 36.4], to: CW.기벌포, kind: "enemy", label: "당군 13만", bend: 0.05 }, { from: CW.금성, to: CW.탄현, kind: "enemy", label: "신라군 5만" }],
+      text: () => "660년, 당나라 군대 13만 명이 바닷길로 기벌포를 향해 오고, 신라의 김유신이 5만 군대로 탄현을 넘으려 해요. 귀양 간 흥수는 '탄현과 기벌포를 먼저 막으라' 하고, 신하들은 '적이 들어오게 한 뒤 한꺼번에 치자' 해요.",
+      choices: () => [
+        C("흥수의 말대로 탄현과 기벌포를 먼저 막는다", () => { if (S.flags.advice || S.st.def >= 30) { S.flags.blocked = true; return SR({ def: 10, kp: 4, gold: -6 }, "두 길목을 굳게 막았어요! 당군의 배와 신라군이 쉽게 들어오지 못해요.", [0.3, 0.8, 0], "기벌포에 말뚝을 박으니, 당나라 배들이 갯벌에 걸려 꼼짝하지 못하였다."); } S.flags.half = true; return SR({ def: 3, gold: -6 }, "군사가 모자라 탄현만 겨우 막았어요. 기벌포는 비어 있어요.", [0.3, 0.8, 0], "탄현만 막으니, 기벌포 갈매기들이 당나라 배를 먼저 맞이하였다."); }, "성충의 말을 들었거나 국방 30 이상이면 두 곳 모두 막아요."),
+        C("신하들 말대로 적이 들어오게 한 뒤 한꺼번에 친다", () => SR({ def: -12, ppl: -8, kp: -4 }, "실제 역사 그대로, 당군은 기벌포를, 신라군은 탄현을 넘어 들어왔어요.", [0.3, 0.6, -0.3], "신하들이 회의를 하는 동안, 신라군은 이미 탄현을 넘었다.", FAILX)),
+        GB("왜에 급히 구원군을 청한다", S.flags.ally ? 0.6 : 0.3, () => { S.flags.ally = true; return SR({ def: 10, gold: -4 }, "왜의 배들이 구원군을 싣고 백강으로 왔어요!", [-0.2, 0.6, 0], "왜의 배가 백강에 닿으니, 백제 군사들이 깃발을 흔들며 소리쳤다."); }, () => SR({ gold: -8, kp: -3 }, "구원군이 오기에는 너무 늦었어요.", [-0.2, 0.6, 0], "왜에 보낸 배가 돌아오기 전에, 이미 적이 성 밖에 와 있었다.", FAILX), "동맹을 미리 다졌다면 성공하기 쉬워요."),
+        C("백성을 모두 성안으로 들인다", () => SR({ def: 5, ppl: -6, gold: -6 }, "성안은 붐볐지만 군사와 백성이 함께 성을 지킬 준비를 했어요.", [0.2, 0.4, 0.2], "성안이 사람으로 가득 차니, 장독대 위에서 잠자는 사람도 있었다.")),
+      ] },
+    w3: { h: "戰", title: "황산벌, 계백의 5천 결사대", arrows: () => [{ from: CW.탄현, to: CW.황산벌, kind: "enemy", label: "김유신의 5만 군" }],
+      text: () => `신라군 5만 명이 황산벌로 몰려와요. 계백 장군은 '살아서 돌아오지 않겠다'며 5천 결사대를 모았어요. 적의 힘은 약 ${S.flags.blocked ? 62 : 72}이에요.`,
+      choices: () => [
+        battle("계백에게 결사대를 맡겨 황산벌에서 막는다", S.flags.blocked ? 10 : S.flags.half ? 4 : 0, () => (S.flags.blocked ? 62 : 72), (m, e) => { S.flags.hwangsan = true; S.flags.warWon = true; return SR({ def: 6, kp: 6, har: 6 }, "결사대가 네 번 싸워 네 번 이기고, 끝내 신라군을 물리쳤어요! 실제로는 화랑 관창의 죽음에 힘을 얻은 신라군이 이겼어요." + vs(m, e), [0.3, 0.9, 0.2], "계백의 결사대가 이기니, 황산벌 들꽃이 모두 백제 쪽으로 고개를 숙였다."); }, (m, e) => SR({ def: -22, ppl: -10, kp: -8 }, "계백과 결사대가 끝까지 싸우다 모두 쓰러졌어요. 실제 역사 그대로예요." + vs(m, e), [0.3, 0.9, 0.2], "황산벌에 해가 지니, 계백의 칼만이 땅에 꽂혀 남았다.", FAILX), "길목을 막아 두었다면 우리 힘이 더해져요.", true),
+        C("항복하고 나라만은 남겨 달라고 청한다", () => SR({ kp: -25, har: -10, def: -5 }, "적은 항복을 받아 주지 않았어요. 신하들은 왕을 믿지 않게 되었어요.", [-0.5, 0, -0.5], "항복 문서를 든 사신이 신라 진영 앞에서 한참을 서 있었다.", FAILX)),
+        C("사비성을 버리고 웅진성으로 피한다", () => SR({ kp: -14, ppl: -12, def: -6 }, "실제 의자왕처럼 웅진성으로 피했어요. 사비성은 무너지고 백성들은 버림받았다며 슬퍼했어요.", [0.2, 0.2, -0.6], "왕이 밤에 사비성을 빠져나가니, 낙화암 아래 강물이 유난히 검었다.", FAILX)),
+      ] },
+    w4: { h: "城", title: "사비성을 지켜라", arrows: () => [{ from: CW.기벌포, to: CW.사비, kind: "enemy", label: "당군" }],
+      text: () => (S.flags.hwangsan ? "황산벌에서 이겼지만 당나라 13만 대군이 사비성으로 오고 있어요. 마지막 싸움이에요." : "신라군과 당군이 사비성을 에워쌌어요. 이대로라면 실제 역사처럼 나라가 무너져요.") + ` 적의 힘은 약 ${S.flags.blocked ? 66 : 74}이에요.`,
+      choices: () => [
+        battle("남은 힘을 모아 당군과 맞선다", (S.flags.blocked ? 8 : 0) + (S.flags.hwangsan ? 6 : 0), () => (S.flags.blocked ? 66 : 74), (m, e) => { S.flags.kept = true; S.flags.warWon = true; return SR({ def: 8, kp: 8, ppl: 8 }, "당나라 군대가 배를 돌려 물러갔어요! 백제가 살아남았어요. 실제 역사와 다른 길이에요." + vs(m, e), [0.3, 0.9, 0.2], "당군이 물러가니, 사비성 사람들이 백마강에 꽃잎을 띄웠다."); }, (m, e) => SR({ def: -20, kp: -14, ppl: -8 }, "사비성이 무너졌어요." + vs(m, e), [0.3, 0.9, 0.2], "사비성 문이 열리니, 궁녀들이 낙화암으로 달려갔다는 이야기가 전한다.", FAILX), "", true),
+        GB("백강에서 당나라 배들을 불태운다", 0.3 + (S.flags.blocked ? 0.2 : 0) + (S.flags.ally ? 0.1 : 0), () => { S.flags.kept = true; S.flags.warWon = true; return SR({ def: 12, kp: 6 }, "불화살이 백강의 당나라 배들을 태웠어요! 당군이 물러갔어요. (상상의 이야기예요.)", [0.4, 0.8, 0], "백강이 불빛으로 붉게 물드니, 소정방이 투구를 벗고 바다를 바라보았다."); }, () => SR({ def: -15, ppl: -8 }, "바람이 거꾸로 불어 불이 우리 배로 번졌어요.", [0.4, 0.8, 0], "불화살을 쏘자 바람이 돌아, 백제 배의 돛이 먼저 탔다.", FAILX), "길목을 막았고 동맹이 있으면 성공하기 쉬워요."),
+        C("땅 일부를 내주고 화친한다", () => { S.flags.kept = true;  return SR({ kp: -10, har: -6, gold: -10, def: 4 }, "남쪽 땅을 내주고 겨우 나라를 지켰어요. 왕의 체면은 땅에 떨어졌어요.", [-0.4, 0, -0.2], "화친 문서에 도장을 찍으니, 왕의 손이 떨렸다."); }),
+      ] },
+    w5: { h: "興", title: "다시 일어서는 백제", text: () => "나당 연합군을 막아 낸 백제. 무너진 성과 흩어진 백성을 다시 모아야 해요.",
+      choices: () => [
+        C("무너진 성을 다시 쌓는다", () => SR({ def: 10, gold: -6 }, "성을 다시 쌓고 군사를 모았어요.", [0.2, 0.7, 0], "새 성벽에 계백 장군의 이름을 새기니, 군사들이 지날 때마다 고개를 숙였다.")),
+        C("흩어진 백성을 불러 모은다", () => SR({ ppl: 12, gold: -6 }, "피란 갔던 백성들이 고향으로 돌아왔어요.", [-0.2, 0, 0.9], "고향에 돌아온 백성들이 무너진 집터에 먼저 꽃을 심었다.")),
+        GB("왜와 손잡고 신라에 반격한다", 0.4, () => { S.flags.conquered = true; return SR({ gold: 10, kp: 8 }, "빼앗겼던 성들을 되찾았어요!", [0.5, 0.9, 0], "백제군이 옛 성을 되찾으니, 성 아래 우물물이 다시 맑아졌다."); }, () => SR({ def: -10, ppl: -4 }, "반격에 실패했어요.", [0.5, 0.9, 0], "반격군이 길을 잃고 신라 땅에서 감자만 캐 먹고 돌아왔다.", FAILX)),
+      ] },
+  });
+  const dropTerrW = (id) => { if (S.terr) S.terr = S.terr.filter((x) => x !== id); };
+  // ----- 촉한 -----
+  const CY = { 성도: [104.07, 30.67], 이릉: [111.3, 30.7], 백제성: [109.5, 31.05], 낙양: [112.45, 34.62], 건업: [118.8, 32.06], 가정: [105.7, 34.9], 한중: [107.03, 33.07], 장안: [108.9, 34.27], 남중: [102.7, 25.0], 검각: [105.5, 32.2] };
+  Object.assign(EV, {
+    y1: { h: "怒", title: "관우의 죽음, 형주를 잃다", arrows: () => [{ from: CY.성도, to: CY.이릉, kind: "plan", label: "복수의 길?" }],
+      text: () => "의형제 관우가 오나라 장수 여몽에게 목숨을 잃고, 형주 땅까지 빼앗겼어요. 장비는 당장 복수하자고 울부짖고, 제갈량과 조운은 '진짜 적은 위나라'라며 말려요.",
+      choices: () => [
+        C("제갈량·조운의 말대로 오와 화친하고 위를 경계한다", () => { S.flags.peaceWu = true; return SR({ har: 8, kp: -4, gold: 2 }, "눈물을 삼키고 복수를 미뤘어요. 신하들은 황제의 결단에 고개를 숙였어요. 실제 유비는 이 말을 듣지 않았어요.", [-0.4, -0.2, 0.2], "황제가 복수를 미루니, 조운이 말없이 무릎을 꿇었다."); }),
+        C("곧바로 대군을 이끌고 오나라로 복수하러 간다", () => { S.flags.revenge = true; return SR({ kp: 6, def: -6, gold: -10, ppl: -6 }, "실제 유비처럼 대군을 일으켜 오나라로 향했어요.", [0.8, 0.9, -0.4], "황제가 복수를 외치니, 성도의 대장간 불이 밤새 꺼지지 않았다."); }),
+        C("장비에게 선봉을 맡겨 먼저 보낸다", () => { S.flags.revenge = true; return SR({ def: -8, har: -10 }, "실제 역사처럼, 장비가 출발 전날 부하에게 목숨을 잃었어요.", [0.5, 0.8, 0], "장비의 막사에 불이 꺼지지 않더니, 새벽에 곡소리가 났다.", FAILX); }),
+        C("먼저 나라 안을 다진다 (농사와 군량)", () => SR({ gold: 10, ppl: 6, def: -2 }, "둔전을 열어 군량을 쌓고 백성을 쉬게 했어요.", [0, -0.2, 0.8], "둔전 농사가 잘되니, 군사들이 창 대신 낫을 들고 웃었다.")),
+      ] },
+    y2: { h: "火", title: "이릉의 숲속 진영", arrows: () => (S.flags.revenge ? [{ from: CY.건업, to: CY.이릉, kind: "enemy", label: "육손의 오군" }] : [{ from: CY.장안, to: CY.한중, kind: "enemy", label: "위군" }]),
+      text: () => (S.flags.revenge ? "오나라 깊숙이 들어온 촉군이 한여름 더위에 지쳤어요. 오나라의 젊은 장수 육손은 싸우지 않고 기다리기만 해요. 적의 힘은 약 62예요." : "오와 화친하자, 위나라가 한중 쪽으로 군대를 보내 떠보고 있어요. 적의 힘은 약 52예요."),
+      choices: () => (S.flags.revenge ? [
+        C("더위를 피해 숲속에 700리 진을 친다", () => SR({ def: -26, ppl: -10, kp: -10 }, "육손의 불 공격(화공)에 숲속 진영이 모두 불탔어요. 실제 이릉 전투 그대로예요.", [0.5, 0.9, -0.3], "숲속 진영에 불길이 번지니, 700리 숲이 하룻밤 사이에 재가 되었다.", FAILX)),
+        battle("물러나 강가 탁 트인 곳에 진을 친다", 0, 62, (m, e) => { S.flags.warWon = true; return SR({ def: 4, kp: 6 }, "불 공격을 피하고 오나라와 맞서 비긴 채 돌아왔어요." + vs(m, e), [0.4, 0.8, 0], "강가 진영에 불화살이 떨어졌으나, 강바람에 꺼져 버렸다."); }, (m, e) => SR({ def: -14, ppl: -6 }, "오나라 군대에 밀려 물러났어요." + vs(m, e), [0.4, 0.8, 0], "촉군이 강가에서 밀리니, 말들이 물에 뛰어들었다.", FAILX), "", true),
+        C("군대를 돌려 성도로 돌아간다", () => SR({ kp: -8, def: -3, har: 4 }, "체면은 구겼지만 군사를 잃지 않았어요.", [-0.3, 0.2, 0.2], "군대가 돌아오니, 백성들이 황제의 수레에 말없이 절하였다.")),
+      ] : [
+        battle("한중에서 맞서 싸운다", 0, 52, (m, e) => { S.flags.warWon = true; return SR({ def: 4, kp: 6 }, "위나라 군대를 한중에서 막아 냈어요!" + vs(m, e), [0.4, 0.8, 0], "한중 산길에서 위군이 미끄러지니, 촉군이 돌을 굴려 보냈다."); }, (m, e) => SR({ def: -10, ppl: -4 }, "위군에 밀렸어요." + vs(m, e), [0.4, 0.8, 0], "위군의 기병이 너무 빨라, 촉군이 산 위로 피하였다.", FAILX), "", true),
+        C("검각과 산길에 성을 쌓는다", () => SR({ def: 8, gold: -6 }, "험한 산길마다 관문을 쌓았어요.", [0.1, 0.7, 0.2], "검각에 관문을 세우니, 원숭이들도 허락을 받고 지나갔다.")),
+        C("오나라와 함께 위를 막자고 약속한다", () => { S.flags.ally = true; return SR({ def: 6, kp: -2 }, "오나라와 동맹을 맺었어요(등지의 외교).", [-0.3, 0.4, 0], "오나라 사신이 촉의 비단을 받고 기뻐하였다."); }),
+      ]) },
+    y3: { h: "遺", title: "백제성의 유언", text: () => "황제가 백제성에서 병이 들었어요. 태자 유선은 아직 어리고, 나라는 흔들리고 있어요. 마지막 결정을 내려야 해요.",
+      choices: () => [
+        C("제갈량에게 나라와 태자를 부탁한다 (탁고)", () => { S.flags.ywise = true; return SR({ har: 12, kp: -6, cul: 4 }, "'태자가 부족하면 그대가 나라를 맡으시오.' 제갈량은 울며 충성을 맹세했어요. 실제 역사와 같아요.", [-0.5, -0.3, 0.2], "제갈량이 황제의 손을 잡고 우니, 백제성의 촛불이 흔들렸다."); }),
+        C("어린 태자에게 모든 것을 맡긴다", () => SR({ kp: -14, har: -6 }, "어린 황제를 두고 신하들이 서로 눈치를 보기 시작했어요.", [0.3, 0, -0.2], "어린 황제가 옥좌에 앉으니, 발이 바닥에 닿지 않았다.", FAILX)),
+        C("마지막 힘으로 다시 오를 친다", () => SR({ def: -18, ppl: -10 }, "병든 몸으로 일으킨 군대는 오래 버티지 못했어요.", [0.6, 0.9, -0.4], "병든 황제가 갑옷을 입으니, 갑옷이 헐렁하게 흘러내렸다.", FAILX)),
+        C("오나라와 다시 손잡는다 (등지의 외교)", () => { S.flags.peaceWu = true; S.flags.ally = true; return SR({ def: 8, gold: 4, kp: -2 }, "오나라와 다시 동맹을 맺어 동쪽 걱정을 덜었어요.", [-0.3, 0.4, 0], "등지가 오나라에서 돌아오니, 오나라 귤 한 바구니를 들고 왔다."); }),
+      ] },
+    y4: { h: "蠻", title: "남쪽 맹획의 반란", arrows: () => [{ from: CY.성도, to: CY.남중, kind: "plan", label: "남쪽 원정" }], text: () => "남쪽 땅(남중)의 맹획이 반란을 일으켰어요. 이 땅을 다스리지 못하면 북쪽을 칠 수 없어요.",
+      choices: () => [
+        C("일곱 번 잡고 일곱 번 풀어 준다 (칠종칠금)", () => { if (S.flags.ywise || S.st.har >= 40) { gainTerr("nanman"); return SR({ ppl: 8, def: 4, gold: 8 }, "일곱 번 풀려난 맹획이 '다시는 배반하지 않겠다'며 진심으로 따랐어요!", [-0.4, 0.4, 0.4], "맹획이 일곱 번째로 풀려나니, 스스로 무릎을 꿇고 다시는 도망가지 않았다."); } return SR({ gold: -6, def: -4 }, "풀어 줄 때마다 다시 반란을 일으켜 군량만 날렸어요.", [-0.4, 0.4, 0.4], "맹획이 여덟 번째로 도망가니, 장수들이 한숨을 쉬었다.", FAILX); }, "제갈량에게 나라를 맡겼거나 화합 40 이상이면 마음을 얻을 수 있어요."),
+        C("힘으로 짓눌러 다스린다", () => { tyrUp(1); return SR({ def: -8, ppl: -8, gold: 4 }, "반란은 눌렀지만 남쪽 사람들의 원한이 깊어졌어요.", [0.7, 0.8, -0.4], "남중 사람들이 촉군이 지나간 길에 가시덤불을 심었다.", FAILX); }),
+        C("내버려 두고 북쪽만 본다", () => SR({ def: -4, gold: -2 }, "남쪽이 계속 시끄러웠어요.", [0, 0, 0], "남쪽에서 오는 소식이 매번 '또 반란'이었다.")),
+      ] },
+    y5: { h: "北", title: "북벌과 가정의 길목", arrows: () => [{ from: CY.한중, to: CY.가정, kind: "plan", label: "북벌" }, { from: CY.가정, to: CY.장안, kind: "plan" }],
+      text: () => `제갈량이 '출사표'를 올리고 위나라를 치러 나섰어요. 가정(街亭)은 군량이 오가는 길목이에요. 누구에게 맡길까요? 적의 힘은 약 64예요.`,
+      choices: () => [
+        C("젊은 마속에게 가정을 맡긴다", () => SR({ def: -14, kp: -6 }, "마속이 명령을 어기고 산 위에 진을 쳤다가 물길이 끊겨 크게 졌어요. 제갈량은 눈물을 흘리며 마속을 벌했어요(읍참마속). 실제 역사 그대로예요.", [0.4, 0.8, -0.2], "마속이 산 위에 진을 치니, 산 아래 위군이 물통을 들고 웃었다.", FAILX)),
+        battle("노장 조운과 위연에게 맡기고 길목을 지킨다", S.flags.ywise ? 8 : 0, 64, (m, e) => { S.flags.warWon = true; gainTerr("guanzhong"); return SR({ def: 6, kp: 8, gold: 6 }, "가정을 지켜 내고 장안 가까이까지 나아갔어요! 실제 역사와 다른 길이에요." + vs(m, e), [0.5, 0.9, 0], "조운이 가정을 지키니, 위나라 장수가 '저 노인이 또 왔다' 하며 물러났다."); }, (m, e) => SR({ def: -10 }, "위나라 대군에 막혀 돌아왔어요." + vs(m, e), [0.5, 0.9, 0], "북벌군이 돌아오니, 한중 백성들이 다음을 기약하며 군량을 보탰다.", FAILX), "제갈량에게 나라를 맡겼다면 힘이 더해져요.", true),
+        C("북벌을 미루고 힘을 기른다", () => SR({ gold: 8, ppl: 6, kp: -3 }, "군량을 쌓고 백성을 쉬게 했어요.", [0, 0, 0.6], "북벌을 미루니, 촉의 들판에 누런 벼가 가득하였다.")),
+      ] },
+    y7: { h: "星", title: "오장원의 큰 별", text: () => "234년, 오장원에서 위나라 사마의와 맞서던 제갈량이 병으로 쓰러졌어요. 큰 별이 떨어졌다는 소문이 돌아요.",
+      choices: () => [
+        C("강유에게 북벌의 뜻을 잇게 한다", () => SR({ def: 6, kp: 2, gold: -4 }, "젊은 장수 강유가 제갈량의 뜻을 이었어요.", [0.3, 0.8, 0], "강유가 제갈량의 부채를 받아 드니, 부채가 유난히 무거웠다.")),
+        C("장완·비의에게 나라 안을 맡긴다", () => SR({ ppl: 8, gold: 6, har: 4 }, "전쟁을 쉬고 나라 안을 돌보았어요. 백성들이 오랜만에 숨을 돌렸어요.", [-0.3, -0.3, 0.8], "장완이 나랏일을 맡으니, 성도 장터에 다시 노랫소리가 났다.")),
+        GB("죽음을 숨기고 군대를 물린다 (죽은 제갈량이 산 사마의를 쫓다)", 0.6, () => SR({ def: 6, kp: 6 }, "제갈량의 나무 인형을 본 사마의가 놀라 달아났어요! 군대가 무사히 돌아왔어요.", [0.3, 0.6, 0], "나무 제갈량이 수레에 앉아 있으니, 사마의가 말머리를 돌려 삼십 리를 달아났다."), () => SR({ def: -8 }, "속임수가 들켜 쫓기며 물러났어요.", [0.3, 0.6, 0], "인형의 수염이 바람에 떨어져, 위군이 그만 알아차렸다.", FAILX)),
+      ] },
+    y10: { h: "劍", title: "위나라의 대군 (263년)", arrows: () => [{ from: CY.장안, to: CY.검각, kind: "enemy", label: "종회의 대군" }, { from: [104.0, 33.6], to: CY.성도, kind: "enemy", label: "등애의 샛길" }],
+      text: () => `위나라 종회가 대군으로 검각을 치고, 등애는 아무도 모르는 음평 샛길로 성도를 노려요. 적의 힘은 약 ${has("fortress") ? 66 : 74}이에요.`,
+      choices: () => [
+        battle("강유와 함께 검각을 지키고 음평 샛길도 막는다", 0, () => (has("fortress") ? 66 : 74), (m, e) => { S.flags.kept = true; S.flags.warWon = true; return SR({ def: 10, kp: 10, ppl: 6 }, "검각과 샛길을 모두 막아 위나라 대군이 물러갔어요! 촉한이 263년을 넘어 이어져요." + vs(m, e), [0.4, 0.9, 0], "등애의 군사가 샛길 끝에서 촉의 깃발을 보고 그대로 주저앉았다."); }, (m, e) => SR({ kp: -30, def: -20 }, "등애가 샛길로 성도에 들이닥쳤어요." + vs(m, e), [0.4, 0.9, 0], "성도 성문 앞에 등애의 군사가 나타나니, 아무도 그 길을 알지 못했다.", FAILX), "국경에 성을 쌓아 두었다면 적의 힘이 줄어요.", true),
+        C("항복한다 (실제 황제 유선)", () => SR({ kp: -45 }, "실제 유선처럼 항복했어요. 촉한이 무너졌어요.", [-0.5, 0, -0.5], "유선이 낙양에 가서 '이곳이 즐거워 촉 생각이 나지 않는다' 하였다.", FAILX)),
+      ] },
+  });
+  // 지도: 백제(우리 역사 지도) · 촉한(동아시아 지도)
+  Object.assign(REG, {
+    bj660: [[125.6, 36.9], [126.4, 37.0], [126.85, 37.05], [127.6, 36.95], [127.95, 36.4], [127.75, 35.7], [127.65, 35.0], [127.5, 34.4], [126.2, 34.0], [125.8, 35.1], [126.3, 35.9]],
+    shu: [[101.5, 31], [103.5, 33.5], [106, 33.8], [108.5, 32.8], [110, 31], [109.5, 29], [106, 28], [105, 26.5], [103, 26], [101, 27], [100, 28.5]],
+    nanman: [[101, 27], [103, 26], [105, 26.5], [106, 24], [104, 22.5], [100, 22.5], [98.5, 24.5]],
+    guanzhong: [[104, 35], [106, 33.8], [108.5, 32.8], [110, 33.5], [110.5, 35], [107, 35.6]],
+    wei: [[100, 36], [104, 35], [107, 35.6], [110.5, 35], [110, 33.5], [110, 32], [113, 32], [117, 33], [120.5, 33.5], [121, 37], [119, 39.3], [116, 40.5], [110, 40.5], [103, 38.5]],
+    wu: [[110, 31], [110, 32], [113, 32], [117, 33], [120.5, 33.5], [121.8, 31], [121, 28], [119.5, 25.5], [116, 23], [111, 21.8], [109.5, 24], [109.5, 29]],
+  });
+  for (const k of ["shu", "nanman", "guanzhong", "wei", "wu"]) REG[k] = smooth([...REG[k], REG[k][0]], 3);
+  Object.assign(RLAB, { bj660: [126.75, 35.6], shu: [104.2, 29.6], nanman: [102.3, 24.2], guanzhong: [107.6, 34.4] });
+  Object.assign(TNAME, { nanman: "남중(남만)", guanzhong: "관중(장안 가까이)" });
+  Object.assign(OWN, { 위: "#5F86B5", 오: "#C99A3B", 당: "#9A8FB0" });
+  Object.assign(MAPS, {
+    W: { view: [124.2, 33.6, 130.6, 38.6], start: ["bj660"], me: "백제",
+      others: [["china_w", "당", "far"], ["japan", "일본", "far"], ["go_big", "고구려"], ["sl_core", "신라"], ["gaya", "신라"], ["sl_han", "신라"]],
+      labels: [["신라", [128.9, 36.4]], ["고구려", [127.2, 38.4]], ["왜", [130.4, 33.8]], ["당나라 바닷길", [125.5, 37.4]]],
+      cities: [["사비", CW.사비, true], ["기벌포", [126.65, 35.95]], ["금성", CW.금성]] },
+    Y: { geo: "mongol", view: [97, 21, 123, 38.5], start: ["shu"], me: "촉한",
+      others: [["wei", "위"], ["wu", "오"], ["guanzhong", "위"], ["nanman", "남만"]],
+      labels: [["위", [114, 36.3]], ["오", [116.5, 28]], ["남만", [101.5, 23.6], "nanman"], ["장강", [114, 30.2]]],
+      cities: [["성도", CY.성도, true], ["한중", CY.한중], ["장안", CY.장안], ["낙양", CY.낙양], ["건업", CY.건업], ["이릉", CY.이릉], ["백제성", CY.백제성]] },
+  });
+  // 결말
+  { const W0 = FATE5.W, Y0 = FATE5.Y;
+    FATE5.W = (s, avg, min) => { if (S.flags.kept && S.flags.hwangsan) return { t: "나당 연합군을 물리친 백제", l: "황산벌과 사비성에서 모두 이겨 18만 대군을 물리쳤어요. 실제로 백제는 660년 7월 18일에 무너졌어요. 성충과 흥수의 말을 들었다면 역사가 달라졌을지도 몰라요.", h: "百", big: true }; if (S.flags.kept) return { t: "사비성을 지켜 낸 백제", l: "큰 상처를 입었지만 끝내 나라를 지켜 냈어요. 실제 역사에서는 이루지 못한 일이에요.", h: "守", big: true }; return W0 ? W0(s, avg, min) : null; };
+    FATE5.Y = (s, avg, min) => { if (S.flags.kept && ownsTerr("guanzhong")) return { t: "한나라를 다시 일으킨 촉한", l: "장안까지 되찾고 위나라 대군도 막아 냈어요. 유비와 제갈량이 꿈꾸던 '한나라 다시 일으키기'에 한 걸음 다가섰어요.", h: "漢", big: true }; if (S.flags.kept) return { t: "263년을 넘어 이어진 촉한", l: "실제로 촉한은 263년 위나라에 무너졌어요. 이 촉한은 검각과 샛길을 모두 막아 나라를 이어 갔어요.", h: "蜀", big: true }; return Y0 ? Y0(s, avg, min) : null; };
+  }
+  const HELL_OVER = {
+    W: { h: "落", stamp: "멸망", t: "사비성이 무너지다", story: "660년 7월, 나당 연합군에 사비성이 무너지고 왕이 항복했어요. 678년 동안 이어진 백제가 문을 닫았어요.", hist: "실제 의자왕은 성충과 흥수의 말을 듣지 않았고, 계백의 5천 결사대는 황산벌에서 모두 쓰러졌어요. 백제 사람들은 그 뒤 3년 동안 부흥 운동을 이어 갔어요.", tip: "성충을 풀어 주고, 탄현과 기벌포를 먼저 막고, 동맹을 다져 두세요." },
+    Y: { h: "降", stamp: "멸망", t: "촉한이 무너지다", story: "황제가 성문을 열고 항복했어요. 유비가 세운 촉한이 문을 닫았어요.", hist: "실제 촉한은 이릉 전투의 큰 패배로 힘을 잃었고, 263년 등애가 아무도 모르는 음평 샛길로 성도에 들이닥치자 황제 유선이 항복했어요.", tip: "복수보다 나라를 먼저 생각하고, 제갈량에게 나라를 맡기고, 국경에 성을 쌓아 두세요." },
+  };
+  for (const k of ["W", "Y"]) OVERS_W[k] = Object.fromEntries(["kp", "har", "ppl", "gold", "def", "cul"].map((x) => [x, HELL_OVER[k]]));
+
+  Object.defineProperty(EV.y2, "title", { get: () => (S && S.flags && !S.flags.revenge ? "북쪽 위나라의 움직임" : "이릉의 숲속 진영") });
+
+  // ================= 조금만 더! 다음 왕으로 10시기 더 =================
+  // 기본 게임은 10시기. 끝난 뒤 원하면 다음 왕이 나라를 물려받아 11~20시기를 다스려요.
+  // 확장에서는 국정 힘 +1, '만약에?' 성공 확률이 올라가고, 판타지 사건과 선왕의 실수를 바로잡는 선택지가 나와요.
+  const EXT = () => !!(S && S.ext);
+  const extEra = (t) => `다음 왕 재위 ${(t - 10) * 3 - 2}~${(t - 10) * 3}년`;
+  const weakKey = () => ST.map((x) => x.k).sort((a, b) => S.st[a] - S.st[b])[0];
+  const weak2 = () => ST.map((x) => x.k).sort((a, b) => S.st[a] - S.st[b])[1];
+  const strongKey = () => ST.map((x) => x.k).sort((a, b) => S.st[b] - S.st[a])[0];
+  const extBonus = (ultra) => (EXT() && S.turn > 10 ? (ultra ? 0.08 : 0.1) + (S.flags.prophecy ? 0.05 : 0) + (S.flags.mystic ? 0.03 : 0) : 0);
+  function extendReign(name) {
+    S.ext = { king1: S.king, tier1: S.end && S.end.tier, score1: S.end && S.end.score, turn1: 10 };
+    S.king = (name || "").trim() || `${S.king.trim() || "이름 없는"} 2세`;
+    for (const k of Object.keys(S.st)) S.st[k] = clamp(S.st[k] + 3);
+    S.end = null; S.revealed = false; S.turn = 11; TURNS = 20;
+    startTurn(); window.scrollTo({ top: 0 });
+  }
+  function extEvent() {
+    const t = S.turn, u = (id) => S.used.includes(id);
+    if (t === 11) return "x_crown";
+    if (t === 20) return "x_legacy";
+    const crisis = [["ppl", 22, "revolt"], ["gold", 16, "empty"], ["def", 20, "breach"], ["kp", 20, "weakking"], ["har", 22, "rebel"]].filter(([k, lim, id]) => S.st[k] < lim && !u(id + "_x"));
+    if (crisis.length && Math.random() < 0.5) { S.used.push(crisis[0][2] + "_x"); return crisis[0][2]; }
+    if (t === 15 && !u("x_mend")) return "x_mend";
+    const pool = ["x_dokkaebi", "x_dragon", "x_future", "x_west", "x_inventor", "x_princes", "x_reunite", "x_quake", "x_market", "x_star"].filter((x) => !u(x));
+    return pool.length ? pool[Math.floor(Math.random() * pool.length)] : "x_mend";
+  }
+  const SNK = (k) => SN[k];
+  Object.assign(EV, {
+    x_crown: { h: "冠", title: "새 왕의 즉위", text: () => `${S.ext.king1} 왕의 뒤를 이어 ${KING()}이 즉위했어요. 선왕의 30년이 남긴 가장 큰 숙제는 ${jo(SNK(weakKey()), "이", "가")} ${S.st[weakKey()]}밖에 되지 않는다는 거예요. 새 왕은 어떤 길을 걸을까요?`,
+      choices: () => [
+        C(`선왕의 약점부터 바로잡겠다 (${SNK(weakKey())} 크게 회복)`, () => { const k = weakKey(); return SR({ [k]: 15, [strongKey()]: -3 }, `선왕이 놓친 ${SNK(k)}부터 챙겼어요. 신하들이 '선왕의 빈자리를 메우는 왕'이라 불렀어요.`, [0, 0, 0.3], "새 왕이 선왕의 일기를 펴 보니, 마지막 장에 '이것만은 못다 했다'고 적혀 있었다."); }),
+        C("선왕과 전혀 다른 길을 가겠다", () => { S.flags.newPath = true; return SR({ kp: 5, cul: 5, har: -4 }, "새 왕이 낡은 관습을 걷어 내고 새로운 일을 벌이기 시작했어요. 새 정책들이 열려요.", [0.4, -0.2, 0.2], "새 왕이 궁궐 문패부터 새로 다니, 늙은 신하들이 헛기침을 하였다."); }),
+        C("하늘의 뜻을 묻는 신비한 의식을 연다", () => { S.flags.mystic = true; return SR({ har: 4, cul: 4, gold: -4 }, "하늘에 제사를 올리자 오색 구름이 피어올랐다는 소문이 돌았어요. '만약에?' 선택지의 성공 확률이 조금 올라가요.", [0, -0.3, 0.2], "제단 위로 오색 구름이 피어오르니, 점쟁이들이 앞다투어 길조라 외쳤다."); }),
+      ] },
+    x_mend: { h: "補", title: "선왕의 빈자리", text: () => `나라를 둘러보니 ${jo(SNK(weakKey()), "과", "와")} ${SNK(weak2())}이(가) 가장 약해요. 어디부터 메울까요?`,
+      choices: () => [
+        C(`${SNK(weakKey())}부터 메운다`, () => SR({ [weakKey()]: 12, gold: -5 }, `${SNK(weakKey())}을(를) 크게 끌어올렸어요.`, [0, 0, 0.3], "약한 곳부터 메우니, 나라의 기둥이 덜 삐걱거렸다.")),
+        C(`${SNK(weak2())}도 함께 조금씩 메운다`, () => SR({ [weakKey()]: 7, [weak2()]: 7, [strongKey()]: -4 }, "두 곳을 고르게 채웠어요.", [0, 0, 0.3], "왕이 두 곳을 번갈아 살피니, 신하들이 '고른 임금'이라 불렀다.")),
+        GB("선왕이 숨겨 둔 비밀 곳간을 찾는다", 0.5, () => SR({ gold: 18 }, "궁궐 뒤뜰에서 선왕이 숨겨 둔 곳간을 찾았어요!", [0, 0, 0], "비밀 곳간 문을 여니, 선왕의 글씨로 '아껴 쓰라'는 쪽지가 있었다."), () => SR({ gold: -4, kp: -2 }, "뒤뜰만 다 파헤쳤어요.", [0, 0, 0], "왕이 뒤뜰을 파헤치니, 나온 것은 선왕이 묻어 둔 김칫독뿐이었다.", FAILX)),
+      ] },
+    x_dokkaebi: { h: "鬼", title: "도깨비 방망이를 가진 노인", text: () => "한밤중 궁궐 문 앞에 도깨비 방망이를 든 노인이 나타났어요. '금 나와라 뚝딱!' 하면 무엇이든 나온다는데요…",
+      choices: () => [
+        GB("방망이로 곳간을 채워 달라고 한다", 0.5, () => SR({ gold: 22 }, "금 나와라 뚝딱! 곳간이 금으로 가득 찼어요! (전설 속 이야기예요.)", [0, 0, 0], "방망이를 두드리니, 곳간 문이 금덩이에 밀려 저절로 열렸다."), () => SR({ gold: -6, har: -3 }, "방망이에서 금 대신 도깨비 떼가 쏟아져 궁궐을 엉망으로 만들었어요.", [0, 0, 0], "도깨비들이 궁궐 부엌의 메밀묵을 모두 먹어 치웠다.", FAILX)),
+        GB("방망이로 성벽을 높여 달라고 한다", 0.5, () => SR({ def: 18 }, "하룻밤 사이에 성벽이 두 배로 높아졌어요! (전설 속 이야기예요.)", [0, 0.5, 0], "아침에 일어나 보니, 성벽 위에 도깨비 발자국이 찍혀 있었다."), () => SR({ def: -5, gold: -3 }, "성벽 대신 돌무더기만 쌓였어요.", [0, 0.5, 0], "도깨비가 쌓은 돌탑이 바람에 와르르 무너졌다.", FAILX)),
+        C("노인을 극진히 대접하고 그냥 보낸다", () => SR({ ppl: 5, har: 4, cul: 3 }, "노인이 '욕심 없는 왕이로다' 하며 사라졌어요. 이 이야기가 온 나라에 퍼졌어요.", [-0.2, -0.3, 0.6], "노인이 사라진 자리에 도깨비 방망이 그림이 그려진 부채 하나가 남았다.")),
+      ] },
+    x_dragon: { h: "龍", title: "바다에 나타난 용", text: () => "동쪽 바다에 커다란 용이 나타났다는 소문이 돌아요. 문무왕이 죽어서 용이 되어 나라를 지킨다는 전설처럼요.",
+      choices: () => [
+        C("바닷가에 용을 모시는 사당을 짓는다", () => SR({ cul: 6, def: 6, gold: -6 }, "백성들이 '용이 나라를 지켜 준다'며 마음을 놓았어요.", [0, 0.3, 0.3], "사당이 서니, 고기잡이배들이 사당 앞을 지날 때마다 노를 멈추고 절하였다.")),
+        GB("용의 힘을 빌려 바다를 지킨다", 0.45 + extBonus(false) / 2, () => { S.flags.dragon = true; return SR({ def: 20, kp: 4 }, "용이 바다를 휘저어 해적선들을 쫓아냈어요! (전설 속 이야기예요.)", [0.3, 0.7, 0], "용이 꼬리를 한 번 휘두르니, 해적선들이 수평선 너머로 날아갔다."); }, () => SR({ gold: -8, ppl: -3 }, "용은 나타나지 않고, 제물만 바다에 버렸어요.", [0.3, 0.7, 0], "바다에 바친 소 세 마리를 고래가 받아 갔다.", FAILX)),
+        C("헛소문이라며 잠재운다", () => SR({ kp: 4, cul: -2 }, "왕의 말에 소문은 잦아들었어요.", [0.4, 0, -0.2], "용 소문을 막으니, 장터 이야기꾼들이 일거리를 잃고 한숨을 쉬었다.")),
+      ] },
+    x_future: { h: "書", title: "미래에서 온 책", text: () => "궁궐 서고에서 아무도 본 적 없는 책이 발견되었어요. 책에는 앞으로 일어날 일과, 아직 아무도 해 보지 못한 모험의 비결이 적혀 있다고 해요.",
+      choices: () => [
+        C("책에 적힌 대로 큰 모험을 준비한다", () => { S.flags.prophecy = true; return SR({ cul: 4, kp: 3, gold: -4 }, "책을 따라 대비했어요. '만약에?' 선택지의 성공 확률이 더 올라가요.", [0.2, 0, 0], "왕이 책장을 넘기니, 마지막 장에는 왕 자신의 얼굴이 그려져 있었다."); }),
+        GB("책을 백성에게 풀어 함께 읽는다", 0.5, () => SR({ cul: 15, ppl: 5 }, "백성들이 책에서 새 농사법과 기술을 배웠어요!", [-0.3, -0.7, 0.6], "책을 읽은 농부가 '내년엔 비가 많이 온다더라' 하며 미리 둑을 쌓았다."), () => SR({ har: -8, cul: 2 }, "책을 두고 사람들이 서로 다르게 풀이하며 다투었어요.", [-0.3, -0.7, 0.6], "책 한 줄을 두고 학자 열 명이 열 가지로 풀이하였다.", FAILX)),
+        C("위험한 책이라며 불태운다", () => SR({ har: 5, kp: 3 }, "책은 사라졌지만 나라는 평온해졌어요.", [0.3, 0, 0], "책을 태운 연기가 이상하게도 하늘에 글자 모양을 남겼다.")),
+      ] },
+    x_west: { h: "駝", title: "서역에서 온 상인", text: () => "낙타를 타고 온 서역(아라비아·페르시아) 상인들이 유리그릇과 향료, 별을 보는 기구를 가져왔어요.",
+      choices: () => [
+        C("무역을 허락하고 시장을 열어 준다", () => { addInc(2); return SR({ gold: 6, cul: 4 }, "서역 상인들이 해마다 찾아오게 되었어요. 매 시기 수입이 늘어요.", [0, -0.2, 0.3], "서역 상인이 유리잔에 식혜를 따라 마시니, 구경꾼들이 줄을 섰다."); }),
+        C("별 보는 기구와 기술을 배운다", () => SR({ cul: 10, gold: -4 }, "서역의 천문 기구로 하늘을 더 정확히 재게 되었어요.", [0, -0.7, 0.2], "서역 학자와 우리 학자가 말이 통하지 않아 손짓으로 별자리를 그렸다.")),
+        C("낯선 사람들이라며 돌려보낸다", () => SR({ def: 3, cul: -3 }, "나라는 조용했지만 새 문물은 들어오지 않았어요.", [0.3, 0.2, 0], "낙타들이 돌아가며 궁궐 앞에 커다란 발자국만 남겼다.")),
+      ] },
+    x_inventor: { h: "飛", title: "하늘을 나는 수레", text: () => "한 장인이 '바람을 타고 하늘을 나는 수레(비거)를 만들겠다'며 나랏돈을 청해요. 임진왜란 때 정평구가 비거를 만들었다는 전설도 있어요.",
+      choices: () => [
+        GB("나랏돈을 주어 만들게 한다", 0.45 + extBonus(false) / 2, () => { S.flags.flying = true; return SR({ def: 12, cul: 8 }, "비거가 하늘을 날았어요! 높은 곳에서 적의 움직임을 살필 수 있게 되었어요. (전설 속 이야기예요.)", [0.2, 0.3, 0.2], "비거가 하늘을 나니, 아래에서 올려다보던 소가 놀라 울었다."); }, () => SR({ gold: -8 }, "비거가 날아오르자마자 연못에 떨어졌어요.", [0.2, 0.3, 0.2], "비거가 연못에 빠지니, 장인이 흠뻑 젖은 채 '다음엔 된다' 하였다.", FAILX)),
+        C("작은 모형부터 만들어 보게 한다", () => SR({ cul: 5, gold: -2 }, "모형 비거가 마당을 날아다녔어요. 아이들이 신이 났어요.", [0, -0.5, 0.3], "모형 비거가 궁궐 마당을 날자, 세자가 따라 뛰다 넘어졌다.")),
+        C("허황된 일이라며 물리친다", () => SR({ gold: 2, cul: -2 }, "장인은 실망해 고향으로 돌아갔어요.", [0.2, 0, 0], "돌아가는 장인의 등짐에서 날개 하나가 삐죽 나와 있었다.")),
+      ] },
+    x_princes: { h: "爭", title: "왕자들의 다툼", text: () => "왕자들이 다음 왕 자리를 두고 서로 다투기 시작했어요. 조선 초 '왕자의 난'처럼 칼부림이 날지도 몰라요.",
+      choices: () => [
+        C("한 왕자를 세자로 정하고, 나머지에게 큰 벼슬을 준다", () => SR({ har: 6, kp: 3, gold: -4 }, "다툼이 가라앉았어요.", [0, 0, 0], "세자가 정해지니, 다른 왕자들이 세자에게 활 한 자루씩 선물하였다.")),
+        C("힘으로 다툼을 누른다", () => { tyrUp(1); return SR({ kp: 10, har: -12 }, "다툼은 멈췄지만 왕실에 찬 바람이 불었어요.", [0.9, 0.2, -0.3], "왕자들이 모두 근신하니, 궁궐 연못의 오리들만 시끄러웠다."); }),
+        C("형제들이 나라를 나누어 함께 맡게 한다", () => SR({ har: 10, kp: -10 }, "형제들이 사이좋게 지냈지만 왕의 힘은 나뉘었어요.", [-0.8, 0, 0], "형제들이 한 상에서 밥을 먹으니, 숟가락이 부딪치는 소리만 들렸다.")),
+      ] },
+    x_reunite: { h: "還", title: "선왕의 옛 신하가 돌아오다", text: () => `선왕 때 쫓겨났던 옛 신하가 '${SNK(weak2())}을(를) 살릴 계책이 있다'며 돌아왔어요.`,
+      choices: () => [
+        C("받아들여 계책을 듣는다", () => SR({ [weak2()]: 10, har: 3, kp: -3 }, "옛 신하의 계책 덕분에 나라의 약한 곳이 채워졌어요.", [-0.3, 0, 0.2], "옛 신하가 들고 온 계책 상자가 먼지투성이였으나, 안은 깨끗하였다.")),
+        C("선왕의 뜻을 어길 수 없다며 돌려보낸다", () => SR({ kp: 4, har: -4 }, "왕의 뜻은 굳건했지만 신하들이 아쉬워했어요.", [0.4, 0, 0], "옛 신하가 돌아가며 궁궐 문을 세 번 돌아보았다.")),
+      ] },
+    x_quake: { h: "震", title: "땅이 흔들리다", base: () => ({ ppl: -5, def: -4 }), text: () => "큰 지진이 나 성벽이 무너지고 집들이 쓰러졌어요.",
+      choices: () => [
+        C("곳간을 열어 집을 다시 짓게 돕는다", () => SR({ ppl: 10, gold: -8 }, "백성들이 무너진 집을 다시 세웠어요.", [-0.2, 0, 0.9], "새집 상량식마다 왕이 보낸 떡이 올라갔다.")),
+        C("무너진 성벽부터 다시 쌓는다", () => SR({ def: 10, gold: -6, ppl: -2 }, "성벽은 다시 섰지만 백성들은 서운했어요.", [0.2, 0.7, -0.2], "성벽을 다시 쌓으니, 지진에 놀란 까치가 새 성벽에 둥지를 틀었다.")),
+        C("왕이 반성하는 글을 내리고 잔치를 줄인다", () => SR({ ppl: 5, har: 4, kp: -2 }, "백성들이 왕의 마음을 알아주었어요.", [-0.3, 0, 0.6], "왕이 반찬 가짓수를 줄이니, 수라간 상궁들이 오히려 걱정하였다.")),
+      ] },
+    x_market: { h: "市", title: "온 나라 큰 장터", text: () => "곳곳에서 장이 열리고 상인들이 '나라에서 큰 장터를 만들어 달라'고 해요.",
+      choices: () => [
+        C("큰 장터를 만들고 세금을 조금만 걷는다", () => { addInc(1); return SR({ gold: 5, ppl: 4 }, "장터가 북적이며 나라 살림이 넉넉해졌어요.", [0, 0, 0.5], "장터에 엿장수 가위 소리가 하루 종일 울렸다."); }),
+        GB("나라가 직접 큰 상단을 꾸려 멀리 장사하러 보낸다", 0.5 + extBonus(false) / 2, () => { addInc(2); return SR({ gold: 15 }, "나라 상단이 큰돈을 벌어 왔어요!", [0.3, 0, 0], "상단이 돌아오니, 수레마다 비단과 은이 가득하였다."); }, () => SR({ gold: -10 }, "상단이 도적을 만나 빈손으로 돌아왔어요.", [0.3, 0, 0], "상단 대장이 빈 수레를 끌고 와 '도적이 너무 많았소' 하였다.", FAILX)),
+      ] },
+    x_star: { h: "彗", title: "하늘을 가르는 별", text: () => "밤하늘에 긴 꼬리를 단 별이 나타났어요. 사람들은 '나라에 큰일이 생길 징조'라며 웅성거려요.",
+      choices: () => [
+        C("천문 학자들에게 별을 기록하게 한다", () => SR({ cul: 8, har: 2 }, "별의 움직임을 꼼꼼히 기록했어요. 훗날 귀한 과학 자료가 되었어요.", [0, -0.7, 0.2], "학자들이 밤새 별을 그리니, 아침에는 종이마다 꼬리별이 가득하였다.")),
+        C("'좋은 징조'라고 백성을 안심시킨다", () => SR({ ppl: 6, kp: 3 }, "왕의 말에 백성들이 안심했어요.", [0.3, 0, 0.4], "왕이 '복을 몰고 온 별'이라 하니, 아이들이 별을 보며 소원을 빌었다.")),
+      ] },
+    x_legacy: { h: "史", title: "두 왕의 역사책", text: () => `${S.ext.king1} 왕과 ${KING()}, 두 왕의 60년이 저물어 가요. 사관이 묻습니다. '두 임금의 역사를 무엇으로 기억하게 할까요?'`,
+      choices: () => [
+        C("백성을 아낀 두 임금으로", () => SR({ ppl: 8 }, "역사책은 두 왕을 '백성의 임금'으로 기록했어요.", [-0.2, 0, 0.9], "사관이 붓을 드니, 백성들이 저마다 두 임금의 이야기를 들려주러 몰려왔다.")),
+        C("나라를 굳건히 지킨 두 임금으로", () => SR({ def: 8 }, "역사책은 두 왕을 '나라를 지킨 임금'으로 기록했어요.", [0.3, 0.8, 0], "사관이 '지켰다'는 글자를 적으니, 성벽 위 깃발이 크게 펄럭였다.")),
+        C("문화를 꽃피운 두 임금으로", () => SR({ cul: 8 }, "역사책은 두 왕을 '문화의 임금'으로 기록했어요.", [0, -0.8, 0.2], "사관이 붓을 내려놓자, 서고의 책들이 한 권 더 늘어 있었다.")),
+      ] },
+  });
+  // 조금만 더 전용 정책 (11시기부터)
+  const xvis = () => EXT() && S.turn > 10;
+  PP({ id: "x_fix", cat: "law", name: "선왕의 실수 바로잡기", sub: "조금만 더 · 보완", kings: "다음 왕", cost: 1, repeat: 3, phase: xvis, scen: Object.keys(SCEN),
+    get eff() { return S && S.st ? { [weakKey()]: 10, gold: -3 } : { gold: -3 }; }, tags: [0, 0, 0.3],
+    get note() { return S && S.st ? `지금 가장 약한 ${SN[weakKey()]}을(를) 10 올려요. 3시기마다 다시 할 수 있어요.` : ""; },
+    run() { const k = weakKey(); return R({ [k]: 10, gold: -3 }, `선왕 때부터 약했던 ${SN[k]}을(를) 바로잡았어요.`, this.tags, { sl: "새 왕이 선왕의 장부를 펴 빨간 글씨부터 고쳐 나갔다." }); } });
+  PP({ id: "x_wonder", cat: "cul", name: "나라의 걸작 짓기", sub: "조금만 더 · 석굴암·팔만대장경 같은 걸작", kings: "다음 왕", cost: 3, phase: xvis, scen: Object.keys(SCEN), eff: { cul: 16, ppl: 5, har: 3, gold: -10 }, tags: [0, -0.8, 0.3], strong: true,
+    note: "수백 년 뒤까지 남을 걸작을 만들어요. 돈이 많이 들어요.",
+    run() { return R({ cul: 16, ppl: 5, har: 3, gold: -10 }, "온 나라의 장인이 모여 수백 년 뒤까지 남을 걸작을 완성했어요.", this.tags, { sl: "걸작이 완성되니, 장인들이 서로의 손을 보며 '이 손이 했다' 하였다." }); } });
+  PP({ id: "x_voyage", cat: "eco", name: "바다 끝 탐험대", sub: "조금만 더 · 새로운 경험", kings: "다음 왕", cost: 2, phase: () => xvis() && !!S.flags.newPath, scen: Object.keys(SCEN), gamble: true, risky: true, eff: { gold: 18, cul: 6 }, fail: { gold: -8, def: -5 }, inc: 2, tags: [0.2, 0.3, 0],
+    chance() { return 0.5 + (has("trade") ? 0.1 : 0) + extBonus(false); },
+    note: "모험! '선왕과 다른 길'을 고른 왕만 할 수 있어요. 성공하면 먼 나라와 무역 길이 열려 매 시기 수입 +2.",
+    run() { if (Math.random() < this.chance()) { addInc(2); return R({ gold: 18, cul: 6 }, "탐험대가 바다 끝 나라를 찾아 무역 길을 열었어요!", this.tags, { sl: "탐험대가 돌아오니, 처음 보는 과일을 맛본 왕이 씨를 뱉어 궁궐 뜰에 심었다." }); } return R({ gold: -8, def: -5 }, "탐험대가 폭풍을 만나 돌아왔어요.", this.tags, { ok: false, sl: "탐험대 배의 돛이 찢겨, 선원들이 저고리를 이어 붙여 돌아왔다." }); } });
+  PP({ id: "x_council", cat: "men", name: "온 백성 대표 회의", sub: "조금만 더 · 새로운 경험", kings: "다음 왕", cost: 2, phase: () => xvis() && !!S.flags.newPath, scen: Object.keys(SCEN), eff: { har: 10, ppl: 8, kp: -6 }, tags: [-0.8, -0.2, 0.8],
+    note: "양반·상민·천민 대표가 모두 모여 나랏일을 의논해요. 시대를 앞선 실험이에요.",
+    run() { return R({ har: 10, ppl: 8, kp: -6 }, "신분을 가리지 않고 대표들이 모여 나랏일을 의논했어요. 시대를 훨씬 앞선 일이었어요.", this.tags, { sl: "백정 대표가 의견을 말하니, 양반 대표가 처음으로 귀를 기울였다." }); } });
+
   // ================= 시대에 맞는 정책 이름과 이야기 =================
   // 같은 정책이라도 나라와 시대에 따라 그 시대의 제도·인물·말로 바꾸어 보여 줘요. 효과(숫자)는 그대로예요.
   // 찾는 순서: 시나리오 고유(P, Q, …) → 시대(sam, gor, jo1, jo2, dh, dh2)
-  const ERA_OF = () => ({ P: "sam", Q: "sam", R: "sam", T: "gor", U: "jo1", E: "jo2", F: "jo2", K: "jo2", V: "jo2", J: S.flags && S.flags.lost ? "dh2" : "dh" })[S.scen] || null;
+  const ERA_OF = () => ({ W: "sam", P: "sam", Q: "sam", R: "sam", T: "gor", U: "jo1", E: "jo2", F: "jo2", K: "jo2", V: "jo2", J: S.flags && S.flags.lost ? "dh2" : "dh" })[S.scen] || null;
   const hasAny = (...ids) => ids.some(has);
   const ERA_TXT = {
     // ---------- 삼국 (고구려·백제·신라) ----------
@@ -4250,6 +4523,8 @@ details.real[open] summary { margin-bottom: 8px; }
     const dream = ["china", "manchu", "liaoBack", "seaKing", "waKing", "kept", "stayed"].filter((f) => S.flags[f]).length;
     const star = (SCEN[S.scen] && SCEN[S.scen].star) || 3;
     let sc = avg + Math.min(6, achievements().length) * 1.5 + (min >= 45 ? 3 : 0) + (agreeCount() >= 2 ? 3 : 0) + Math.min(8, gained * 2) + dream * 8 + (S.flags.warWon ? 2 : 0) + (altEnding() ? 5 : 0) + featCount() * 3 + (featList().length && featCount() === featList().length ? 3 : 0) + (star - 3) * 3 - S.tyr * 3;
+    // 조금만 더: 두 왕의 점수를 합쳐 평균 (선왕 점수 + 지금 점수)
+    if (S.ext && S.ext.score1 != null) sc = (sc + S.ext.score1) / 2 - 2;
     if (S.over) sc = Math.min(sc, 40) - 10 + (S.overAt ? S.overAt.turn * 2 : 0);
     // 무너졌거나 폭군으로 기록되면 F 등급이라, 버텨 낸 왕보다 점수가 높지 않게 해요
     if (S.over || (S.end && S.end.rec && S.end.rec.kind === "tyrant")) sc = Math.min(sc, 29); else sc = Math.max(sc, 30);
@@ -4596,7 +4871,7 @@ details.real[open] summary { margin-bottom: 8px; }
     push(`trailer\n<< /Size ${size} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
     return new Blob(chunks, { type: "application/pdf" });
   }
-  const fileBase = () => `${NATION()}_${S.king.trim() || "왕"}_${S.over ? "멈춘다스림" : "30년"}`.replace(/[\\/:*?"<>|\s]+/g, "_");
+  const fileBase = () => `${NATION()}_${S.king.trim() || "왕"}_${S.over ? "멈춘다스림" : S.ext ? "60년" : "30년"}`.replace(/[\\/:*?"<>|\s]+/g, "_");
   let toastT = 0;
   function toast(msg) { const t = $("toast"); if (!t) return; t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3200); }
   async function getDownloads() { try { return window.claude && typeof window.claude.use === "function" ? await window.claude.use("downloads") : null; } catch (e) { return null; } }
@@ -4661,7 +4936,7 @@ details.real[open] summary { margin-bottom: 8px; }
   const arrows = (v) => { const n = Math.abs(v) >= 12 ? 3 : Math.abs(v) >= 7 ? 2 : 1; return (v > 0 ? "▲" : "▼").repeat(n); };
   const signed = (v) => (v > 0 ? `+${v}` : `${v}`);
   const timeline = () => `<div class="timeline" style="grid-template-columns:repeat(${TURNS},1fr)" aria-label="재위 ${TURNS}시기 중 ${S.turn}시기">${Array.from({ length: TURNS }, (_, i) => `<span class="${i + 1 < S.turn ? "done" : i + 1 === S.turn ? "on" : ""}"></span>`).join("")}</div>`;
-  const stars = (n) => `<span class="stars" aria-label="어려움 ${n}">${"★".repeat(n)}<i>${"★".repeat(5 - n)}</i></span>`;
+  const stars = (n) => (n > 5 ? `<span class="stars hell" aria-label="어려움 ${n}">${"★".repeat(n)}</span>` : `<span class="stars" aria-label="어려움 ${n}">${"★".repeat(n)}<i>${"★".repeat(5 - n)}</i></span>`);
 
   function irworobongdo() {
     // 일월오봉도: 가운데 큰 봉우리를 사이에 두고 오른쪽에 붉은 해, 왼쪽에 흰 달
@@ -4690,10 +4965,10 @@ details.real[open] summary { margin-bottom: 8px; }
     <section class="panel"><h2>2. 어떤 나라의 왕이 될까요?</h2>
       <p class="sub">★이 많을수록 어려워요. ★★★★ 나라는 첫 시기부터 큰 위기가 기다리고, ★★★★★ 나라는 역사 속에서 가장 혹독했던 때예요. 같은 나라도 판마다 다른 사건과 선택지가 나와요.</p>
       ${[["우리 역사 속 나라 · 지도와 함께", (v) => v.real], ["상상 속 나라 · 이름 없는 왕국", (v) => !v.world && !v.real], ["세계사 속 나라", (v) => v.world]].map(([gname, gf]) => `<h3 class="sgroup">${gname}</h3>
-      <div class="scens">${Object.entries(SCEN).filter(([, v]) => gf(v)).sort((x, y) => (x[1].year || 0) - (y[1].year || 0)).map(([k, v]) => `<button type="button" class="scen ${v.war || k === "F" ? "warlike" : ""}" data-scen="${k}" aria-pressed="${S.scen === k}">
+      <div class="scens">${Object.entries(SCEN).filter(([, v]) => gf(v)).sort((x, y) => (x[1].year || 0) - (y[1].year || 0)).map(([k, v]) => `<button type="button" class="scen ${v.war || k === "F" ? "warlike" : ""} ${v.warn ? "hellcard" : ""}" data-scen="${k}" aria-pressed="${S.scen === k}">
         <span class="sh"><b>${esc(v.name)}</b>${stars(v.star)}</span>
         <span class="tags">${v.strong ? `<span class="tag good">처음부터 강한 나라</span>` : ""}${v.war ? `<span class="tag war">전쟁 중</span>` : ""}${k === "F" ? `<span class="tag war">전쟁 직전</span>` : ""}${k === "G" ? `<span class="tag world">정복과 통일</span>` : ""}${k === "H" ? `<span class="tag war">혁명 직전</span>` : ""}${v.tag ? `<span class="tag ${v.tag[0]}">${esc(v.tag[1])}</span>` : ""}</span>
-        <span>${esc(v.text)}</span>
+        ${v.warn ? `<span class="hellwarn">⚠ ${esc(v.warn)}</span>` : ""}<span>${esc(v.text)}</span>
         <span class="mini">${ST.map((x) => `<i>${x.h}<b>${v.st[x.k]}</b></i>`).join("")}</span>
         <small>${esc(v.like)}${v.done.length ? ` · 이미 있는 제도: ${v.done.map((d) => P[d].name).join(", ")}` : ""}</small></button>`).join("")}</div>`).join("")}</section>
     <section class="panel"><h2>3. 나의 다스림 원칙</h2>
@@ -4808,6 +5083,7 @@ details.real[open] summary { margin-bottom: 8px; }
       ${O ? `<p class="sub">${esc(S.overAt.where)} ${esc(jo(SN[S.over], "이", "가"))} 0이 되었어요.</p><div class="histbox"><b>역사 속에서 실제로 있었던 일</b><p>${esc(O.hist)}</p></div>` : ""}
       <div class="stats">${ST.map((x) => statBox(x, S.st[x.k])).join("")}</div>
       <div class="row exportrow"><button type="button" class="btn go" id="btnCard">결과 카드 사진으로 저장</button><button type="button" class="btn" id="btnPdf">실록까지 PDF로 저장</button><span class="sub">사진(PNG)은 결과 카드 한 장, PDF는 결과 카드·실록·생각 적기 쪽이 함께 들어 있어요.</span></div></section>
+    ${!S.over && !S.ext && !"GHLMY".includes(S.scen) && !S.flags.lost ? `<section class="panel morebox"><h2>조금만 더?</h2><p>아쉬운가요? 왕자가 나라를 물려받아 <b>10시기(30년)를 더</b> 다스릴 수 있어요. 지금 능력치와 땅을 그대로 이어받고, 국정 힘이 하나 늘어요. 선왕의 실수를 바로잡는 선택지, 처음 보는 사건, 전설 같은 이야기가 기다려요. '만약에?' 모험의 성공 확률도 올라가요.</p><button type="button" class="btn go" id="btnMore">다음 왕으로 10시기 더 다스리기</button></section>` : ""}${S.ext ? `<p class="sub">${esc(S.ext.king1)} 왕(${esc(S.ext.tier1 || "")}등급 ${S.ext.score1 ?? ""}점)에 이어 ${esc(KING())}까지, 두 왕의 60년 기록이에요.</p>` : ""}
     ${tierPanel()}
     ${featPanel()}
     ${hasMap() && S.terr0 ? `<section class="panel"><h2>${esc(NATION())}의 땅은 어떻게 바뀌었을까?</h2><div class="mapduo"><figure>${mapSVG({ terr: S.terr0 })}<figcaption>처음 (${esc(era(1))})</figcaption></figure><figure>${mapSVG({ terr: S.terr, gain: S.terr.filter((x) => !S.terr0.includes(x)) })}<figcaption>${S.over ? "무너질 때" : "다스림을 마칠 때"}${S.terr.length > S.terr0.length ? ` · 새로 얻은 땅 ${S.terr.length - S.terr0.length}곳` : ""}</figcaption></figure></div><p class="sub">지도의 경계는 교과서 지도를 바탕으로 한 대략적인 모습이에요.</p></section>` : ""}
@@ -4935,6 +5211,8 @@ details.real[open] summary { margin-bottom: 8px; }
     if (t.id === "btnAgain") return newGame();
     if (t.id === "btnNew") return askNew();
     if (t.id === "btnNewNo") return closeLayer();
+    if (t.id === "btnMore") { $("layer").innerHTML = `<div class="overlay" role="dialog" aria-modal="true" aria-labelledby="moreTitle"><div class="modal"><h2 id="moreTitle">다음 왕의 이름은?</h2><p>${esc(KING())}의 뒤를 이을 왕의 이름을 지어 주세요. 비워 두면 '${esc(S.king.trim() || "이름 없는")} 2세'가 돼요.</p><input id="moreName" class="inp" maxlength="12" placeholder="새 왕의 이름"><div class="row"><button type="button" class="btn" id="btnNewNo">그만하기</button><button type="button" class="btn go" id="btnMoreGo">즉위식 올리기</button></div></div></div>`; $("moreName").focus(); return; }
+    if (t.id === "btnMoreGo") { const nm = $("moreName").value; closeLayer(); stopReveal(); return extendReign(nm); }
     if (t.id === "btnNewYes") return newGame();
   });
   document.addEventListener("change", (e) => {
