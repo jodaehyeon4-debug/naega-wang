@@ -70,12 +70,12 @@
     stopReveal();
     const m = endData(), k = m.top.k;
     const reduce = false; // 학교 PC는 '애니메이션 끄기'가 켜진 경우가 많아, 연출은 늘 재생해요(건너뛰기 가능)
-    const names = KINGS.filter(kingPool).map((x) => x.n);
+    const names = (m.bad ? BAD_KINGS : KINGS).filter(kingPool).map((x) => x.n);
     $("layer").innerHTML = `<div class="reveal" id="reveal" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
       <canvas class="fx" id="fx" aria-hidden="true"></canvas><div class="rays" aria-hidden="true"></div>
       <div class="rv-tools"><button type="button" class="rv-btn" id="btnSound" aria-pressed="${soundOn}">${soundOn ? "소리 켬" : "소리 끔"}</button><button type="button" class="rv-btn" id="btnSkip">건너뛰기</button></div>
       <div class="rv-stage">
-        <p class="rv-top" id="rvTitle">역사 속에서 나와 가장 닮은 왕은…</p>
+        <p class="rv-top" id="rvTitle">${m.bad ? "역사 속에서 나와 닮은 '아쉬운 왕'은…" : "역사 속에서 나와 가장 닮은 왕은…"}</p>
         <div class="rv-frame">
           <div class="rv-portrait">${portrait(k)}</div>
           <div class="door l" aria-hidden="true"></div><div class="door r" aria-hidden="true"></div>
@@ -84,7 +84,7 @@
         <div class="rv-name"><span class="rv-era">${esc(k.era)}</span><b class="rv-stamp">${esc(k.n)}</b></div>
         <p class="rv-pct"><b id="rvPct">0</b>% 닮았어요!</p>
         <div class="rv-more">
-          <p class="rv-bio">${esc(k.bio)}</p>
+          <p class="rv-bio">${esc(k.bio)}</p>${k.lesson ? `<p class="rv-same"><b>배울 점</b> ${esc(k.lesson)}</p>` : ""}
           ${m.top.same.length ? `<p class="rv-same">나와 같은 정책: ${m.top.same.map((x) => `<span>${esc(sigName(x))}</span>`).join("")}</p>` : `<p class="rv-same">같은 정책은 없지만, 다스림의 방향이 꼭 닮았어요.</p>`}
           ${m.specials.length ? `<div class="rv-twist"><b>그런데… 역사책은 이렇게 적었어요</b><span>${esc(jo(m.specials.map((sp) => sp.n).join(" · "), "과", "와"))} 닮은 왕</span></div>` : ""}
           <button type="button" class="btn go" id="btnRvDone">내 결과 자세히 보기</button>

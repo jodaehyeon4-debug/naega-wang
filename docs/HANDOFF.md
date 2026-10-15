@@ -49,7 +49,7 @@ tr/                    ← 걸작 사진 70장(go_0.jpg처럼 '나라 묶음_번
 ```
 
 ### 빌드 순서 (build.py 안)
-`v2_data → main1 → pol → ev → ev2 → variety → flow → kings → sillok → scen5 → mapdata → map → mapworld_data → mapworld → real → ifs → late → feat → alt → legend → hell → more → treasure → trinfo → era → patch → new15 → ext → situ → myo → star → tier → reveal → export → render`
+`v2_data → main1 → pol → ev → ev2 → variety → flow → kings → sillok → scen5 → mapdata → map → mapworld_data → mapworld → real → ifs → late → feat → alt → legend → hell → more → treasure → trinfo → era → patch → new15 → ext → situ → myo → badking → star → tier → reveal → export → render`
 
 - `v2_patch.js`(밸런스 패치)는 다른 모듈의 함수·데이터를 **덮어씌우는** 방식이에요. 같은 기능을 고칠 때는 원래 모듈과 patch를 함께 확인할 것.
 - 빌드 재현 확인(2026-10-15): `src/`에서 빌드한 `dist/index.html`이 저장소의 `index.html`과 **바이트 단위로 같음**. 소스와 배포본이 어긋나 있지 않아요.
@@ -251,6 +251,13 @@ cd .. && git add -A && git commit -m "…" && git push origin main && git push o
 - 같은 시대 왕 가산 +0.08(`KING_ERA`): 고구려 → 고구려 왕, 고려 → 고려 왕, 조선 나라 → 조선 왕, 대한 제국 → 조선·대한 제국 왕.
 - 결과: 고려 효율 플레이 닮은 왕 태조 왕건 44·광종 14(60판 중), 소수림왕 0.
 
+### 3-23. 역사 속 '아쉬운 왕' (v2_badking.js, 2026-10-15)
+- 왕력 티어가 **C~F**이면 닮은 왕을 `BAD_KINGS`에서 골라요. 공개 장면 제목도 "나와 닮은 '아쉬운 왕'은…"으로 바뀌고, 왕마다 '배울 점'이 나와요.
+- 한국 8명: 봉상왕(고구려), 개로왕·의자왕(백제), 경애왕(신라), 궁예(후고구려), 의종(고려), 인조·철종(조선). 세계 3명: 유선(촉한 후주), 존 왕(잉글랜드), 루이 16세(프랑스).
+- 고르는 법(`matchBadKings`): 다스림 방향 0.4 + 같은 정책 0.25 + **무너진 능력치 일치 0.35**(가장 낮은/0이 된 능력치가 그 왕의 `weak`에 있으면 1, 둘째로 낮으면 0.5) + 같은 시대 +0.12 · 세계사 나라의 세계 왕 +0.12 · `home` +0.08.
+- 폭군·폐주 기록(연산군·네로·광해군·루이 16세)은 지금처럼 '그런데… 역사책은' 칸에 함께 나오고, 닮은 왕과 겹치면 빠져요.
+- 측정(무작위 60판, C~F만): 고구려 → 봉상왕 41, 백제 346 → 의자왕 25·개로왕 14, 신라 → 경애왕, 고려 → 의종, 조선 → 인조·철종, 촉한 → 루이 16세·유선·존 왕.
+
 ---
 
 ## 4. 시나리오 목록
@@ -445,6 +452,7 @@ cd .. && git add -A && git commit -m "…" && git push origin main && git push o
 23. (2026-10-15) 새 정책 15개, 병자호란 ★4.5, '조금만 더' 시대 리뉴얼(한국사 10개 나라)과 역사 판타지 40장·결말 10개, 연장 피로 강화.
 26. (2026-10-15) 걸작 사진 출처(국가유산청) 표시, 시대 어긋남은 픽션으로 유지, 난이도 별을 붕괴율에 맞춰 재조정(`v2_star.js`).
 27. (2026-10-15) 신라 효율 플레이 조정, 묘호 30가지와 같은 묘호의 실제 왕 해설, 닮은 왕에서 처음부터 있던 제도 제외·같은 시대 가산.
+28. (2026-10-15) 티어 C~F일 때 역사 속 '아쉬운 왕'(무능·최악의 왕 11명)과 배울 점.
 21. (2026-10-15) 전체 점검: 빌드 재현 확인, 전 시나리오 붕괴율·연장 티어 측정, 학생용 설명서 주소와 교사용 가이드 영조 별 수정, 인수인계 문서 최신화.
 
 ---
