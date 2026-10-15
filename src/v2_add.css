@@ -406,3 +406,11 @@ button.trcard:hover { transform: translateY(-2px); }
 .to-more .tr-n, .to-more .tr-g { display: none; }
 .ifb.retry { background: #C8332B; color: #fff; border-color: #C8332B; animation: retryPulse 1.2s ease-in-out 3; }
 @keyframes retryPulse { 50% { transform: scale(1.08); } }
+
+/* 내가 고른 나라는 초록색: 지옥급(빨간 테두리)과 헷갈리지 않게 */
+.scen { position: relative; }
+.scen[aria-pressed="true"], .scen.warlike[aria-pressed="true"], .scen.hellcard[aria-pressed="true"] { border-color: var(--good); box-shadow: 0 0 0 2px var(--good); background: color-mix(in srgb, var(--good) 9%, var(--paper)); }
+.scen[aria-pressed="true"]::after { content: "✓ 내가 고른 나라"; position: absolute; top: -12px; right: 12px; background: var(--good); color: var(--bg); font-size: 13px; font-weight: 800; padding: 2px 10px; border-radius: 999px; }
+/* 정책 정렬 */
+.tabs.sorts { align-items: center; margin-top: -4px; }
+.tabs.sorts .sub { margin-right: 4px; }

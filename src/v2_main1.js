@@ -1,7 +1,7 @@
   // ================= 상태 =================
   const KEY = "king-game-v2";
   let S = null;
-  const UI = { cat: "all", msg: null };
+  const UI = { cat: "all", msg: null, sort: "base" };
   const GOAL_BONUS = [6, 4, 2];
   function fresh() {
     return { v: 2, phase: "start", king: "", nation: "", scen: "A", goals: ["ppl", "kp", "def"], turn: 1,

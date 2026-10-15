@@ -95,7 +95,9 @@
   function renderPolicy() {
     const ap = apPoints(), used = usedPoints(), errs = queueErrors();
     const ev = S.evRes, adv = advice(), pj = projection();
-    const list = POL.filter((p) => polVisible(p) && (UI.cat === "all" || p.cat === UI.cat));
+    let list = POL.filter((p) => polVisible(p) && (UI.cat === "all" || p.cat === UI.cat));
+    // 국정 힘 적은 순: 힘이 같으면 원래 순서, 이미 한 정책은 맨 뒤로
+    if (UI.sort === "cost") list = list.map((p, i) => [p, i]).sort((x, y) => (!!usedUp(x[0]) - !!usedUp(y[0])) || (x[0].cost - y[0].cost) || (x[1] - y[1])).map((x) => x[0]);
     return watchBox() + `<section class="era"><h2>${S.turn}시기 · ${esc(era(S.turn))}</h2><span class="t">살림과 정책 고르기</span></section>${timeline()}${featStrip()}
     <section class="result ${ev.risk ? (ev.ok ? "won" : "lost") : ""}">${ev.risk ? `<span class="dice">${ev.ok ? "모험 성공!" : "모험 실패…"}</span>` : ""}<b>${esc(ev.title)} — ${esc(ev.choice)}</b><p>${esc(ev.text)}</p>${chips(ev.delta)}</section>
     ${adv.length ? `<section class="advice"><b>신하의 조언</b><ul>${adv.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></section>` : ""}
@@ -109,6 +111,7 @@
       <div class="row"><button type="button" class="btn go" id="btnRun" ${Object.keys(errs).length ? "disabled" : ""}>${S.picks.length ? "이 순서로 실행하기" : "정책 없이 이번 시기 보내기"}</button></div></section>
     ${mapPanel("지도 · 우리 군대가 갈 길")}
     <section class="tabs" role="group" aria-label="정책 종류">${[["all", "전체"], ...Object.entries(CATS).map(([k, v]) => [k, `${v.h} ${v.n}`])].map(([k, n]) => `<button type="button" data-cat="${k}" aria-pressed="${UI.cat === k}">${esc(n)}</button>`).join("")}</section>
+    <section class="tabs sorts" role="group" aria-label="정책 정렬"><span class="sub">보는 순서</span>${[["base", "기본 순"], ["cost", "국정 힘 적은 순 ●→●●●"]].map(([k, n]) => `<button type="button" data-sort="${k}" aria-pressed="${UI.sort === k}">${n}</button>`).join("")}</section>
     <section class="cards">${list.map((p) => policyCard(p)).join("")}</section>`;
   }
   function policyCard(p) {
@@ -279,6 +282,7 @@
     if (t.id === "btnStart") return beginReign();
     if (d.choice) return chooseEvent(+d.choice);
     if (d.cat) { UI.cat = d.cat; render(); return; }
+    if (d.sort) { UI.sort = d.sort; render(); return; }
     if (d.pick) { if (t.getAttribute("aria-disabled") === "true") return; return togglePick(d.pick); }
     if (d.qup) { const i = +d.qup; [S.picks[i - 1], S.picks[i]] = [S.picks[i], S.picks[i - 1]]; save(); render(); return; }
     if (d.qdn) { const i = +d.qdn; [S.picks[i + 1], S.picks[i]] = [S.picks[i], S.picks[i + 1]]; save(); render(); return; }
