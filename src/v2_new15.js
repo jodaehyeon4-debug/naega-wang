@@ -86,10 +86,9 @@
   }
   { const w0 = treasureDrift; treasureDrift = function (drift, parts) { w0(drift, parts); n15Drift(drift, parts); }; }
 
-  // ================= 병자호란 ★4.5: 더 혹독하게 =================
+  // ================= 병자호란: 더 혹독하게 (별은 v2_star.js) =================
   // 정묘호란(1627) 직후라 곳간과 군대가 이미 지쳐 있어요. 청의 요구는 전쟁 뒤에도 끝나지 않아요.
   if (SCEN.F) {
-    SCEN.F.star = 4.5;
     SCEN.F.st = { kp: 36, har: 34, ppl: 42, gold: 34, def: 34, cul: 50 };
     SCEN.F.text += " 정묘호란을 막 겪어 곳간과 군대가 지쳐 있고, 전쟁이 끝나도 청나라의 요구는 계속돼요.";
   }

@@ -2347,7 +2347,7 @@ button.trcard:hover { transform: translateY(-2px); }
     return { best, worst };
   }
 
-  // ================= ★★★★★ 나라 4가지: 경신 대기근 · 대한 제국과 일제 강점기 · 아메리카 원주민 · 흑사병 =================
+  // ================= 어려운 나라 4가지: 경신 대기근 · 대한 제국과 일제 강점기 · 아메리카 원주민 · 흑사병 =================
   const PP = (o) => { o.tags = o.tags || [0, 0, 0]; POL.push(o); P[o.id] = o; };
   const pw = (d) => Object.fromEntries(Object.entries(d).filter(([, v]) => v));
 
@@ -4567,9 +4567,12 @@ button.trcard:hover { transform: translateY(-2px); }
     const fb = `<span class="trph-fb" aria-hidden="true"><b>${g}</b><i>${esc(t.k)}</i></span>`;
     return `<div class="trph ${cls || ""} ${t.c || ""}">${id && !TR_NOIMG.has(id) ? `<img src="tr/${id}.jpg" alt="${esc(t.n)}" loading="lazy" onerror="this.remove()">` : ""}${fb}<span class="sheen" aria-hidden="true"></span></div>`;
   }
+  // 사진 출처: 한국사 걸작 사진은 국가유산청(공공누리 제1유형)
+  const TR_KR = new Set(["go", "bj", "sl", "gr", "js1", "js2", "dh"]);
+  function trCredit(t) { const id = t.img || trImgId(t.n); return id && !TR_NOIMG.has(id) && TR_KR.has(id.split("_")[0]) ? "사진: 국가유산청" : ""; }
   const TR_EFF = { legend: "문화 +18 · 민심 +4 · 화합 +4", rare: "문화 +12 · 화합 +2", common: "문화 +8" };
   function trCardHTML(t) {
-    const i = trInfo(t.n);
+    const i = trInfo(t.n), cr = trCredit(t);
     return `<div class="trinfo ${t.c}">
       <p class="tr-g">${esc(i.g || "걸작")} · <span class="trr">${esc(t.r)}</span></p>
       <h3 class="tr-n">${esc(t.n)}</h3>
@@ -4577,7 +4580,7 @@ button.trcard:hover { transform: translateY(-2px); }
       ${i.m ? `<p class="tr-m">${esc(i.m)}</p>` : ""}
       <p class="tr-t">${esc(i.t || t.d)}</p>
       ${i.q ? `<blockquote class="tr-q">“${esc(i.q)}”<cite>— ${esc(i.qs || "")}</cite></blockquote>` : ""}
-      <p class="tr-e"><b>${esc(TR_EFF[t.c] || "")}</b> · 이 걸작이 있는 동안 매 시기 문화 +1${i.ph ? `<span class="tr-ph">${esc(i.ph)}</span>` : ""}</p>
+      <p class="tr-e"><b>${esc(TR_EFF[t.c] || "")}</b> · 이 걸작이 있는 동안 매 시기 문화 +1${i.ph ? `<span class="tr-ph">${esc(i.ph)}</span>` : ""}${cr ? `<span class="tr-ph tr-src">${cr}</span>` : ""}</p>
     </div>`;
   }
 
@@ -4875,8 +4878,7 @@ button.trcard:hover { transform: translateY(-2px); }
   function coreApply() { for (const [id, e] of Object.entries(CORE_BASE)) P[id].eff = isCore(P[id]) ? coreScale(e) : e; }
 
   // ================= 밸런스 패치 (2026-10) =================
-  // 영조 별 4개, 고구려 난이도 상향
-  if (SCEN.V) SCEN.V.star = 4;
+  // 고구려 난이도 상향 (별은 v2_star.js)
   if (SCEN.P) {
     SCEN.P.st = { kp: 38, har: 42, ppl: 44, gold: 40, def: 40, cul: 24 };
     SCEN.P.text += " 사방이 적이라, 매 시기 나라 살림과 군사가 조금씩 깎여 나가요.";
@@ -5043,7 +5045,7 @@ button.trcard:hover { transform: translateY(-2px); }
   // ---------- 세계사 밸런스 ----------
   // 몽골: 처음에는 부족들이 쉽게 흩어져요
   { const g0 = DRIFT5.G; DRIFT5.G = (dr, parts, L) => { if (g0) g0(dr, parts, L); if (S.turn <= 4 && !has("law")) { dr.har -= 2; parts.push("아직 법이 없어 부족장들이 저마다 딴마음 (화합 -2)"); } }; }
-  // 큰 평원(★5): 철도와 이주민의 물결이 끝없이 밀려와요
+  // 큰 평원: 철도와 이주민의 물결이 끝없이 밀려와요
   { const l0 = DRIFT5.L; DRIFT5.L = (dr, parts, L) => { if (l0) l0(dr, parts, L); if (S.turn >= 4) { const t = S.flags.treaty || has("lscript"); dr.ppl -= t ? 1 : 2; dr.gold -= 1; parts.push(t ? "철도와 이주민이 밀려오지만 약속과 글로 버팀 (민심 -1, 재정 -1)" : "철도와 이주민의 물결이 사냥터를 덮음 (민심 -2, 재정 -1)"); } }; }
 
   // ================= 실제 역사 속 정책 15개 (2026-10-15) =================
@@ -5134,10 +5136,9 @@ button.trcard:hover { transform: translateY(-2px); }
   }
   { const w0 = treasureDrift; treasureDrift = function (drift, parts) { w0(drift, parts); n15Drift(drift, parts); }; }
 
-  // ================= 병자호란 ★4.5: 더 혹독하게 =================
+  // ================= 병자호란: 더 혹독하게 (별은 v2_star.js) =================
   // 정묘호란(1627) 직후라 곳간과 군대가 이미 지쳐 있어요. 청의 요구는 전쟁 뒤에도 끝나지 않아요.
   if (SCEN.F) {
-    SCEN.F.star = 4.5;
     SCEN.F.st = { kp: 36, har: 34, ppl: 42, gold: 34, def: 34, cul: 50 };
     SCEN.F.text += " 정묘호란을 막 겪어 곳간과 군대가 지쳐 있고, 전쟁이 끝나도 청나라의 요구는 계속돼요.";
   }
@@ -5711,6 +5712,12 @@ button.trcard:hover { transform: translateY(-2px); }
     };
     return o;
   }
+
+  // ================= 난이도 별 (2026-10-15, 무작위 플레이 300판 붕괴율 기준) =================
+  // ★2 10% 미만 · ★3 10~19% · ★4 20~29% · ★4.5 30~39% · ★5 40% 이상 · ★10 지옥급(90% 이상)
+  // 별은 왕력 점수((★−3)×3)와 '다른 역사' 문턱에도 쓰여요. 밸런스를 바꾸면 다시 재서 여기만 고칠 것.
+  const STAR = { A: 3, B: 2, C: 4, D: 2, Q: 2, P: 4.5, R: 3, T: 2, U: 2, E: 4, F: 4.5, K: 5, V: 3, J: 4, G: 3, H: 4, L: 5, M: 4.5, W: 10, Y: 10 };
+  for (const k in STAR) if (SCEN[k]) SCEN[k].star = STAR[k];
 
   // ================= 화합을 키우는 정책 =================
   PP({ id: "har_council", cat: "men", name: "신하·호족과 함께 정하는 큰 회의", sub: "화백 회의 · 도병마사 · 비변사처럼", kings: "신라 · 고려 · 조선", cost: 1, repeat: 3, eff: { har: 8, kp: -3, cul: 1 }, tags: [-0.8, -0.2, 0],

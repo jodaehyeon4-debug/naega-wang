@@ -94,9 +94,12 @@
     const fb = `<span class="trph-fb" aria-hidden="true"><b>${g}</b><i>${esc(t.k)}</i></span>`;
     return `<div class="trph ${cls || ""} ${t.c || ""}">${id && !TR_NOIMG.has(id) ? `<img src="tr/${id}.jpg" alt="${esc(t.n)}" loading="lazy" onerror="this.remove()">` : ""}${fb}<span class="sheen" aria-hidden="true"></span></div>`;
   }
+  // 사진 출처: 한국사 걸작 사진은 국가유산청(공공누리 제1유형)
+  const TR_KR = new Set(["go", "bj", "sl", "gr", "js1", "js2", "dh"]);
+  function trCredit(t) { const id = t.img || trImgId(t.n); return id && !TR_NOIMG.has(id) && TR_KR.has(id.split("_")[0]) ? "사진: 국가유산청" : ""; }
   const TR_EFF = { legend: "문화 +18 · 민심 +4 · 화합 +4", rare: "문화 +12 · 화합 +2", common: "문화 +8" };
   function trCardHTML(t) {
-    const i = trInfo(t.n);
+    const i = trInfo(t.n), cr = trCredit(t);
     return `<div class="trinfo ${t.c}">
       <p class="tr-g">${esc(i.g || "걸작")} · <span class="trr">${esc(t.r)}</span></p>
       <h3 class="tr-n">${esc(t.n)}</h3>
@@ -104,6 +107,6 @@
       ${i.m ? `<p class="tr-m">${esc(i.m)}</p>` : ""}
       <p class="tr-t">${esc(i.t || t.d)}</p>
       ${i.q ? `<blockquote class="tr-q">“${esc(i.q)}”<cite>— ${esc(i.qs || "")}</cite></blockquote>` : ""}
-      <p class="tr-e"><b>${esc(TR_EFF[t.c] || "")}</b> · 이 걸작이 있는 동안 매 시기 문화 +1${i.ph ? `<span class="tr-ph">${esc(i.ph)}</span>` : ""}</p>
+      <p class="tr-e"><b>${esc(TR_EFF[t.c] || "")}</b> · 이 걸작이 있는 동안 매 시기 문화 +1${i.ph ? `<span class="tr-ph">${esc(i.ph)}</span>` : ""}${cr ? `<span class="tr-ph tr-src">${cr}</span>` : ""}</p>
     </div>`;
   }

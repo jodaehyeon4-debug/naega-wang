@@ -1,6 +1,5 @@
   // ================= 밸런스 패치 (2026-10) =================
-  // 영조 별 4개, 고구려 난이도 상향
-  if (SCEN.V) SCEN.V.star = 4;
+  // 고구려 난이도 상향 (별은 v2_star.js)
   if (SCEN.P) {
     SCEN.P.st = { kp: 38, har: 42, ppl: 44, gold: 40, def: 40, cul: 24 };
     SCEN.P.text += " 사방이 적이라, 매 시기 나라 살림과 군사가 조금씩 깎여 나가요.";
@@ -167,5 +166,5 @@
   // ---------- 세계사 밸런스 ----------
   // 몽골: 처음에는 부족들이 쉽게 흩어져요
   { const g0 = DRIFT5.G; DRIFT5.G = (dr, parts, L) => { if (g0) g0(dr, parts, L); if (S.turn <= 4 && !has("law")) { dr.har -= 2; parts.push("아직 법이 없어 부족장들이 저마다 딴마음 (화합 -2)"); } }; }
-  // 큰 평원(★5): 철도와 이주민의 물결이 끝없이 밀려와요
+  // 큰 평원: 철도와 이주민의 물결이 끝없이 밀려와요
   { const l0 = DRIFT5.L; DRIFT5.L = (dr, parts, L) => { if (l0) l0(dr, parts, L); if (S.turn >= 4) { const t = S.flags.treaty || has("lscript"); dr.ppl -= t ? 1 : 2; dr.gold -= 1; parts.push(t ? "철도와 이주민이 밀려오지만 약속과 글로 버팀 (민심 -1, 재정 -1)" : "철도와 이주민의 물결이 사냥터를 덮음 (민심 -2, 재정 -1)"); } }; }

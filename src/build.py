@@ -13,7 +13,7 @@ css = css.replace("--moon: #F2F5F3; --wave: #3B5869;\n", "--moon: #F2F5F3; --wav
 css = css.replace("/* 어좌 뒤 일월오봉도: 해(주홍)·달·다섯 봉우리(석록)·물결(군청). 위에는 늘 보이는 나라 살림판, 아래는 시기마다 바뀌는 국정 화면. */",
   "/* 어좌 뒤 일월오봉도: 해(주홍)·달·다섯 봉우리(석록)·물결(군청). 위에는 늘 보이는 나라 살림판, 아래는 시기마다 바뀌는 국정 화면. 닮은 왕 공개 장면은 밤의 궁궐(늘 어두운 배경)에 오방색 꽃가루. */")
 css += r("v2_add.css")
-js = "\n".join([r("v2_data.js"), r("v2_main1.js"), r("v2_pol.js"), r("v2_ev.js"), r("v2_ev2.js"), r("v2_variety.js"), r("v2_flow.js"), r("v2_kings.js"), r("v2_sillok.js"), r("v2_scen5.js"), r("v2_mapdata.js"), r("v2_map.js"), r("v2_mapworld_data.js"), r("v2_mapworld.js"), r("v2_real.js"), r("v2_ifs.js"), r("v2_late.js"), r("v2_feat.js"), r("v2_alt.js"), r("v2_legend.js"), r("v2_hell.js"), r("v2_more.js"), r("v2_treasure.js"), r("v2_trinfo.js"), r("v2_era.js"), r("v2_patch.js"), r("v2_new15.js"), r("v2_ext.js"), r("v2_situ.js"), r("v2_tier.js"), r("v2_reveal.js"), r("v2_export.js"), r("v2_render.js")])
+js = "\n".join([r("v2_data.js"), r("v2_main1.js"), r("v2_pol.js"), r("v2_ev.js"), r("v2_ev2.js"), r("v2_variety.js"), r("v2_flow.js"), r("v2_kings.js"), r("v2_sillok.js"), r("v2_scen5.js"), r("v2_mapdata.js"), r("v2_map.js"), r("v2_mapworld_data.js"), r("v2_mapworld.js"), r("v2_real.js"), r("v2_ifs.js"), r("v2_late.js"), r("v2_feat.js"), r("v2_alt.js"), r("v2_legend.js"), r("v2_hell.js"), r("v2_more.js"), r("v2_treasure.js"), r("v2_trinfo.js"), r("v2_era.js"), r("v2_patch.js"), r("v2_new15.js"), r("v2_ext.js"), r("v2_situ.js"), r("v2_star.js"), r("v2_tier.js"), r("v2_reveal.js"), r("v2_export.js"), r("v2_render.js")])
 head = '''<title>왕BTI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
