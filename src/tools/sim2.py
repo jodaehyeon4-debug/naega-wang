@@ -79,7 +79,7 @@ S = {
   "feat": dict(ev="greedy", econ="greedy", pol="feat", safe=True, fp={
      "P": ["fortress","law","school","buddhism","p_north","p_west","p_south"],
      "Q": ["q_south","fortress","alliance","trade","q_north"],
-     "R": ["law","buddhism","alliance","fortress","r_gaya","r_han"],
+     "R": ["r_byeongbu","law","buddhism","alliance","fortress","r_gaya1","r_gaya","r_han"],
      "T": ["marriage","hostage","har_council","fortress","t_silla","t_hb","t_north"],
      "U": ["fortress","scholars","u_4gun1","u_6jin1","hangeul","u_4gun","u_samin","u_6jin","science","survey"],
      "V": ["tangpyeong","military_tax","v_tangbi","v_junchun","har_council"]}),

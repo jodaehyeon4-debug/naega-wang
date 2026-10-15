@@ -30,7 +30,7 @@
     Q: [{ id: "q_mahan", h: "馬", n: "근초고왕의 마한 정복", d: "근초고왕은 369년 무렵 남쪽 마한 땅을 거의 다 차지했어요.", ok: () => ownsTerr("mahan"), pols: ["q_south"] },
       { id: "q_pyeong", h: "平", n: "평양성 싸움 승리", d: "371년 근초고왕은 평양성을 공격해 고구려 고국원왕을 쓰러뜨렸어요.", ok: () => ownsTerr("hwanghae"), pols: ["q_north"] },
       { id: "q_sea", h: "海", n: "바다 건너 동진·왜와 교류", d: "백제는 동진과 교류하고 왜에 칠지도와 학자(아직기·왕인)를 보냈어요.", ok: () => has("trade") && (S.flags.ally || has("alliance")), pols: ["trade", "alliance"] }],
-    R: [{ id: "r_law", h: "佛", n: "법흥왕의 율령 반포와 불교 공인", d: "법흥왕은 520년 율령을 반포하고, 이차돈의 순교 뒤 불교를 공인했어요(527년).", ok: () => has("law") && has("buddhism"), pols: ["law", "buddhism"] },
+    R: [{ id: "r_law", h: "佛", n: "법흥왕의 나라 틀 세우기", d: "법흥왕은 병부를 두고(517년), 율령을 반포하고(520년), 이차돈의 순교 뒤 불교를 공인했어요(527년). 10년 넘게 걸린 일이에요.", ok: () => has("r_byeongbu") && has("law") && has("buddhism"), pols: ["r_byeongbu", "law", "buddhism"], hint: "병부 · 율령 · 불교" },
       { id: "r_gaya", h: "伽", n: "가야 통합", d: "법흥왕이 금관가야(532년)를, 진흥왕이 대가야(562년)를 아울렀어요. 30년이 걸린 일이에요.", ok: () => ownsTerr("gaya"), pols: ["r_gaya1", "r_gaya"], hint: "금관가야 → 대가야" },
       { id: "r_han", h: "漢", n: "진흥왕의 한강 차지", d: "진흥왕은 553년 한강 유역을 차지해 중국과 바로 오가는 길을 열었어요.", ok: () => ownsTerr("sl_han"), pols: ["r_han"] }],
     T: [{ id: "t_unify", h: "統", n: "후삼국 통일", d: "왕건은 신라를 평화롭게 받아들이고(935년), 일리천 싸움에서 후백제를 무너뜨렸어요(936년).", ok: () => ownsTerr("hb") && ownsTerr("sl_late"), pols: ["t_hb", "t_silla"] },

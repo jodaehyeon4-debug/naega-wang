@@ -8,6 +8,14 @@
     if (S.turn <= 5) { const f = has("fortress"); dr.def -= f ? 1 : 2; dr.gold -= 1; dr.ppl -= f ? 0 : 1; parts.push(f ? "서쪽 연나라·남쪽 백제의 압박, 성곽 덕분에 버팀 (국방 -1, 재정 -1)" : "서쪽 연나라·남쪽 백제의 압박 (국방 -2, 재정 -1, 민심 -1)"); }
     else if (!ownsTerr("liaodong")) { dr.def -= 2; dr.ppl -= 1; parts.push("후연이 요동을 노리며 국경을 흔듦 (국방 -2, 민심 -1)"); }
   };
+  // 신라: 삼국 가운데 가장 늦게 출발한 나라. 초반에는 귀족 힘이 세고 살림이 작으며, 한강을 차지하면 백제·고구려가 함께 되찾으려 해요(관산성 전투, 554)
+  DRIFT5.R = (dr, parts) => {
+    if (S.turn <= 5) { dr.kp -= 1; dr.gold -= 1; dr.cul -= 1; parts.push("늦게 출발한 나라: 골품 귀족의 힘이 세고 살림과 문물이 모자람 (왕권 -1, 재정 -1, 문화 -1)"); }
+    else if (ownsTerr("sl_han")) { dr.def -= 2; dr.har -= 1; parts.push("한강을 빼앗긴 백제·고구려의 반격 (국방 -2, 화합 -1)"); }
+  };
+  // 우산국은 지증왕 때(512) 이사부가 이미 복속했어요 → 514년 신라는 처음부터 우산국을 가지고 시작해요
+  if (MAPS.R && !MAPS.R.start.includes("usan")) MAPS.R.start = MAPS.R.start.concat("usan");
+  { const u = POL.find((p) => p.id === "r_usan"); if (u) u.phase = () => !ownsTerr("usan"); }
   // ---------- 국방을 키우는 새 정책 2개 (핵심 정책보다는 약하게) ----------
   const KOR = Object.keys(SCEN).filter((k) => !"GHLMJWY".includes(k));
   const ANC = ["P", "Q", "R", "B", "D", "W"];

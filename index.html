@@ -3404,7 +3404,7 @@ button.trcard:hover { transform: translateY(-2px); }
   DirPol({ id: "r_gaya1", scen: "R", cat: "men", name: "금관가야 받아들이기 (532)", sub: "가야 통합의 시작", kings: "법흥왕", cost: 2, once: "rg1", stage: "가야 1/2단계", tags: [0.2, 0.3, 0],
     peace: () => S.st.kp >= 50 && S.st.def >= 48, eff: { gold: 5, kp: 3, har: 2 }, lose: { har: -4, gold: -3 },
     note: "싸우지 않아요. 왕권 50·국방 48 이상이면 금관가야 왕(김구해)이 스스로 나라를 바쳐요. 그 왕족은 신라의 귀족이 되었어요(김유신의 증조할아버지).", winText: "금관가야의 왕이 신라에 나라를 바쳤어요! 남은 가야 나라들은 대가야를 중심으로 뭉쳤어요.", loseText: "금관가야가 아직 신라를 믿지 못해 망설였어요. 왕권과 국방을 더 키워 보세요.", slWin: "금관가야 왕이 보물 상자를 들고 오니, 신라 왕이 상자보다 왕의 손을 먼저 잡았다.", slLose: "금관가야 사신이 금성까지 왔다가 신라 군대가 약해 보인다며 그냥 돌아갔다.", dir: { from: C_.금성, to: [128.88, 35.23], label: "금관가야" } });
-  DirPol({ id: "r_gaya", scen: "R", name: "대가야 정복 (562)", sub: "가야 통합의 완성", kings: "진흥왕 · 이사부 · 사다함", cost: 2, need: 60, after: "rg1", afterId: "r_gaya1", stage: "가야 2/2단계", region: "gaya", eff: { gold: 10, def: 4, kp: 3, har: -3 }, inc: 2, lose: { def: -8, gold: -4 }, dir: { from: C_.금성, to: [128.0, 35.3], label: "가야로" },
+  DirPol({ id: "r_gaya", scen: "R", name: "대가야 정복 (562)", sub: "가야 통합의 완성", kings: "진흥왕 · 이사부 · 사다함", cost: 2, need: 64, after: "rg1", afterId: "r_gaya1", stage: "가야 2/2단계", region: "gaya", eff: { gold: 6, def: 4, kp: 3, har: -3 }, inc: 1, lose: { def: -8, gold: -4 }, dir: { from: C_.금성, to: [128.0, 35.3], label: "가야로" },
     note: "가야는 철이 많이 나는 땅이에요(금관가야 532년, 대가야 562년).", winText: "가야를 차지했어요! 질 좋은 쇠로 무기와 농기구를 만들게 되었어요.", loseText: "가야의 성들이 굳게 버텼어요.", slWin: "가야를 얻으니, 신라 대장장이들이 가야 쇠를 두드리며 콧노래를 불렀다.", slLose: "가야 성 앞에서 신라군의 칼이 이가 나갔다." });
   DirPol({ id: "r_han", scen: "R", name: "한강 유역 차지하기", sub: "한강 진출", kings: "진흥왕", cost: 3, need: 68, region: "sl_han", eff: { gold: 8, kp: 6, def: 4, ppl: -3 }, inc: 2, lose: { def: -12, ppl: -6 }, dir: { from: C_.금성, to: [127.2, 37.5], label: "한강으로" },
     note: "한강을 차지하면 서해로 나가 중국과 바로 오갈 수 있어요(진흥왕 553년).", winText: "한강 유역을 차지했어요! 바닷길로 중국과 바로 오가게 되었어요(북한산 순수비처럼).", loseText: "한강을 지키는 군사들이 너무 강했어요.", slWin: "북한산에 순수비를 세우니, 비석이 어찌나 반듯하던지 산이 더 높아 보였다.", slLose: "한강에 이르지 못하고, 군사들이 산 고개에서 발길을 돌렸다." });
@@ -3830,7 +3830,7 @@ button.trcard:hover { transform: translateY(-2px); }
     Q: [{ id: "q_mahan", h: "馬", n: "근초고왕의 마한 정복", d: "근초고왕은 369년 무렵 남쪽 마한 땅을 거의 다 차지했어요.", ok: () => ownsTerr("mahan"), pols: ["q_south"] },
       { id: "q_pyeong", h: "平", n: "평양성 싸움 승리", d: "371년 근초고왕은 평양성을 공격해 고구려 고국원왕을 쓰러뜨렸어요.", ok: () => ownsTerr("hwanghae"), pols: ["q_north"] },
       { id: "q_sea", h: "海", n: "바다 건너 동진·왜와 교류", d: "백제는 동진과 교류하고 왜에 칠지도와 학자(아직기·왕인)를 보냈어요.", ok: () => has("trade") && (S.flags.ally || has("alliance")), pols: ["trade", "alliance"] }],
-    R: [{ id: "r_law", h: "佛", n: "법흥왕의 율령 반포와 불교 공인", d: "법흥왕은 520년 율령을 반포하고, 이차돈의 순교 뒤 불교를 공인했어요(527년).", ok: () => has("law") && has("buddhism"), pols: ["law", "buddhism"] },
+    R: [{ id: "r_law", h: "佛", n: "법흥왕의 나라 틀 세우기", d: "법흥왕은 병부를 두고(517년), 율령을 반포하고(520년), 이차돈의 순교 뒤 불교를 공인했어요(527년). 10년 넘게 걸린 일이에요.", ok: () => has("r_byeongbu") && has("law") && has("buddhism"), pols: ["r_byeongbu", "law", "buddhism"], hint: "병부 · 율령 · 불교" },
       { id: "r_gaya", h: "伽", n: "가야 통합", d: "법흥왕이 금관가야(532년)를, 진흥왕이 대가야(562년)를 아울렀어요. 30년이 걸린 일이에요.", ok: () => ownsTerr("gaya"), pols: ["r_gaya1", "r_gaya"], hint: "금관가야 → 대가야" },
       { id: "r_han", h: "漢", n: "진흥왕의 한강 차지", d: "진흥왕은 553년 한강 유역을 차지해 중국과 바로 오가는 길을 열었어요.", ok: () => ownsTerr("sl_han"), pols: ["r_han"] }],
     T: [{ id: "t_unify", h: "統", n: "후삼국 통일", d: "왕건은 신라를 평화롭게 받아들이고(935년), 일리천 싸움에서 후백제를 무너뜨렸어요(936년).", ok: () => ownsTerr("hb") && ownsTerr("sl_late"), pols: ["t_hb", "t_silla"] },
@@ -4887,6 +4887,14 @@ button.trcard:hover { transform: translateY(-2px); }
     if (S.turn <= 5) { const f = has("fortress"); dr.def -= f ? 1 : 2; dr.gold -= 1; dr.ppl -= f ? 0 : 1; parts.push(f ? "서쪽 연나라·남쪽 백제의 압박, 성곽 덕분에 버팀 (국방 -1, 재정 -1)" : "서쪽 연나라·남쪽 백제의 압박 (국방 -2, 재정 -1, 민심 -1)"); }
     else if (!ownsTerr("liaodong")) { dr.def -= 2; dr.ppl -= 1; parts.push("후연이 요동을 노리며 국경을 흔듦 (국방 -2, 민심 -1)"); }
   };
+  // 신라: 삼국 가운데 가장 늦게 출발한 나라. 초반에는 귀족 힘이 세고 살림이 작으며, 한강을 차지하면 백제·고구려가 함께 되찾으려 해요(관산성 전투, 554)
+  DRIFT5.R = (dr, parts) => {
+    if (S.turn <= 5) { dr.kp -= 1; dr.gold -= 1; dr.cul -= 1; parts.push("늦게 출발한 나라: 골품 귀족의 힘이 세고 살림과 문물이 모자람 (왕권 -1, 재정 -1, 문화 -1)"); }
+    else if (ownsTerr("sl_han")) { dr.def -= 2; dr.har -= 1; parts.push("한강을 빼앗긴 백제·고구려의 반격 (국방 -2, 화합 -1)"); }
+  };
+  // 우산국은 지증왕 때(512) 이사부가 이미 복속했어요 → 514년 신라는 처음부터 우산국을 가지고 시작해요
+  if (MAPS.R && !MAPS.R.start.includes("usan")) MAPS.R.start = MAPS.R.start.concat("usan");
+  { const u = POL.find((p) => p.id === "r_usan"); if (u) u.phase = () => !ownsTerr("usan"); }
   // ---------- 국방을 키우는 새 정책 2개 (핵심 정책보다는 약하게) ----------
   const KOR = Object.keys(SCEN).filter((k) => !"GHLMJWY".includes(k));
   const ANC = ["P", "Q", "R", "B", "D", "W"];
