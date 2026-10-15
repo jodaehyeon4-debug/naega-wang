@@ -6530,7 +6530,7 @@ button.trcard:hover { transform: translateY(-2px); }
         <div class="axes">${AX.map((x, i) => `<div class="axis"><span class="l"><b class="${a[i] >= 0 ? "on" : ""}">${x[0]}</b> ${x[1]}</span><span class="track"><span class="dot" style="left:${50 - a[i] * 50}%"></span></span><span><b class="${a[i] < 0 ? "on" : ""}">${x[2]}</b> ${x[3]}</span></div>`).join("")}</div>
         <p class="sub">힘·화: 왕의 힘을 키웠나, 신하와 함께했나 / 칼·붓: 군사를 키웠나, 학문을 키웠나 / 민·법: 백성을 먼저 챙겼나, 나라의 제도를 먼저 세웠나 / 빠·차: 큰 개혁을 앞쪽 시기에 몰아서 했나, 차근차근 했나</p></div>
     </section>
-    <section class="panel" id="kingPanel"><div class="row" style="justify-content:space-between"><p class="sub">${m.bad ? "역사 속에서 나와 닮은 '아쉬운 왕' — 같은 실수를 되풀이하지 않으려면?" : "역사 속에서 나와 가장 닮은 왕"}</p><button type="button" class="btn small" id="btnReplay">공개 장면 다시 보기</button></div>
+    <section class="panel" id="kingPanel"><div class="row" style="justify-content:space-between"><p class="sub">${m.bad ? "역사 속에서 나와 닮은 '아쉬운 왕'" : "역사 속에서 나와 가장 닮은 왕"}</p><button type="button" class="btn small" id="btnReplay">공개 장면 다시 보기</button></div>
       <div class="kingcard"><div class="kport">${portrait(top.k)}</div><div style="display:grid;gap:6px;min-width:0;align-content:start"><span class="pct">${m.pct}%</span><h2>${esc(top.k.era)} ${esc(top.k.n)}</h2><p>${esc(top.k.bio)}</p>${top.k.lesson ? `<p class="today"><b>배울 점</b> ${esc(top.k.lesson)}</p>` : ""}
         <p class="sub">같은 정책: ${top.same.length ? top.same.map((x) => esc(sigName(x))).join(", ") : "없음 — 다스림의 방향이 닮았어요"}</p></div></div>
       ${m.specials.map((sp) => `<div class="warnbox kingcard small"><div class="kport">${portrait(sp, "dim")}</div><div><b>그리고 역사 기록으로는… ${esc(sp.era)} ${esc(sp.n)}</b><p>${esc(sp.bio)}</p></div></div>`).join("")}
