@@ -208,11 +208,12 @@
   for (const [k, ids] of Object.entries(ERA_HIDE)) if (SCEN[k]) SCEN[k].hide = [...new Set([...(SCEN[k].hide || []), ...ids])];
 
   let ERA_BASE = null;
-  const eraTxt = (id) => { const e = ERA_OF(); if (!e) return null; const a = ERA_TXT[e] && ERA_TXT[e][id], b = ERA_TXT[S.scen] && ERA_TXT[S.scen][id]; return a || b ? Object.assign({}, a, b) : null; };
+  // 조금만 더(v2_ext.js)에서는 새 시대의 이름이 맨 위에 덮여요
+  const eraTxt = (id) => { const x = extTxt(id), e = ERA_OF(); if (!e) return x; const a = ERA_TXT[e] && ERA_TXT[e][id], b = ERA_TXT[S.scen] && ERA_TXT[S.scen][id]; return a || b || x ? Object.assign({}, a, b, x) : null; };
   function eraApply() {
     if (!ERA_BASE) {
       ERA_BASE = {};
-      const ids = new Set(Object.values(ERA_TXT).flatMap((o) => Object.keys(o)));
+      const ids = new Set([...Object.values(ERA_TXT).flatMap((o) => Object.keys(o)), ...extIds()]);
       for (const id of ids) {
         const p = P[id]; if (!p) continue;
         ERA_BASE[id] = { name: p.name, sub: p.sub, kings: p.kings, note: Object.getOwnPropertyDescriptor(p, "note") };
@@ -278,7 +279,7 @@
     U: ["scholars", "hangeul", "science", "survey"], V: ["tangpyeong", "military_tax"], E: ["e_hun", "e_navy"], F: ["daedong"], K: ["daedong", "relief", "kjinhyul"],
     J: ["survey", "jarmy", "jnews", "jdebt", "jschool", "jmilitia", "jgov", "jcorps", "jbase", "jword", "jedu", "jbuy"],
   };
-  const isCore = (p) => !!(CORE[S.scen] && CORE[S.scen].includes(p.id));
+  const isCore = (p) => { const L = extCore() || CORE[S.scen]; return !!(L && L.includes(p.id)); };
   // 핵심 정책은 좋은 효과는 크게(×1.4), 나쁜 효과는 작게(×0.6) 나타나요.
   const coreScale = (d) => { const o = {}; for (const [k, v] of Object.entries(d || {})) o[k] = v > 0 ? Math.round(v * 1.4) : Math.round(v * 0.6); return o; };
   const CORE_BASE = {};

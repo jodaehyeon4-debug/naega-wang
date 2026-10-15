@@ -2,7 +2,7 @@
   // 기본 게임은 10시기. 끝난 뒤 원하면 다음 왕이 나라를 물려받아 11~20시기를 다스려요.
   // 확장에서는 국정 힘 +1, '만약에?' 성공 확률이 올라가고, 판타지 사건과 선왕의 실수를 바로잡는 선택지가 나와요.
   const EXT = () => !!(S && S.ext);
-  const extEra = (t) => `다음 왕 재위 ${(t - 10) * 3 - 2}~${(t - 10) * 3}년`;
+  const extEra = (t) => `${extLabel() ? extLabel() + " · " : ""}다음 왕 재위 ${(t - 10) * 3 - 2}~${(t - 10) * 3}년`;
   const weakKey = () => ST.map((x) => x.k).sort((a, b) => S.st[a] - S.st[b])[0];
   const weak2 = () => ST.map((x) => x.k).sort((a, b) => S.st[a] - S.st[b])[1];
   const strongKey = () => ST.map((x) => x.k).sort((a, b) => S.st[b] - S.st[a])[0];

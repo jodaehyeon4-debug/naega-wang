@@ -133,7 +133,7 @@
     if (DRIFT5[S.scen]) DRIFT5[S.scen](drift, parts, L);
     if (has("school")) { drift.cul = (drift.cul || 0) + 1; parts.push("나라 학교에서 인재가 자람 (문화 +1)"); }
     watchDrift(drift, parts); treasureDrift(drift, parts);
-    if (S.ext && S.turn > 10) { drift.def -= 1; drift.ppl -= 1; drift.har -= 1; parts.push("오래된 나라의 피로 (국방·민심·화합 -1)"); }
+    if (S.ext && S.turn > 10) { drift.def -= 2; drift.ppl -= 1; drift.har -= 2; drift.gold -= 2; parts.push("오래된 나라의 피로 (국방 -2, 민심 -1, 화합 -2)", "커진 나라를 꾸리는 비용 (재정 -2)"); }
     if (S.flags.debt) { drift.gold -= 2; parts.push("빌린 돈의 이자 -2"); }
     if (S.scen === "E" && S.turn <= 5) {
       const strong = S.st.def >= 55;
