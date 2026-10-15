@@ -161,7 +161,7 @@
       ${O ? `<p class="sub">${esc(S.overAt.where)} ${esc(jo(SN[S.over], "이", "가"))} 0이 되었어요.</p><div class="histbox"><b>역사 속에서 실제로 있었던 일</b><p>${esc(O.hist)}</p></div>` : ""}
       <div class="stats">${ST.map((x) => statBox(x, S.st[x.k])).join("")}</div>
       <div class="row exportrow"><button type="button" class="btn go" id="btnCard">결과 카드 사진으로 저장</button><button type="button" class="btn" id="btnPdf">실록까지 PDF로 저장</button><span class="sub">사진(PNG)은 결과 카드 한 장, PDF는 결과 카드·실록·생각 적기 쪽이 함께 들어 있어요.</span></div></section>
-    ${!S.over && !S.ext && !"GHLMY".includes(S.scen) && !S.flags.lost ? `<section class="panel morebox"><h2>조금만 더?</h2><p>아쉬운가요? 왕자가 나라를 물려받아 <b>다음 시대 30년</b>을 더 다스릴 수 있어요. 지금 능력치와 땅을 이어받고 국정 힘이 하나 늘어요. 정책 카드가 <b>새 시대에 맞게 모두 바뀌고</b>, 성공하기는 어렵지만 이루면 새로운 역사가 열리는 <b>'역사 판타지'</b> 도전이 기다려요. 대신 커진 나라를 꾸리기는 더 힘들고, 등급은 두 왕의 점수를 평균해 매겨요. 점수보다 '만약 그때 우리가…'를 즐기는 모드예요.</p><button type="button" class="btn go" id="btnMore">다음 왕으로 10시기 더 다스리기</button></section>` : ""}${S.ext ? `<p class="sub">${esc(S.ext.king1)} 왕(${esc(S.ext.tier1 || "")}등급 ${S.ext.score1 ?? ""}점)에 이어 ${esc(KING())}까지, 두 왕의 60년 기록이에요.</p>` : ""}
+    ${!S.over && !S.ext && !S.flags.lost ? `<section class="panel morebox"><h2>조금만 더?</h2><p>아쉬운가요? 왕자가 나라를 물려받아 <b>다음 시대 30년</b>을 더 다스릴 수 있어요. 지금 능력치와 땅을 이어받고 국정 힘이 하나 늘어요. 정책 카드가 <b>새 시대에 맞게 모두 바뀌고</b>, 성공하기는 어렵지만 이루면 새로운 역사가 열리는 <b>'역사 판타지'</b> 도전이 기다려요. 대신 커진 나라를 꾸리기는 더 힘들고, 등급은 두 왕의 점수를 평균해 매겨요. 점수보다 '만약 그때 우리가…'를 즐기는 모드예요.</p><button type="button" class="btn go" id="btnMore">다음 왕으로 10시기 더 다스리기</button></section>` : ""}${S.ext ? `<p class="sub">${esc(S.ext.king1)} 왕(${esc(S.ext.tier1 || "")}등급 ${S.ext.score1 ?? ""}점)에 이어 ${esc(KING())}까지, 두 왕의 60년 기록이에요.</p>` : ""}
     ${tierPanel()}
     ${featPanel()}
     ${treasurePanel()}

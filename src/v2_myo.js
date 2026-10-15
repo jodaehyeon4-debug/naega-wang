@@ -108,7 +108,7 @@
   }
   { const rec0 = record; record = function (f) {
     const r = rec0(f);
-    if (WORLD() || !r.myo) return r;
+    if (WORLD() || S.scen === "Y" || !r.myo) return r; // 촉한은 중국 황제라 한국 왕의 묘호 예시를 붙이지 않아요
     const m = r.myo.match(/^(.)(조|종)\(/);
     if (!m || r.myo.startsWith("려종") || r.myo.startsWith("애종")) return r;
     const e = pickMyo(r, f, m[2] === "조"), jo = e.jo;

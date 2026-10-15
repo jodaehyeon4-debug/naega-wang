@@ -93,7 +93,7 @@
       const same = k.sig.filter((x) => mine.has(x));
       const ov = same.length / (k.sig.length + 1);
       // 세계사 나라에서는 세계의 왕, 그 나라와 이어진 왕이 조금 더 잘 나와요
-      const bonus = (WORLD() && k.world ? 0.05 : 0) + ([].concat(k.home || []).includes(S.scen) ? 0.05 : 0) + (sameEra(k) ? 0.08 : 0);
+      const bonus = ((WORLD() || S.scen === "Y") && k.world ? 0.1 : 0) + ([].concat(k.home || []).includes(S.scen) ? 0.05 : 0) + (sameEra(k) ? 0.08 : 0);
       return { k, score: 0.55 * axisSim + 0.45 * ov + bonus, same };
     }).sort((x, y) => y.score - x.score);
   }

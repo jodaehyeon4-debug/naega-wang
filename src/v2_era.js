@@ -1,7 +1,7 @@
   // ================= 시대에 맞는 정책 이름과 이야기 =================
   // 같은 정책이라도 나라와 시대에 따라 그 시대의 제도·인물·말로 바꾸어 보여 줘요. 효과(숫자)는 그대로예요.
   // 찾는 순서: 시나리오 고유(P, Q, …) → 시대(sam, gor, jo1, jo2, dh, dh2)
-  const ERA_OF = () => ({ W: "sam", P: "sam", Q: "sam", R: "sam", T: "gor", U: "jo1", E: "jo2", F: "jo2", K: "jo2", V: "jo2", J: S.flags && S.flags.lost ? "dh2" : "dh" })[S.scen] || null;
+  const ERA_OF = () => ({ W: "sam", P: "sam", Q: "sam", R: "sam", T: "gor", U: "jo1", E: "jo2", F: "jo2", K: "jo2", V: "jo2", J: S.flags && S.flags.lost ? "dh2" : "dh", G: "wld", H: "wld", L: "wld", M: "wld", Y: "wld" })[S.scen] || null;
   const hasAny = (...ids) => ids.some(has);
   const ERA_TXT = {
     // ---------- 삼국 (고구려·백제·신라) ----------
