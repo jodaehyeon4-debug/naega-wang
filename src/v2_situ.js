@@ -219,6 +219,24 @@
       { k: "hungry", hint: "흉년이라 백성들이 작은 일에도 불안해해요.", m: { 1: { add: { ppl: 3 } } } },
     ],
   });
+  // ---------- 고정 칸이던 5시기 '외적의 큰 침입'과 10시기 '다음 왕 정하기'에도 형편을 ----------
+  // pow: 이 선택을 할 때만 우리 힘에 더해요(싸움 형편). hint: 선택지 밑 설명에 덧붙여요.
+  Object.assign(SITU, {
+    invasion: [
+      { k: "supply", hint: "척후병이 '적의 군량 수레가 끊겨 군사들이 굶고 있다'고 알려 왔어요.", m: { 1: { pow: 10, hint: "굶주린 적은 오래 버티지 못해요: 성에서는 우리 힘 +10 더.", text: "군량이 떨어진 적이 먼저 물러갔어요." }, 2: { add: { kp: -4 }, text: "'조금만 버티면 되었는데' 하는 탄식이 나왔어요." } } },
+      { k: "siege", hint: "적이 성벽을 부수는 투석기와 충차를 잔뜩 끌고 왔대요.", m: { 1: { pow: -12, hint: "적의 공성 무기 때문에 성에서는 우리 힘 -12." }, 0: { pow: 6, hint: "무거운 공성 무기를 끈 적은 들판에서 느려요: 우리 힘 +6." } } },
+      { k: "river", hint: "적의 대군이 큰 강을 건너는 중이래요. 강을 반쯤 건넜을 때가 기회라는 장수도 있어요.", m: { 0: { pow: 12, hint: "강을 건너는 적을 치면 우리 힘 +12 (살수 대첩처럼).", text: "강을 반쯤 건넌 적을 들이쳐 크게 무찔렀어요." } } },
+      { k: "letter", hint: "적 장수가 '재물만 주면 돌아가겠다'는 편지를 보내왔어요.", m: { 2: { add: { gold: 10, kp: 5, ppl: 2 }, text: "생각보다 적은 재물로 전쟁을 끝냈어요." }, 0: { pow: -4, hint: "싸울 생각이 적은 적이지만, 싸움을 걸면 끝까지 덤벼요: 우리 힘 -4." } } },
+    ],
+    heir: [
+      { k: "weak", hint: "맏아들이 몸이 약하고 공부를 싫어한다는 걱정이 많아요.", m: { 0: { add: { kp: -4, cul: -3, har: -2 }, text: "신하들 사이에 '약한 임금이 될까' 걱정하는 소리가 커졌어요.", ok: false }, 1: { add: { har: 5, kp: 3 }, text: "신하들도 어진 왕자를 반겼어요." } } },
+      { k: "faction", hint: "왕자들의 외가 사이에 벌써 편 가르기가 시작됐대요.", m: { 0: { add: { har: 4 }, text: "전통대로 맏아들을 세우자 편 가르기가 멎었어요." }, 1: { add: { har: -7, kp: -2 }, text: "맏아들의 외가가 크게 반발해 왕자들 사이가 틀어졌어요(왕자의 난처럼).", ok: false } } },
+      { k: "newage", hint: "바다 건너 새 학문과 기술이 밀려오는 때래요.", m: { 2: { add: { cul: 4, gold: 3 }, text: "새 학문이 마침 필요한 때였어요." }, 0: { add: { cul: -2 }, text: "옛 방식만 아는 세자라는 걱정도 있었어요." } } },
+      { k: "regency", hint: "왕이 많이 늙어 세자가 곧바로 나랏일을 대신 맡아야 해요(대리청정).", m: { 3: { add: { har: -5 }, text: "대리청정을 하는 세자를 엄하게 꾸짖자 세자와 신하들 모두 지쳤어요.", ok: false }, 1: { add: { kp: 4, har: 4 }, text: "어진 세자가 대리청정을 훌륭히 해냈어요." } } },
+    ],
+  });
+  const POWADJ = { v: 0 };
+  { const mp = myPow; myPow = function () { return mp() + (POWADJ.v || 0); }; }
   { const b0 = EV.disaster.base; EV.disaster.base = () => { const d = b0(); if (S.flags.granary) d.ppl += 3; return d; }; }
   const DIS = ["disaster", "dis_locust", "dis_cold", "dis_fire", "dis_typhoon", "dis_cattle"];
   const DIS_WORLD = ["disaster", "dis_locust", "dis_cold", "dis_cattle"];
@@ -254,10 +272,11 @@
   function situChoice(c, m) {
     const o = Object.assign({}, c);
     if (m.p != null && c.risk) o.risk = Math.max(0.05, Math.min(0.95, m.p));
+    if (m.hint) o.hint = (c.hint ? c.hint + " " : "") + m.hint;
     o.run = () => {
       let r;
       if (m.rep) r = R({ ...m.rep.d }, m.rep.text, [0, 0, 0], m.rep.ok === false ? { ok: false } : {});
-      else { ROLLP.v = m.p != null && c.risk ? o.risk : null; try { r = c.run(); } finally { ROLLP.v = null; } r.d = { ...r.d }; }
+      else { ROLLP.v = m.p != null && c.risk ? o.risk : null; POWADJ.v = m.pow || 0; try { r = c.run(); } finally { ROLLP.v = null; POWADJ.v = 0; } r.d = { ...r.d }; }
       if (m.add) for (const [k, v] of Object.entries(m.add)) r.d[k] = (r.d[k] || 0) + v;
       if (m.inc) addInc(m.inc);
       if (m.go) m.go();
