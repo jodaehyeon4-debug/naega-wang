@@ -4350,7 +4350,7 @@ button.trcard:hover { transform: translateY(-2px); }
 
   // ================= 걸작과 보물: 나라의 문화유산 만들기 =================
   // '걸작 만들기' 정책을 펼치면 보물 상자가 열리고, 그 나라의 실제 문화유산 하나가 완성돼요.
-  // 등급: 보통(문화 +8) · 희귀(+12) · 전설(+18, 민심·화합도 올라요). 걸작마다 매 시기 문화 +1 (최대 +3).
+  // 등급: 보통(문화 +5) · 희귀(+8) · 전설(+12, 민심·화합도 올라요). 걸작마다 매 시기 문화 +1 (최대 +3).
   const TR = {
     go: [["광개토대왕릉비", "비석", "414년, 장수왕이 아버지의 업적을 새긴 6m가 넘는 비석"], ["무용총 수렵도", "벽화", "말 탄 사람들이 활로 사냥하는 고분 벽화"], ["강서대묘 사신도", "벽화", "청룡·백호·주작·현무를 그린 고분 벽화"], ["연가7년명 금동여래입상", "불상", "고구려에서 만든 글씨가 새겨진 금동 불상"], ["『유기』 100권", "역사서", "고구려 초기에 쓴 역사책"], ["안악 3호분 행렬도", "벽화", "250여 명이 줄지어 가는 고분 벽화"]],
     bj: [["백제 금동대향로", "공예", "부여 능산리에서 나온, 신선 세계를 새긴 향로"], ["서산 마애여래삼존상", "불상", "'백제의 미소'라 불리는 바위 부처"], ["칠지도", "공예", "가지가 일곱 개 달린 쇠칼, 왜에 보낸 선물"], ["무령왕릉 금제 관장식", "공예", "불꽃 모양의 금 관장식"], ["정림사지 오층 석탑", "탑", "부여에 서 있는 백제의 석탑"], ["미륵사지 석탑", "탑", "익산에 있는 우리나라에서 가장 오래되고 큰 석탑"], ["『서기』", "역사서", "근초고왕 때 고흥이 쓴 역사책"]],
@@ -4367,7 +4367,8 @@ button.trcard:hover { transform: translateY(-2px); }
   };
   const TR_OF = { P: "go", Q: "bj", W: "bj", R: "sl", T: "gr", U: "js1", E: "js2", F: "js2", K: "js2", V: "js2", J: "dh", A: "gr", B: "sl", C: "js2", D: "go", G: "mg", H: "fr", L: "na", M: "en", Y: "shu" };
   const trList = () => TR[TR_OF[S.scen]] || TR.gr;
-  const TR_RANK = [{ r: "전설", c: "legend", d: { cul: 18, ppl: 4, har: 4 } }, { r: "희귀", c: "rare", d: { cul: 12, har: 2 } }, { r: "보통", c: "common", d: { cul: 8 } }];
+  // 2026-10-15: 문화가 100으로 끝나는 일이 잦아 걸작의 보상을 예전(문화 18/12/8)의 약 65%로 줄였어요
+  const TR_RANK = [{ r: "전설", c: "legend", d: { cul: 12, ppl: 3, har: 3 } }, { r: "희귀", c: "rare", d: { cul: 8, har: 1 } }, { r: "보통", c: "common", d: { cul: 5 } }];
   function makeTreasure(boost) {
     S.treasures = S.treasures || [];
     const left = trList().filter((x) => !S.treasures.some((t) => t.n === x[0]));
@@ -4381,7 +4382,7 @@ button.trcard:hover { transform: translateY(-2px); }
   }
   const trCount = () => (S.treasures || []).length;
   PP({ id: "masterwork", cat: "cul", name: "나라의 걸작 만들기", get sub() { return S && S.scen ? trList().slice(0, 3).map((x) => x[0]).join(" · ") + " …" : "문화유산"; }, kings: "그 시대의 장인과 학자들", cost: 2, repeat: 2, scen: Object.keys(SCEN), phase: () => trCount() < trList().length,
-    eff: { cul: 8, gold: -4 }, tags: [0, -0.8, 0.2],
+    eff: { cul: 5, gold: -4 }, tags: [0, -0.8, 0.2],
     get note() { const n = S && S.treasures ? S.treasures.length : 0; return `보물 상자를 열어 이 나라의 실제 문화유산 하나를 완성해요(${n}/${trList().length}). 보통·희귀·전설 중 무엇이 나올지 몰라요! 걸작마다 매 시기 문화 +1. 학자를 모았거나 문화 60 이상이면 전설이 더 잘 나와요. 2시기마다 다시 할 수 있어요.`; },
     run() {
       const m = makeTreasure(0);
@@ -4579,7 +4580,7 @@ button.trcard:hover { transform: translateY(-2px); }
   // 사진 출처: 한국사 걸작 사진은 국가유산청(공공누리 제1유형)
   const TR_KR = new Set(["go", "bj", "sl", "gr", "js1", "js2", "dh"]);
   function trCredit(t) { const id = t.img || trImgId(t.n); return id && !TR_NOIMG.has(id) && TR_KR.has(id.split("_")[0]) ? "사진: 국가유산청" : ""; }
-  const TR_EFF = { legend: "문화 +18 · 민심 +4 · 화합 +4", rare: "문화 +12 · 화합 +2", common: "문화 +8" };
+  const TR_EFF = { legend: "문화 +12 · 민심 +3 · 화합 +3", rare: "문화 +8 · 화합 +1", common: "문화 +5" };
   function trCardHTML(t) {
     const i = trInfo(t.n), cr = trCredit(t);
     return `<div class="trinfo ${t.c}">

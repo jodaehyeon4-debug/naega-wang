@@ -97,7 +97,7 @@
   // 사진 출처: 한국사 걸작 사진은 국가유산청(공공누리 제1유형)
   const TR_KR = new Set(["go", "bj", "sl", "gr", "js1", "js2", "dh"]);
   function trCredit(t) { const id = t.img || trImgId(t.n); return id && !TR_NOIMG.has(id) && TR_KR.has(id.split("_")[0]) ? "사진: 국가유산청" : ""; }
-  const TR_EFF = { legend: "문화 +18 · 민심 +4 · 화합 +4", rare: "문화 +12 · 화합 +2", common: "문화 +8" };
+  const TR_EFF = { legend: "문화 +12 · 민심 +3 · 화합 +3", rare: "문화 +8 · 화합 +1", common: "문화 +5" };
   function trCardHTML(t) {
     const i = trInfo(t.n), cr = trCredit(t);
     return `<div class="trinfo ${t.c}">
