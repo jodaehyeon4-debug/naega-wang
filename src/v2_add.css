@@ -417,3 +417,8 @@ button.trcard:hover { transform: translateY(-2px); }
 /* 반 별(★4.5) */
 .stars .half { position: relative; display: inline-block; color: var(--line); font-weight: inherit; }
 .stars .half::before { content: "★"; position: absolute; left: 0; top: 0; width: 50%; overflow: hidden; color: var(--gold); }
+.myox { display: grid; gap: 4px; margin-top: 8px; padding: 10px 12px; border-left: 3px solid var(--gold); background: var(--paper); border-radius: 0 8px 8px 0; text-align: left; }
+.myox > b { font-size: 17px; }
+.myox p { margin: 0; line-height: 1.6; }
+.myox blockquote { margin: 4px 0 0; padding: 0; font-style: italic; opacity: .85; line-height: 1.55; }
+.myox cite { display: block; font-size: 12.5px; font-style: normal; opacity: .75; margin-top: 2px; }

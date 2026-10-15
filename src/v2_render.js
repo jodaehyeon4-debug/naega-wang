@@ -168,7 +168,7 @@
     ${hasMap() && S.terr0 ? `<section class="panel"><h2>${esc(NATION())}의 땅은 어떻게 바뀌었을까?</h2><div class="mapduo"><figure>${mapSVG({ terr: S.terr0 })}<figcaption>처음 (${esc(era(1))})</figcaption></figure><figure>${mapSVG({ terr: S.terr, gain: S.terr.filter((x) => !S.terr0.includes(x)) })}<figcaption>${S.over ? "무너질 때" : "다스림을 마칠 때"}${S.terr.length > S.terr0.length ? ` · 새로 얻은 땅 ${S.terr.length - S.terr0.length}곳` : ""}</figcaption></figure></div><p class="sub">지도의 경계는 교과서 지도를 바탕으로 한 대략적인 모습이에요.</p></section>` : ""}
     <section class="two">
       <div class="record ${r.kind}"><p class="sub">후대의 역사책은 이렇게 적었어요</p><span class="stamp">${esc(r.stamp)}</span>
-        <p class="myo"><span class="sub">${WORLD() ? "역사책이 붙인 별명" : "역사책이 붙인 이름"}</span><b>${esc(r.myo)}</b><span class="sub">${esc(r.myoD)}</span></p>
+        <p class="myo"><span class="sub">${WORLD() ? "역사책이 붙인 별명" : "역사책이 붙인 이름"}</span><b>${esc(r.myo)}</b><span class="sub">${esc(r.myoD)}</span></p>${myoXHTML(r)}
         <h2>${esc(r.t)}</h2><p>${esc(r.l)}</p>
         ${ach.length ? `<div class="achs" aria-label="업적">${ach.map(([h, n]) => `<span class="ach"><i>${h}</i>${esc(n)}</span>`).join("")}</div>` : ""}
         ${r.today ? `<p class="today"><b>${O ? "이렇게 했다면" : "다시 생각해 보기"}</b> ${esc(r.today)}</p>` : ""}

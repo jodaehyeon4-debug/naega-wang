@@ -73,13 +73,17 @@
     return a.map((x) => Math.max(-1, Math.min(1, x)));
   }
   function mineSet() {
-    const m = new Set(S.done.filter((d) => d.ok !== false).map((d) => d.id));
+    // 처음부터 있던 제도(by: "start")는 이번 판에 내가 한 일이 아니므로 빼요
+    const m = new Set(S.done.filter((d) => d.ok !== false && d.by !== "start").map((d) => d.id));
     for (const k in S.flags) if (S.flags[k]) m.add("f:" + k);
     if (S.flags.conquered) m.add("conquest");
     return m;
   }
   // 한국사 나라에서는 한국의 왕만, 세계사 나라(촉한 포함)에서는 모든 왕이 후보예요
   const kingPool = (k) => WORLD() || S.scen === "Y" || !k.world;
+  // 한국사 나라에서는 같은 시대의 왕이 조금 더 잘 나와요(고려를 했는데 고구려 왕만 나오지 않게)
+  const KING_ERA = { P: ["고구려"], Q: ["백제"], W: ["백제"], R: ["신라", "통일 신라"], T: ["고려"], A: ["고려"], U: ["조선"], E: ["조선"], F: ["조선"], K: ["조선"], V: ["조선"], C: ["조선"], J: ["조선", "조선 · 대한 제국"] };
+  const sameEra = (k) => !WORLD() && (KING_ERA[S.scen] || []).includes(k.era);
   function matchKings(a) {
     const mine = mineSet();
     // 한국사 나라에서는 한국의 왕만 닮은 왕 후보가 돼요
@@ -89,7 +93,7 @@
       const same = k.sig.filter((x) => mine.has(x));
       const ov = same.length / (k.sig.length + 1);
       // 세계사 나라에서는 세계의 왕, 그 나라와 이어진 왕이 조금 더 잘 나와요
-      const bonus = (WORLD() && k.world ? 0.05 : 0) + ([].concat(k.home || []).includes(S.scen) ? 0.05 : 0);
+      const bonus = (WORLD() && k.world ? 0.05 : 0) + ([].concat(k.home || []).includes(S.scen) ? 0.05 : 0) + (sameEra(k) ? 0.08 : 0);
       return { k, score: 0.55 * axisSim + 0.45 * ov + bonus, same };
     }).sort((x, y) => y.score - x.score);
   }

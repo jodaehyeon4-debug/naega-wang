@@ -624,6 +624,11 @@ button.trcard:hover { transform: translateY(-2px); }
 /* 반 별(★4.5) */
 .stars .half { position: relative; display: inline-block; color: var(--line); font-weight: inherit; }
 .stars .half::before { content: "★"; position: absolute; left: 0; top: 0; width: 50%; overflow: hidden; color: var(--gold); }
+.myox { display: grid; gap: 4px; margin-top: 8px; padding: 10px 12px; border-left: 3px solid var(--gold); background: var(--paper); border-radius: 0 8px 8px 0; text-align: left; }
+.myox > b { font-size: 17px; }
+.myox p { margin: 0; line-height: 1.6; }
+.myox blockquote { margin: 4px 0 0; padding: 0; font-style: italic; opacity: .85; line-height: 1.55; }
+.myox cite { display: block; font-size: 12.5px; font-style: normal; opacity: .75; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -1955,13 +1960,17 @@ button.trcard:hover { transform: translateY(-2px); }
     return a.map((x) => Math.max(-1, Math.min(1, x)));
   }
   function mineSet() {
-    const m = new Set(S.done.filter((d) => d.ok !== false).map((d) => d.id));
+    // 처음부터 있던 제도(by: "start")는 이번 판에 내가 한 일이 아니므로 빼요
+    const m = new Set(S.done.filter((d) => d.ok !== false && d.by !== "start").map((d) => d.id));
     for (const k in S.flags) if (S.flags[k]) m.add("f:" + k);
     if (S.flags.conquered) m.add("conquest");
     return m;
   }
   // 한국사 나라에서는 한국의 왕만, 세계사 나라(촉한 포함)에서는 모든 왕이 후보예요
   const kingPool = (k) => WORLD() || S.scen === "Y" || !k.world;
+  // 한국사 나라에서는 같은 시대의 왕이 조금 더 잘 나와요(고려를 했는데 고구려 왕만 나오지 않게)
+  const KING_ERA = { P: ["고구려"], Q: ["백제"], W: ["백제"], R: ["신라", "통일 신라"], T: ["고려"], A: ["고려"], U: ["조선"], E: ["조선"], F: ["조선"], K: ["조선"], V: ["조선"], C: ["조선"], J: ["조선", "조선 · 대한 제국"] };
+  const sameEra = (k) => !WORLD() && (KING_ERA[S.scen] || []).includes(k.era);
   function matchKings(a) {
     const mine = mineSet();
     // 한국사 나라에서는 한국의 왕만 닮은 왕 후보가 돼요
@@ -1971,7 +1980,7 @@ button.trcard:hover { transform: translateY(-2px); }
       const same = k.sig.filter((x) => mine.has(x));
       const ov = same.length / (k.sig.length + 1);
       // 세계사 나라에서는 세계의 왕, 그 나라와 이어진 왕이 조금 더 잘 나와요
-      const bonus = (WORLD() && k.world ? 0.05 : 0) + ([].concat(k.home || []).includes(S.scen) ? 0.05 : 0);
+      const bonus = (WORLD() && k.world ? 0.05 : 0) + ([].concat(k.home || []).includes(S.scen) ? 0.05 : 0) + (sameEra(k) ? 0.08 : 0);
       return { k, score: 0.55 * axisSim + 0.45 * ov + bonus, same };
     }).sort((x, y) => y.score - x.score);
   }
@@ -5721,6 +5730,132 @@ button.trcard:hover { transform: translateY(-2px); }
     return o;
   }
 
+  // ================= 묘호 30가지와 '같은 묘호를 가진 왕' (2026-10-15) =================
+  // 실제 고려·조선(대한 제국) 왕이 받은 묘호만 써요. 다스린 모습(능력치·정책·사건)에 가장 가까운 묘호를 골라,
+  // 같은 묘호를 가진 실제 왕의 이야기를 문명6 백과사전처럼 보여 줘요.
+  // k: 능력치 닮음 가중치 · p: 이번 판에 직접 편 정책 · x(c): 그 밖의 조건 점수 · sc: 그 왕의 시대 나라 · alt: 나라별로 다른 예시 왕
+  const MYO_LIST = [
+    // ---------- '조' : 나라를 새로 일으키거나 큰 위기를 이겨 낸 왕 ----------
+    { m: "태조", hz: "太祖", jo: true, mean: "나라를 처음 크게 일으킨", k: { kp: 0.8, har: 0.8 }, p: ["marriage", "hostage"], x: (c) => (c.f.big ? 1 : 0), sc: "TA",
+      ex: "고려 태조 왕건", y: "918~943", t: "궁예를 몰아내고 고려를 세운 뒤, 힘이 다한 신라를 평화롭게 받아들이고 후백제를 무너뜨려 후삼국을 하나로 묶었어요. 지방 호족의 딸 29명을 부인으로 맞을 만큼 혼인으로 손을 잡았고, 나라를 잃은 발해 사람들까지 품었어요. 세상을 떠나기 전에는 뒤를 이을 왕들에게 '훈요 10조'를 남겼어요.",
+      alt: { UEFKVJ: { ex: "조선 태조 이성계", y: "1392~1398", t: "왜구와 홍건적을 물리친 이름난 장수였어요. 위화도에서 군대를 돌려 권력을 잡고, 새 나라 조선을 세워 도읍을 한양으로 옮겼어요. 경복궁과 종묘, 한양 도성이 모두 이때 세워졌어요. 오늘날 전하는 태조 어진은 몇 안 되는 진짜 조선 왕의 초상화예요." } } },
+    { m: "세조", hz: "世祖", jo: true, mean: "왕의 힘으로 나라의 틀을 다시 짠", k: { kp: 1.3 }, p: ["purge", "local", "law", "disband"], x: (c) => (c.tyr >= 1 ? 1 : 0), sc: "U",
+      ex: "조선 세조", y: "1455~1468", t: "조카 단종의 왕위를 빼앗아 오른 왕이라, 지금까지도 평가가 크게 엇갈려요. 하지만 왕이 6조를 직접 다스리게 하고, 나라의 기본 법전인 『경국대전』을 만들기 시작했으며, 직전법으로 나라 살림을 다잡았어요. 강한 왕권이 나라에 무엇을 주고 무엇을 앗아 가는지 생각하게 하는 왕이에요." },
+    { m: "선조", hz: "宣祖", jo: true, mean: "큰 전쟁을 끝내 이겨 낸", k: { def: 0.8 }, p: ["fortress", "mil_tunjeon"], x: (c) => (c.f.warWon || c.f.bigWin ? 1 : 0), sc: "EF",
+      ex: "조선 선조", y: "1567~1608", t: "이황·이이 같은 큰 학자들이 활약한 학문의 시대에 왕이 되었어요. 그러나 1592년 임진왜란이 터지자 의주까지 피란해야 했어요. 이순신의 수군과 곳곳에서 일어난 의병, 명나라 원군의 힘을 모아 7년 전쟁을 끝내 이겨 냈어요.",
+      q: "지금 신에게는 아직 열두 척의 배가 남아 있습니다.", qs: "이순신이 선조에게 올린 글(1597)" },
+    { m: "인조", hz: "仁祖", jo: true, mean: "어진 마음으로 어려운 때를 견딘", k: { ppl: 0.4 }, p: [], x: (c) => (c.kind === "hard" ? 2 : 0) + (c.lowMin <= 20 ? 1.5 : 0), sc: "F",
+      ex: "조선 인조", y: "1623~1649", t: "광해군을 몰아낸 반정으로 왕이 되었지만, 정묘호란과 병자호란을 잇달아 맞았어요. 남한산성에서 47일을 버티다 끝내 삼전도에서 청나라 황제에게 머리를 숙였어요. 그래도 나라는 이어졌고, 그 아픔은 다음 왕들이 나라를 다시 다지는 다짐이 되었어요." },
+    { m: "영조", hz: "英祖", jo: true, mean: "여러 신하를 고르게 품은", k: { har: 1.2, ppl: 0.6 }, p: ["tangpyeong", "military_tax", "har_council"], sc: "V",
+      ex: "조선 영조", y: "1724~1776", t: "52년, 조선의 왕 가운데 가장 오래 나라를 다스렸어요. 여러 붕당의 인재를 고르게 쓰는 탕평책을 펴고 성균관 앞에 탕평비를 세웠어요. 군포를 2필에서 1필로 줄인 균역법과 청계천의 흙을 퍼낸 준천으로 백성의 짐을 덜었어요.",
+      q: "두루 사랑하고 편을 가르지 않는 것은 군자의 공평한 마음이요, 편을 가르고 두루 사랑하지 않는 것은 소인의 사사로운 생각이다.", qs: "탕평비(1742)" },
+    { m: "정조", hz: "正祖", jo: true, mean: "바르게 다스려 새 시대를 꿈꾼", k: { cul: 1, kp: 0.7 }, p: ["scholars", "capital", "school"], sc: "V",
+      ex: "조선 정조", y: "1776~1800", t: "할아버지 영조의 탕평을 이어받고, 규장각을 세워 서얼 출신 학자까지 뽑아 썼어요. 정약용이 고안한 거중기를 써서 수원 화성을 쌓고, 새 도시를 꿈꾸었어요. 스스로를 온 세상 냇물을 비추는 달에 빗대어 불렀어요.",
+      q: "만천명월주인옹(萬川明月主人翁) — 온 냇물에 비친 밝은 달의 주인 늙은이", qs: "정조가 스스로 지은 호(1798)" },
+    { m: "순조", hz: "純祖", jo: true, mean: "순수하고 바르게 다스리려 한", k: { ppl: 0.5 }, p: [], x: (c) => (c.lowKey === "kp" ? 1 : 0),
+      ex: "조선 순조", y: "1800~1834", t: "열한 살에 왕이 되었고, 몇몇 가문이 권력을 쥐고 흔드는 세도 정치가 시작되었어요. 1811년에는 평안도 사람을 차별한다며 홍경래가 난을 일으켰어요. 정조가 꿈꾼 개혁이 이어지지 못한 아쉬운 시대예요." },
+    // ---------- '종' ----------
+    { m: "태종", hz: "太宗", mean: "나라의 기틀을 크게 다진", k: { kp: 1.2 }, p: ["purge", "disband", "rank"], x: (c) => (c.tyr >= 1 ? 1 : 0), sc: "U",
+      ex: "조선 태종 이방원", y: "1400~1418", t: "왕자의 난으로 형제들을 꺾고 왕위에 올랐어요. 공신들의 개인 군대를 없애고, 6조가 왕에게 바로 보고하게 하고, 호패법으로 백성의 수를 헤아려 왕의 힘을 단단히 세웠어요. 피로 다진 이 기틀 위에서 아들 세종의 태평성대가 꽃필 수 있었어요.",
+      q: "이런들 어떠하리 저런들 어떠하리, 만수산 드렁칡이 얽어진들 어떠하리.", qs: "이방원, 「하여가」",
+      alt: { PQRWB: { ex: "신라 태종 무열왕 김춘추", y: "654~661", t: "진골 출신으로 처음 왕이 된 사람이에요. 왕이 되기 전부터 고구려와 당나라를 직접 오가며 외교를 펼쳤고, 당과 손잡아 660년 백제를 무너뜨렸어요. 삼국 통일의 문을 연 왕으로, 신라 왕 가운데 유일하게 '태종'이라는 묘호를 받았어요." } } },
+    { m: "세종", hz: "世宗", mean: "온 세상을 고르게 이끈", k: { cul: 1, ppl: 1 }, p: ["hangeul", "science", "scholars", "survey"], x: (c) => (c.min >= 55 ? 3 : 0), sc: "U",
+      ex: "조선 세종", y: "1418~1450", t: "집현전에 젊은 학자들을 모으고, 백성이 쉽게 익힐 수 있는 글자 훈민정음을 만들었어요. 측우기와 자격루로 하늘의 이치를 재고, 새 세금 제도를 정하기 전에는 17만 명이 넘는 백성에게 뜻을 물었어요. 4군 6진으로 오늘날 압록강·두만강 국경을 만들었어요.",
+      q: "나라의 말이 중국과 달라 문자와 서로 통하지 아니하므로, 어리석은 백성이 말하고자 하는 바가 있어도 마침내 제 뜻을 펴지 못하는 사람이 많으니라.", qs: "『훈민정음』 언해본 서문" },
+    { m: "문종", hz: "文宗", mean: "학문과 문화를 빛낸", k: { cul: 1.1, gold: 0.4 }, p: ["school", "buddhism", "history", "trade"], x: (c) => (c.avg >= 58 && c.tyr === 0 ? 1 : 0), sc: "T",
+      ex: "고려 문종", y: "1046~1083", t: "고려가 가장 찬란했던 시절을 하나 꼽으라면 문종의 37년이에요. 관리의 녹봉과 토지 제도를 가다듬고, 끊겼던 송나라와 다시 오가며 새 문물을 받아들였어요. 최충의 사립 학교가 생겨날 만큼 학문이 일어났고, 왕자 의천은 승려가 되어 고려 불교를 새로 일으켰어요." },
+    { m: "성종", hz: "成宗", mean: "나라의 제도를 알차게 이룬", k: { gold: 0.9, kp: 0.4 }, p: ["local", "law", "school", "rank"], sc: "T",
+      ex: "고려 성종", y: "981~997", t: "최승로가 올린 시무 28조를 받아들여 유교로 나라를 다스리는 틀을 세웠어요. 전국 12목에 처음으로 지방관을 보내고, 국자감을 세워 인재를 길렀어요. 거란이 처음 쳐들어왔을 때는 서희의 담판으로 싸우지 않고 강동 6주를 얻었어요.",
+      q: "불교를 행하는 것은 몸을 닦는 근본이요, 유교를 행하는 것은 나라를 다스리는 근본입니다.", qs: "최승로, 「시무 28조」" },
+    { m: "광종", hz: "光宗", mean: "빛나는 개혁으로 왕권을 세운", k: { kp: 1 }, p: ["slaves", "exam", "purge"], sc: "T",
+      ex: "고려 광종", y: "949~975", t: "호족의 그늘 아래 왕위에 오른 광종은 조용히 때를 기다렸어요. 그리고 노비안검법으로 억울하게 노비가 된 사람을 풀어 주고, 과거제로 실력 있는 관리를 뽑아 호족의 힘을 단숨에 꺾었어요. 반대하는 공신은 가차 없이 숙청해, 개혁 군주와 두려운 군주라는 두 얼굴을 함께 지녔어요." },
+    { m: "현종", hz: "顯宗", mean: "어려움을 이기고 나라를 드러낸", k: { def: 0.8 }, p: ["fortress"], x: (c) => (c.lowMin <= 22 && c.avg >= 48 ? 3 : 0) + (c.f.warWon ? 1.5 : 0), sc: "TK",
+      ex: "고려 현종", y: "1009~1031", t: "왕이 되자마자 거란 40만 대군이 쳐들어와 개경이 불타고, 왕은 멀리 나주까지 피란해야 했어요. 하지만 나라를 다시 추스른 현종은 1019년 강감찬의 귀주 대첩으로 거란을 크게 물리쳤어요. 부처의 힘으로 나라를 지키려 초조대장경을 새기기 시작한 것도 이때예요.",
+      alt: { K: { ex: "조선 현종", y: "1659~1674", t: "조선 역사에서 가장 무서운 흉년, 경신 대기근(1670~1671)을 맞은 왕이에요. 가뭄·홍수·우박·메뚜기 떼에 돌림병까지 겹쳐 백성이 크게 줄었어요. 왕은 나라 곳간을 열고 세금을 덜어 주며 끝까지 버텼고, 대동법을 호남 지방으로 넓혔어요." } } },
+    { m: "숙종", hz: "肅宗", mean: "엄숙하게 나라를 바로잡은", k: { kp: 0.8, gold: 0.6 }, p: ["coin", "daedong", "purge"], sc: "VK",
+      ex: "조선 숙종", y: "1674~1720", t: "46년 동안 왕위에 있으면서, 신하들의 무리를 한꺼번에 갈아 치우는 '환국'을 여러 번 일으켜 왕의 힘을 지켰어요. 상평통보를 널리 쓰게 하고 대동법을 거의 온 나라로 넓혔어요. 백두산정계비를 세워 북쪽 국경을 정한 것도 숙종 때예요." },
+    { m: "예종", hz: "睿宗", mean: "슬기롭게 나라를 넓힌", k: { def: 0.6, cul: 0.5 }, p: ["school"], x: (c) => (c.f.conquered ? 2.5 : 0) + (c.gained >= 2 ? 1 : 0), sc: "T",
+      ex: "고려 예종", y: "1105~1122", t: "아버지 숙종 때 만든 별무반을 이끌고 윤관이 여진을 몰아내 동북 9성을 쌓았어요. 하지만 지키기가 어려워 1년 남짓 만에 돌려주었어요. 예종은 국학에 7재라는 전문 강좌를 열 만큼 학문을 아낀 왕이기도 했어요." },
+    { m: "인종", hz: "仁宗", mean: "어진 마음으로 백성을 살핀", k: { ppl: 1 }, p: ["history", "relief", "taxcut"], sc: "T",
+      ex: "고려 인종", y: "1122~1146", t: "외척 이자겸의 난과, 서경으로 도읍을 옮기자던 묘청의 난을 잇달아 겪은 험한 시절의 왕이에요. 그래도 김부식에게 명해 우리 역사를 정리한 『삼국사기』를 펴내게 했어요. 오늘날 전하는 가장 오래된 우리 역사책이에요.",
+      q: "우리나라의 일에 이르러서는 도리어 아득하여 그 처음과 끝을 알지 못하니 매우 한탄스럽습니다.", qs: "김부식, 「진삼국사기표」(뜻을 풀어 씀)" },
+    { m: "효종", hz: "孝宗", mean: "효성스럽고 굳센 뜻을 지킨", k: { def: 1.2 }, p: ["fortress", "mil_tunjeon", "hwarang", "f_naseon"], x: (c) => (!c.f.conquered ? 0.5 : 0), sc: "F",
+      ex: "조선 효종", y: "1649~1659", t: "병자호란 뒤 형 소현 세자와 함께 청나라에 인질로 끌려가 8년을 보냈어요. 왕이 되자 그 치욕을 갚겠다며 군대를 기르고 성을 고치는 북벌을 준비했어요. 북벌은 끝내 이루지 못했지만, 그 군대는 청의 요청으로 러시아군과 싸운 나선 정벌에서 이름을 떨쳤어요." },
+    { m: "정종", hz: "定宗", mean: "흔들리는 나라를 안정시킨", k: { def: 0.6, kp: 0.4 }, p: ["fortress", "alliance"], x: (c) => (c.lowKey === "har" ? 1 : 0), sc: "T",
+      ex: "고려 정종", y: "945~949", t: "형 혜종 때 왕위를 노린 왕규를 서경 세력의 힘을 빌려 물리치고 왕이 되었어요. 거란의 침입에 대비해 30만 명의 광군을 만들었고, 도읍을 서경으로 옮기려 했지만 이루지 못했어요." },
+    { m: "경종", hz: "景宗", mean: "나라 살림의 틀을 밝게 연", k: { gold: 0.8, har: 0.4 }, p: ["survey", "taxcut", "rank"], sc: "T",
+      ex: "고려 경종", y: "975~981", t: "관리들에게 등급에 따라 땅을 나누어 주는 전시과를 처음 만들었어요(976년). 광종 때의 피바람이 그치고, 숨죽였던 신하들이 다시 마음을 놓은 때였어요." },
+    { m: "덕종", hz: "德宗", mean: "덕으로 나라를 지킨", k: { har: 0.6, def: 0.6 }, p: ["fortress", "mil_signal"], sc: "T",
+      ex: "고려 덕종", y: "1031~1034", t: "거란과 여진에 맞서, 압록강 어귀에서 동해안까지 이어지는 천리장성을 쌓기 시작했어요. 3년의 짧은 재위였지만, 이 성은 다음 왕 때 완성되어 오랫동안 고려의 북쪽을 지켰어요." },
+    { m: "선종", hz: "宣宗", mean: "널리 문물을 펼친", k: { cul: 0.5, har: 0.5 }, p: ["buddhism", "trade", "alliance"], sc: "T",
+      ex: "고려 선종", y: "1083~1094", t: "송나라와 요나라 사이에서 균형을 지키며 평화를 이어 갔어요. 동생 의천이 송에서 돌아와 불교 경전의 풀이책을 모은 '교장'을 펴낸 것도 이때예요." },
+    { m: "명종", hz: "明宗", mean: "밝게 다스리려 애쓴", k: { cul: 0.3 }, p: [], x: (c) => (c.lowKey === "kp" ? 2 : 0), sc: "",
+      ex: "조선 명종", y: "1545~1567", t: "열두 살에 왕이 되어 어머니 문정 왕후가 대신 나라를 다스렸어요. 외척 윤원형이 권력을 쥐었고, 임꺽정이 들고일어났으며, 왜구가 전라도를 휩쓴 을묘왜변이 일어났어요. 왕의 힘이 약할 때 나라가 어떻게 흔들리는지 보여 주는 시대예요." },
+    { m: "중종", hz: "中宗", mean: "바른 가운데 길을 찾은", k: { cul: 0.5 }, p: ["exam", "scholars"], x: (c) => (c.lowKey === "har" ? 1.5 : 0),
+      ex: "조선 중종", y: "1506~1544", t: "폭군 연산군을 몰아낸 반정으로 왕이 되었어요. 젊은 선비 조광조를 불러 과감한 개혁을 맡겼지만, 반대 세력의 반발 속에 끝내 그를 내치고 말았어요(기묘사화). 개혁은 빠를수록 좋은지, 함께 갈 수 있는 속도가 중요한지 묻게 하는 이야기예요." },
+    { m: "혜종", hz: "惠宗", mean: "은혜를 베푼", k: { ppl: 0.3 }, p: [], x: (c) => (c.kind === "hard" ? 2 : 0) + (c.lowKey === "kp" ? 1 : 0), sc: "TA",
+      ex: "고려 혜종", y: "943~945", t: "아버지 왕건의 뒤를 이었지만, 외가의 힘이 약해 힘센 호족들 사이에서 늘 불안했어요. 왕의 침실까지 자객이 들어왔다는 이야기가 전할 만큼 위태로운 2년이었어요. 호족을 하나로 묶는 일이 얼마나 어려운지 보여 주는 왕이에요." },
+    { m: "의종", hz: "毅宗", mean: "굳센 뜻을 품었던", k: { cul: 0.6 }, p: [], x: (c) => (c.best === "cul" && c.lowKey === "def" ? 3 : 0),
+      ex: "고려 의종", y: "1146~1170", t: "정자와 연못을 꾸미고 문신들과 시를 짓는 잔치를 즐겼어요. 그사이 무신들은 푸대접에 분노를 쌓아 갔고, 1170년 무신 정변이 일어나 왕은 쫓겨났어요. 문화와 국방, 문신과 무신의 균형이 깨지면 어떤 일이 생기는지 보여 줘요." },
+    { m: "신종", hz: "神宗", mean: "신령스러운", k: {}, p: [], x: (c) => (c.lowKey === "kp" && c.s.kp < 35 ? 2.5 : 0) + (c.has("slaves") ? 1 : 0),
+      ex: "고려 신종", y: "1197~1204", t: "무신 최충헌이 세운 왕이라, 실제 권력은 최씨 집안이 쥐고 있었어요. 이 무렵 개경의 노비 만적은 '높은 벼슬아치의 씨가 따로 있겠느냐'며 노비들과 함께 신분에서 벗어날 날을 꿈꾸었어요.",
+      q: "왕후장상의 씨가 어찌 따로 있겠는가?", qs: "만적의 말, 『고려사』" },
+    { m: "고종", hz: "高宗", mean: "높은 뜻으로 나라를 지킨", k: { def: 0.6, cul: 0.3 }, p: ["buddhism"], x: (c) => (c.scen === "J" ? 3 : 0) + (c.f.warWon ? 1 : 0) + (c.lowMin <= 22 ? 1 : 0), sc: "J",
+      ex: "고려 고종", y: "1213~1259", t: "몽골이 쳐들어오자 도읍을 강화도로 옮기고 30년 가까이 버텼어요. 부처의 힘으로 나라를 지키려고 16년에 걸쳐 새긴 팔만대장경이 지금도 해인사에 남아 있어요.",
+      alt: { J: { ex: "대한 제국 고종(광무 황제)", y: "1863~1907", t: "1897년 나라 이름을 대한 제국으로 바꾸고 황제가 되었어요. 광무개혁으로 땅을 다시 재고 근대 공장과 학교, 전차와 전화를 들였어요. 하지만 일본의 압박 속에 1907년 헤이그 특사 사건을 빌미로 황제 자리에서 물러나야 했어요." } } },
+    { m: "원종", hz: "元宗", mean: "나라의 으뜸을 지켜 낸", k: { har: 0.5 }, p: ["alliance"], x: (c) => (c.f.ally || c.f.neutral ? 2 : 0),
+      ex: "고려 원종", y: "1259~1274", t: "30년 전쟁 끝에 몽골과 화친을 맺었어요. 세자 시절 직접 쿠빌라이를 찾아가, 고려의 풍속을 바꾸지 않겠다는 약속을 받아 냈어요. 나라 이름과 왕실을 지킨 대신, 고려는 오랫동안 원나라의 간섭을 받게 되었어요." },
+    { m: "순종", hz: "純宗", mean: "순수한 마음을 지닌", k: {}, p: [], x: (c) => (c.scen === "J" && c.f.lost ? 5 : -9),
+      ex: "대한 제국 순종(융희 황제)", y: "1907~1910", t: "아버지 고종이 강제로 물러난 뒤 황제가 되었지만, 군대는 해산되고 1910년 나라를 빼앗겼어요. 1926년 그의 장례일에 학생들이 6·10 만세 운동을 일으켰어요." },
+    { m: "철종", hz: "哲宗", mean: "밝고 슬기로운", k: {}, p: [], x: (c) => (c.lowKey === "ppl" && c.s.ppl < 38 ? 2.5 : 0),
+      ex: "조선 철종", y: "1849~1863", t: "강화도에서 농사를 짓던 왕족이 하루아침에 왕이 되어 '강화 도령'이라 불렸어요. 실제 권력은 세도 가문이 쥐었고, 탐관오리에 시달린 백성들이 1862년 진주를 비롯한 곳곳에서 들고일어났어요(임술 농민 봉기)." },
+  ];
+  function myoCtx(r, f) {
+    const s = S.st, avg = avgOf(s), vals = statVals(), min = Math.min(...vals);
+    const keys = ST.map((x) => x.k), lowKey = keys.reduce((a, b) => (s[b] < s[a] ? b : a));
+    const mine = new Set(S.done.filter((d) => d.ok !== false && d.by !== "start").map((d) => d.id));
+    const gained = S.terr && S.terr0 ? S.terr.filter((x) => !S.terr0.includes(x)).length : 0;
+    const rank = {}; keys.slice().sort((p, q) => s[q] - s[p]).forEach((k, i) => { rank[k] = i; });
+    return { s, avg, min, lowKey, rank, best: bestKey(), mine, has: (id) => mine.has(id), f: Object.assign({ big: !!(f && f.big) }, S.flags), kind: r.kind, tyr: S.tyr || 0, scen: S.scen, gained,
+      lowMin: Math.min(...Object.values(S.low || s)) };
+  }
+  function myoScore(e, c) {
+    let sc = 0;
+    // 능력치는 크기가 아니라 순위로 봐요(문화처럼 늘 높게 쌓이는 능력치 하나가 묘호를 독차지하지 않게)
+    for (const k in e.k) sc += e.k[k] * (c.rank[k] === 0 ? 1.5 : c.rank[k] === 1 ? 0.8 : c.rank[k] === 5 ? -1 : 0);
+    sc += Math.min(2, e.p.filter((id) => c.mine.has(id)).length) * 1.5;
+    if (e.x) sc += e.x(c);
+    if (e.sc && e.sc.includes(c.scen)) sc += 1.2;
+    return sc + Math.random() * 2;
+  }
+  function pickMyo(r, f, jo) {
+    const c = myoCtx(r, f);
+    // 그 나라 시대의 실제 왕(alt가 있는 묘호)은 조·종과 상관없이 후보가 돼요 (예: 대한 제국 → 고종, 경신 대기근 → 현종)
+    const own = (e) => e.alt && Object.keys(e.alt).some((k) => k.includes(S.scen));
+    const list = MYO_LIST.filter((e) => !!e.jo === jo || own(e));
+    let best = list[0], bv = -1e9;
+    for (const e of list) { const v = myoScore(e, c); if (v > bv) { bv = v; best = e; } }
+    const a = best.alt && Object.keys(best.alt).find((k) => k.includes(S.scen));
+    return Object.assign({ m: best.m, hz: best.hz, mean: best.mean, q: best.q, qs: best.qs, jo: !!best.jo }, { ex: best.ex, y: best.y, t: best.t }, a ? best.alt[a] : {});
+  }
+  { const rec0 = record; record = function (f) {
+    const r = rec0(f);
+    if (WORLD() || !r.myo) return r;
+    const m = r.myo.match(/^(.)(조|종)\(/);
+    if (!m || r.myo.startsWith("려종") || r.myo.startsWith("애종")) return r;
+    const e = pickMyo(r, f, m[2] === "조"), jo = e.jo;
+    r.myo = `${e.m}(${e.hz})`;
+    r.myoD = `'${e.mean} 임금'이라는 뜻이에요.` + (jo ? " 나라를 새로 일으키거나 큰 위기를 이겨 낸 왕에게는 '종' 대신 '조'를 붙였어요." : "");
+    r.myoX = { ex: e.ex, y: e.y, t: e.t, q: e.q, qs: e.qs, m: e.m };
+    if (r.kind === "great") r.t = `${e.m}대왕으로 기록되다`;
+    return r;
+  }; }
+  function myoXHTML(r) {
+    const x = r && r.myoX;
+    if (!x) return "";
+    return `<div class="myox"><p class="sub">같은 묘호 '${esc(x.m)}'${/종$/.test(x.m) ? "을" : "를"} 받은 실제 왕</p><b>${esc(x.ex)}</b> <span class="sub">재위 ${esc(x.y)}</span><p>${esc(x.t)}</p>${x.q ? `<blockquote>“${esc(x.q)}”<cite>— ${esc(x.qs || "")}</cite></blockquote>` : ""}</div>`;
+  }
+
   // ================= 난이도 별 (2026-10-15, 무작위 플레이 300판 붕괴율 기준) =================
   // ★2 10% 미만 · ★3 10~19% · ★4 20~29% · ★4.5 30~39% · ★5 40% 이상 · ★10 지옥급(90% 이상)
   // 별은 왕력 점수((★−3)×3)와 '다른 역사' 문턱에도 쓰여요. 밸런스를 바꾸면 다시 재서 여기만 고칠 것.
@@ -6327,7 +6462,7 @@ button.trcard:hover { transform: translateY(-2px); }
     ${hasMap() && S.terr0 ? `<section class="panel"><h2>${esc(NATION())}의 땅은 어떻게 바뀌었을까?</h2><div class="mapduo"><figure>${mapSVG({ terr: S.terr0 })}<figcaption>처음 (${esc(era(1))})</figcaption></figure><figure>${mapSVG({ terr: S.terr, gain: S.terr.filter((x) => !S.terr0.includes(x)) })}<figcaption>${S.over ? "무너질 때" : "다스림을 마칠 때"}${S.terr.length > S.terr0.length ? ` · 새로 얻은 땅 ${S.terr.length - S.terr0.length}곳` : ""}</figcaption></figure></div><p class="sub">지도의 경계는 교과서 지도를 바탕으로 한 대략적인 모습이에요.</p></section>` : ""}
     <section class="two">
       <div class="record ${r.kind}"><p class="sub">후대의 역사책은 이렇게 적었어요</p><span class="stamp">${esc(r.stamp)}</span>
-        <p class="myo"><span class="sub">${WORLD() ? "역사책이 붙인 별명" : "역사책이 붙인 이름"}</span><b>${esc(r.myo)}</b><span class="sub">${esc(r.myoD)}</span></p>
+        <p class="myo"><span class="sub">${WORLD() ? "역사책이 붙인 별명" : "역사책이 붙인 이름"}</span><b>${esc(r.myo)}</b><span class="sub">${esc(r.myoD)}</span></p>${myoXHTML(r)}
         <h2>${esc(r.t)}</h2><p>${esc(r.l)}</p>
         ${ach.length ? `<div class="achs" aria-label="업적">${ach.map(([h, n]) => `<span class="ach"><i>${h}</i>${esc(n)}</span>`).join("")}</div>` : ""}
         ${r.today ? `<p class="today"><b>${O ? "이렇게 했다면" : "다시 생각해 보기"}</b> ${esc(r.today)}</p>` : ""}
