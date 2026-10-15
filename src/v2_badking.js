@@ -1,5 +1,5 @@
   // ================= 역사 속 '아쉬운 왕' (2026-10-15) =================
-  // 왕력 티어가 C~F일 때는 닮은 왕을 이 목록에서 골라요. 나라를 어렵게 만든 실제 왕의 이야기와 '배울 점'을 함께 보여 줘요.
+  // 왕력 티어가 D~F일 때는 닮은 왕을 이 목록에서 골라요. 나라를 어렵게 만든 실제 왕의 이야기와 '배울 점'을 함께 보여 줘요.
   // weak: 그 왕 때 무너진 능력치 — 내 판에서 가장 낮은(또는 0이 된) 능력치와 맞으면 크게 닮았다고 봐요.
   const BAD_KINGS = [
     { id: "bongsang", n: "봉상왕", hz: "烽上王", era: "고구려", v: [0.8, 0.2, -0.6, 0.5], sig: ["purge", "f:bigpalace"], weak: ["ppl", "har", "def"], pt: { hat: "gogu", robe: "#5B3A55", beard: "mustache", item: "none", brow: "fierce", frown: true },
@@ -36,7 +36,7 @@
     Object.assign({}, SPECIAL.louis16, { home: "H", v: [-0.3, -0.2, -0.3, -0.4], sig: ["f:bigpalace"], weak: ["gold", "ppl"],
       lesson: "개혁은 미룰수록 더 어려워져요. 나라 빚과 백성의 굶주림은 기다려 주지 않아요." }),
   ];
-  const BAD_TIERS = ["C", "D", "E", "F"];
+  const BAD_TIERS = ["D", "E", "F"];
   function matchBadKings(a) {
     const mine = mineSet(), s = S.st, keys = ST.map((x) => x.k).sort((p, q) => s[p] - s[q]);
     const low1 = S.over && keys.includes(S.over) ? S.over : keys[0], low2 = keys.find((k) => k !== low1);
