@@ -893,7 +893,9 @@ button.trcard:hover { transform: translateY(-2px); }
   const tyrUp = (n) => { S.tyr += n; };
   const C = (label, run, hint) => ({ label, run, hint });
   // 모험 선택지: p 확률로 성공. 성공·실패 모두 크게 움직여요.
-  const roll = (p) => Math.random() < p;
+  // 사건의 형편(v2_situ.js)이 모험 확률을 바꿀 때 ROLLP.v를 잠깐 씌워요
+  const ROLLP = { v: null };
+  const roll = (p) => Math.random() < (ROLLP.v != null ? ROLLP.v : p);
   const GB = (label, p, ok, fail, hint) => ({ label, hint, risk: Math.max(0.05, Math.min(0.95, p)), run: () => (roll(p) ? ok() : fail()) });
   const EV = {
     // ---------- 첫 사건 ----------
@@ -1248,7 +1250,7 @@ button.trcard:hover { transform: translateY(-2px); }
     if (S.scen === "G") { const g = { 2: "g2", 3: "g3", 5: "g5", 7: "g7", 8: "dzud", 9: "g9" }[t]; if (g) return g; }
     if (S.scen === "H") { const h = { 2: "h2", 3: "h3", 4: "h4", 6: "h6", 9: "h9" }[t]; if (h) return h; if (t === 7 && S.flags.napoleon && S.st.kp < 60) return "h7"; }
     if (!"EFGH".includes(S.scen) && !(SCEN[S.scen] && SCEN[S.scen].noInv) && t === 5) return "invasion";
-    if (t === 8) return "disaster";
+    if (t === 8) return pickDisaster();
     return freeEvent();
   }
   function freeEvent() {
@@ -1264,7 +1266,7 @@ button.trcard:hover { transform: translateY(-2px); }
     if (!tried("buddhism") && t <= 4 && !u("monk") && !"EFHJKLMTUV".includes(S.scen) && Math.random() < 0.4) return "monk";
     const pool = POOL.filter((x) => !u(x) && poolOk(x) && !(S.scen === "G" && x === "pirates"));
     // 지난 판들에서 덜 본 사건이 더 자주 나와요
-    return pool.length ? wpick(pool, (x) => 1 / (1 + 0.8 * (SEEN.ev[x] || 0))) : "harvest";
+    return pool.length ? wpick(pool, (x) => recentW(x) / (1 + 0.8 * (SEEN.ev[x] || 0))) : "harvest";
   }
 
   // ================= 더 넓어진 사건들: 판마다 다른 선택지 =================
@@ -4239,7 +4241,7 @@ button.trcard:hover { transform: translateY(-2px); }
     const crisis = [["ppl", 22, "revolt"], ["gold", 16, "empty"], ["def", 20, "breach"], ["kp", 20, "weakking"], ["har", 22, "rebel"]].filter(([k, lim, id]) => S.st[k] < lim && !u(id + "_x"));
     if (crisis.length && Math.random() < 0.5) { S.used.push(crisis[0][2] + "_x"); return crisis[0][2]; }
     if (t === 15 && !u("x_mend")) return "x_mend";
-    const pool = ["x_dokkaebi", "x_dragon", "x_future", "x_west", "x_inventor", "x_princes", "x_reunite", "x_quake", "x_market", "x_star"].filter((x) => !u(x));
+    const pool = ["x_dokkaebi", "x_dragon", "x_future", "x_west", "x_inventor", "x_princes", "x_reunite", "x_quake", "x_market", "x_star", "dis_locust", "dis_cold", "dis_fire", "dis_typhoon", "dis_cattle"].filter((x) => !u(x) && poolOk(x));
     return pool.length ? pool[Math.floor(Math.random() * pool.length)] : "x_mend";
   }
   const SNK = (k) => SN[k];
@@ -5416,8 +5418,280 @@ button.trcard:hover { transform: translateY(-2px); }
   // 최종 도전에 성공하면 결말이 바뀌어요
   for (const [sc, E] of Object.entries(FXEND)) { const f0 = FATE5[sc]; FATE5[sc] = (s, avg, min) => (S.ext && S.flags[E.id] ? { t: E.t, l: E.l, h: E.h, big: true } : f0 ? f0(s, avg, min) : null); }
 
+  // 고구려의 후연 압박은 광개토대왕 시대에 끝나요(다음 시대에는 이어지지 않아요)
+  { const p0 = DRIFT5.P; if (p0) DRIFT5.P = (dr, parts, L) => { if (S.ext && S.turn > 10) return; p0(dr, parts, L); }; }
   // ---------- 새 왕 즉위 사건에 '시대가 바뀌었어요' 알림 ----------
   { const t0 = EV.x_crown.text; EV.x_crown.text = () => t0() + (XE[S.scen] ? ` 시대가 바뀌었어요: '${XE[S.scen].label}'. 정책 카드가 새 시대에 맞게 바뀌고, 성 쌓기·외교 같은 기본 정책도 새 시대의 이름으로 다시 펼칠 수 있어요. '역사 판타지' 카드는 성공하기 어렵지만, 이루면 새로운 역사가 열려요.` : ""); }
+
+  // ================= 사건마다 '그때의 형편(조짐)'이 달라져요 (2026-10-15) =================
+  // 예전에는 같은 사건이면 늘 같은 선택이 정답이었어요. 이제 사건이 열릴 때마다 형편 하나가 정해지고,
+  // 사건 글 끝에 '조짐'으로 알려 줘요. 형편에 따라 어떤 선택은 더 좋아지고 어떤 선택은 나빠지며, 모험 확률도 바뀌어요.
+  // 글을 꼼꼼히 읽고 판단해야 하는 구조예요. 같은 기기에서는 지난번과 다른 형편이 먼저 나와요.
+  // m: 선택지 번호 → { add: 능력치 더하기, p: 모험 확률 바꾸기, inc: 매 시기 수입, text: 덧붙는 말, rep: { d, text, ok } 결과 통째로 바꾸기 }
+  const SITU = {
+    famine: [
+      { k: "rain", hint: "관상감이 '동풍이 불고 개미가 줄지어 이사한다, 곧 비가 온다'고 아뢰어요.", m: { 3: { p: 0.75 }, 1: { add: { gold: -2 }, text: "비가 곧 와서 저수지는 이번 가뭄에 쓰이지 못했어요." } } },
+      { k: "long", hint: "우물까지 말랐어요. 늙은 농부들이 '이 가뭄은 해를 넘길 것'이라고 해요.", m: { 1: { add: { ppl: 4 }, inc: 1, text: "긴 가뭄에 저수지가 큰 힘이 되었어요." }, 3: { p: 0.15 }, 0: { add: { gold: -4 }, text: "가뭄이 길어 곡식이 더 많이 들었어요." } } },
+      { k: "hoard", hint: "곡식 장수들이 쌀을 쌓아 두고 값을 마구 올리고 있대요.", m: { 0: { add: { ppl: 5 }, text: "나라 곡식이 풀리자 쌀값이 뚝 떨어졌어요." }, 2: { add: { ppl: -5 }, text: "쌀값까지 올라 백성의 원망이 두 배가 되었어요." } } },
+    ],
+    plague: [
+      { k: "early", hint: "의원이 '아직 몇 마을에만 퍼졌다'고 해요.", m: { 1: { rep: { d: { ppl: 3, gold: 1 }, text: "일찍 막은 덕분에 병이 몇 마을에서 멈췄어요. 백성들이 왕의 빠른 판단을 고마워했어요." } } } },
+      { k: "spread", hint: "병이 벌써 도읍 한가운데 장터까지 번졌다는 소식이에요.", m: { 1: { add: { ppl: -8, har: -3 }, text: "이미 퍼진 병을 막으려다 도읍 절반을 가두는 꼴이 되었어요.", ok: false }, 0: { add: { ppl: 4 }, text: "의원들이 집집마다 돌며 병을 잡았어요." } } },
+      { k: "herb", hint: "중국에서 오는 약재 값이 열 배로 뛰었대요.", m: { 0: { add: { gold: -5 }, text: "비싼 약재 때문에 곳간이 크게 줄었어요." }, 3: { add: { ppl: 5, gold: 3 }, text: "우리 땅 약초는 값이 싸서 더 많은 사람을 살렸어요." }, 4: { p: 0.25 } } },
+    ],
+    harvest: [
+      { k: "dear", hint: "이웃 나라는 흉년이라 곡식 값이 세 배로 뛰었대요.", m: { 1: { add: { gold: 8 }, text: "비싼 값에 곡식을 팔았어요!" }, 3: { p: 0.8 } } },
+      { k: "cheap", hint: "곡식이 너무 흔해 시장에서 값이 바닥으로 떨어졌어요.", m: { 1: { add: { gold: -7 }, text: "헐값에 팔아 남는 게 거의 없었어요." }, 3: { p: 0.35 }, 2: { add: { ppl: 3 }, text: "값싼 곡식 때문에 손해 보던 농부들이 크게 기뻐했어요." } } },
+      { k: "omen", hint: "관상감이 '내년 날씨가 몹시 나쁠 것'이라고 아뢰어요.", m: { 0: { add: { gold: 4 }, text: "창고를 가득 채워 두었어요. 다음 큰 재난 때 피해가 줄어요.", go: () => { S.flags.granary = true; } }, 1: { add: { ppl: -4 }, text: "다 팔아 버리자 백성들이 내년 걱정에 불안해했어요." } } },
+    ],
+    goldmine: [
+      { k: "thin", hint: "늙은 광부가 '광맥이 얕아 몇 해 못 간다'고 해요.", m: { 0: { add: { gold: 6, ppl: 2 }, text: "얕은 광맥을 빨리 캐내 큰돈을 모았어요." }, 1: { inc: -1, add: { gold: -3 }, text: "광맥이 금방 바닥나 세금이 끊겼어요." }, 3: { p: 0.15 } } },
+      { k: "deep", hint: "솜씨 좋은 광부들이 '깊은 곳에 큰 은맥이 있다'고 장담해요.", m: { 3: { p: 0.75 } } },
+      { k: "farm", hint: "광산 아래 마을 농민들이 '논에 흙탕물이 든다'며 들고일어날 기세예요.", m: { 2: { add: { ppl: 6, har: 2 }, text: "농민들이 왕의 결정을 반겼어요." }, 0: { add: { ppl: -6 }, text: "흙탕물에 논을 버린 농민들이 크게 원망했어요." }, 1: { add: { ppl: -4 }, text: "백성끼리 광산을 두고 다툼이 났어요." } } },
+    ],
+    merchants: [
+      { k: "boom", hint: "바다 건너 큰 시장이 새로 열려 배마다 손님이 넘친대요.", m: { 3: { p: 0.75 }, 0: { add: { gold: 4 } } } },
+      { k: "hoard", hint: "큰 상인 몇 명이 물건을 사재기해 값을 올리고 있대요.", m: { 1: { add: { ppl: -6, har: -2 }, text: "몇몇 큰 상인만 더 배를 불렸어요.", ok: false }, 0: { add: { ppl: 4 }, text: "작은 상인들이 늘어나자 사재기가 힘을 잃었어요." } } },
+      { k: "pirate", hint: "바닷길에 해적이 들끓는다는 소식이에요.", m: { 3: { p: 0.2 }, 2: { add: { har: 2, gold: 2 }, text: "위험한 때 무리하지 않았다며 신하들이 칭찬했어요." } } },
+    ],
+    palace: [
+      { k: "envoy", hint: "큰 나라 사신이 곧 온대요. 신하들은 '나라의 얼굴'이 필요하다고 해요.", m: { 0: { add: { kp: 4, def: 2 }, text: "사신이 웅장한 궁궐을 보고 우리 나라를 함부로 대하지 못했어요." }, 2: { add: { kp: -3 }, text: "낡은 궁궐을 본 사신이 우리 나라를 얕보았어요." } } },
+      { k: "tired", hint: "흉년 끝이라 백성들이 몹시 지쳐 있어요.", m: { 0: { add: { ppl: -8, har: -2 }, text: "굶주린 백성까지 공사에 끌려가 원망이 하늘을 찔렀어요.", ok: false }, 2: { add: { ppl: 4 }, text: "백성들이 '어려울 때 아끼는 임금'이라며 칭찬했어요." } } },
+      { k: "rot", hint: "목수가 '궁궐 기둥이 썩어 언제 무너질지 모른다'고 아뢰어요.", m: { 1: { add: { kp: 3, har: 2 }, text: "썩은 기둥을 미리 바꿔 큰 사고를 막았어요." }, 2: { rep: { d: { gold: -6, kp: -4, ppl: -2 }, text: "돈을 아끼려다 장마철에 궁궐 지붕 한쪽이 무너졌어요. 고치는 데 더 큰돈이 들었어요.", ok: false } } } },
+    ],
+    pirates: [
+      { k: "poor", hint: "잡힌 해적을 보니 굶주린 어부 출신이 많대요.", m: { 3: { p: 0.8 }, 2: { add: { ppl: 3 }, text: "먹고살 길이 생기자 해적질을 그만두는 사람이 많았어요." } } },
+      { k: "army", hint: "해적 뒤에 이웃 나라 영주의 군대가 있대요. 배가 수백 척이래요.", m: { 0: { add: { def: -4 }, text: "생각보다 적이 훨씬 많았어요." }, 1: { p: 0.15 }, 2: { add: { kp: -3, gold: -3 }, text: "해적들이 장사를 핑계로 더 많은 것을 요구했어요." } } },
+      { k: "map", hint: "한 어부가 해적 본거지 섬의 뱃길을 안다며 찾아왔어요.", m: { 1: { p: 0.85 } } },
+    ],
+    luxury: [
+      { k: "silver", hint: "사치품이 모두 외국에서 들어와 나라의 은이 밖으로 빠져나가고 있어요.", m: { 0: { add: { gold: 4 }, text: "외국으로 새던 은이 멈췄어요." }, 2: { add: { gold: -6 }, text: "은이 계속 빠져나가 곳간이 줄었어요." } } },
+      { k: "inlaw", hint: "사치하는 귀족들이 왕비의 친척들과 한 무리래요.", m: { 0: { add: { har: -6, kp: -2 }, text: "왕비의 친척들까지 들고일어나 조정이 시끄러워졌어요." }, 1: { add: { har: 3, ppl: 2 }, text: "왕실이 먼저 모범을 보이자 외척들도 따를 수밖에 없었어요." } } },
+      { k: "craft", hint: "사치품을 만드는 장인과 상인들의 일감이 크게 늘었대요.", m: { 2: { add: { gold: 4, cul: 3, ppl: 4 }, text: "장인과 상인들은 바빠졌고, 비단과 공예품 솜씨가 늘었어요." }, 0: { add: { cul: -3, ppl: -3 }, text: "일감을 잃은 장인들이 한숨을 쉬었어요." } } },
+    ],
+    general: [
+      { k: "border", hint: "변방에 적이 몰려오고 있어요. 그 장군만큼 싸움을 잘 아는 사람이 없어요.", m: { 0: { add: { def: 5 }, text: "장군이 변방을 든든히 지켰어요." }, 2: { add: { def: -8 }, text: "장군이 없는 변방이 크게 흔들렸어요.", ok: false } } },
+      { k: "plot", hint: "장군의 집에 무기와 사람이 모여든다는 밀고가 들어왔어요.", m: { 0: { add: { kp: -10, har: -3 }, text: "군대를 더 받은 장군이 왕의 명령을 듣지 않기 시작했어요.", ok: false }, 1: { add: { kp: 3, def: 2 }, text: "군대를 나누어 맡긴 덕분에 장군이 딴마음을 품지 못했어요." }, 2: { add: { ppl: 3, def: 3 }, text: "조사해 보니 반란 준비가 사실이었어요. 큰일을 미리 막았어요." } } },
+      { k: "folk", hint: "그 장군은 백성 출신이라 백성의 기대가 아주 커요.", m: { 0: { add: { ppl: 5 }, text: "백성들이 '우리 장군'의 출세를 기뻐했어요." }, 2: { add: { ppl: -8 }, text: "백성들이 '역시 백성 출신은 안 된다는 거냐'며 크게 분노했어요." } } },
+    ],
+    talent: [
+      { k: "need", hint: "흉년과 일식을 미리 알 기구가 급하다는 신하들의 상소가 올라왔어요.", m: { 0: { add: { cul: 5, gold: 3, har: 3 }, text: "나라에 꼭 필요한 기구라 신하들도 반대를 거두었어요." } } },
+      { k: "oppose", hint: "신하들이 '노비에게 벼슬은 안 된다'며 연명 상소를 돌리고 있어요.", m: { 0: { add: { har: -6 }, text: "신하들이 한꺼번에 들고일어났어요." }, 1: { add: { cul: 2, har: 2 }, text: "조용히 상을 주고, 궁궐 공방에서 몰래 일하게 했어요." } } },
+      { k: "plan", hint: "그 천재가 날틀 설계도를 이미 다 그려 왔대요.", m: { 3: { p: 0.75 } } },
+    ],
+    envoy: [
+      { k: "rising", hint: "그 큰 나라는 지금 기세가 하늘을 찌르는 나라예요.", m: { 0: { add: { def: 4, kp: 2 }, text: "떠오르는 나라와 손잡은 덕을 톡톡히 보았어요." }, 1: { add: { def: -6 }, text: "거절당한 큰 나라가 국경에 군대를 보내 겁을 주었어요." } } },
+      { k: "falling", hint: "그 큰 나라에서 큰 반란이 일어나 나라가 기울고 있대요.", m: { 0: { add: { def: -6, kp: -3 }, text: "기우는 나라와 손잡았다가 그 나라의 싸움에 끌려 들어갔어요.", ok: false }, 1: { add: { kp: 3 }, text: "기우는 나라와 거리를 둔 것이 현명했어요." } } },
+      { k: "rival", hint: "두 큰 나라가 서로 다투는 중이라 어느 편도 우리를 놓치기 싫어해요.", m: { 2: { add: { gold: 6, har: 3 }, text: "양쪽 모두 우리와 장사하려고 앞다투었어요." } } },
+    ],
+    comet: [
+      { k: "halley", hint: "천문 관리가 '옛 기록을 보니 수십 년마다 돌아오는 별'이라고 계산했대요.", m: { 0: { add: { cul: 6, ppl: 3 }, text: "계산대로 별이 움직이자 백성들의 불안이 싹 사라졌어요." }, 3: { p: 0.7 } } },
+      { k: "fear", hint: "흉년 끝이라 백성들이 별 하나에도 벌벌 떨고 있어요.", m: { 1: { add: { ppl: 4 }, text: "왕이 먼저 몸을 낮추자 백성들이 안심했어요." }, 2: { add: { ppl: -6 }, text: "불안한 백성을 벌하자 원망이 더 커졌어요." }, 0: { add: { ppl: -5 }, text: "관리들이 별만 그리는 동안 백성들의 불안은 더 커졌어요." } } },
+      { k: "foe", hint: "반대파 신하들이 '왕의 덕이 모자라 하늘이 경고한다'는 말을 퍼뜨려요.", m: { 1: { add: { kp: -3 }, text: "반대파가 '왕이 잘못을 인정했다'며 더 큰소리를 쳤어요." }, 3: { p: 0.75 }, 0: { add: { kp: -5 }, text: "반대파가 '왕은 별만 본다'며 비웃었어요." } } },
+    ],
+    castaway: [
+      { k: "gunner", hint: "이방인 가운데 대포를 만들던 기술자가 있대요.", m: { 0: { add: { def: 5, cul: 2 }, text: "솜씨 좋은 기술자 덕분에 대포가 훨씬 나아졌어요." } } },
+      { k: "navy", hint: "그들 나라의 군함이 사라진 배를 찾으러 올지 모른다는 소문이에요.", m: { 2: { add: { def: -6, kp: -3 }, text: "군함이 찾아와 대포를 겨누며 사람을 내놓으라 했어요.", ok: false }, 1: { add: { gold: 4, cul: 3 }, text: "훗날 그 나라 배가 고맙다며 선물을 싣고 왔어요." } } },
+      { k: "shipwright", hint: "그들은 배를 만들던 목수들이래요.", m: { 3: { p: 0.75 } } },
+    ],
+    drum: [
+      { k: "kin", hint: "그 고을 관리는 높은 대신의 친척이래요.", m: { 0: { add: { har: -5 }, text: "대신이 '왕이 내 집안을 욕보였다'며 크게 반발했어요." }, 3: { p: 0.4 }, 4: { add: { har: -4 } } } },
+      { k: "many", hint: "비슷한 호소가 여러 고을에서 한꺼번에 들어오고 있어요.", m: { 4: { add: { gold: 6, ppl: 4 }, text: "온 나라를 조사하자 숨은 세금이 줄줄이 나왔어요." }, 0: { add: { ppl: -3 }, text: "한 고을만 바로잡자 다른 고을 백성들이 서운해했어요." } } },
+      { k: "false", hint: "고을에서 '농부의 말이 부풀려졌다'는 보고가 함께 올라왔어요.", m: { 0: { add: { kp: 3, har: 4 }, text: "왕이 양쪽 말을 다 듣고 공정하게 판결하자 모두가 수긍했어요." }, 3: { p: 0.45 }, 2: { add: { ppl: 4 }, text: "알고 보니 관리의 잘못은 크지 않았어요." } } },
+    ],
+    tiger: [
+      { k: "pack", hint: "호랑이가 한 마리가 아니라 여러 마리래요.", m: { 0: { add: { def: 3, ppl: 3 }, text: "훈련된 부대라서 여러 마리를 모두 잡을 수 있었어요." }, 3: { p: 0.2 } } },
+      { k: "old", hint: "사냥꾼이 '늙고 병든 호랑이 한 마리'라고 해요.", m: { 3: { p: 0.8 }, 1: { add: { gold: 3 }, text: "금방 잡혀 상금이 적게 들었어요." } } },
+      { k: "hungry", hint: "흉년으로 산에 먹을 것이 없어 짐승들이 마을로 내려온대요.", m: { 2: { add: { ppl: 4, def: 1 }, text: "울타리 덕분에 다른 짐승들까지 막았어요." }, 4: { add: { ppl: -3 }, text: "제사를 지내는 사이에도 호랑이가 계속 내려왔어요." } } },
+    ],
+    bribe: [
+      { k: "faction", hint: "그 부자는 반대파 대신들과 한 무리래요.", m: { 3: { p: 0.75 }, 0: { add: { har: -4 }, text: "반대파 대신들이 부자 편을 들며 들고일어났어요." } } },
+      { k: "smart", hint: "부자의 아들이 실제로 글을 아주 잘한대요.", m: { 4: { add: { cul: 3, har: 4 }, text: "그 아들이 당당히 시험에 붙어, 부자도 체면을 지켰어요." }, 2: { add: { cul: 4 }, text: "다행히 아들은 일을 잘했어요. 그래도 '돈으로 벼슬을 샀다'는 말은 남았어요." } } },
+      { k: "rumor", hint: "부자가 금 상자를 보낸 일이 벌써 장터에 소문났대요.", m: { 1: { add: { kp: -6, ppl: -4 }, text: "'왕이 뇌물을 챙겼다'는 소문이 온 나라에 퍼졌어요.", ok: false }, 0: { add: { kp: 4, ppl: 3 }, text: "소문을 들은 백성들이 깨끗한 왕을 칭찬했어요." } } },
+    ],
+    spy: [
+      { k: "proof", hint: "하인이 승려 방에서 이웃 나라로 보내는 편지를 보았대요.", m: { 3: { p: 0.7 } } },
+      { k: "monk", hint: "그 승려는 이름난 절에서 공부한 진짜 학승이라는 이야기도 있어요.", m: { 1: { rep: { d: { har: -5, cul: -4, def: -2 }, text: "조사해 보니 그저 바둑을 좋아하는 학승이었어요. 억울한 사람을 가두었다며 이웃 나라가 항의했어요.", ok: false } }, 2: { add: { cul: 4, har: 2 }, text: "학승과 바둑을 두며 이웃 나라의 학문을 배웠어요." }, 3: { p: 0.2 } } },
+      { k: "war", hint: "이웃 나라와 전쟁이 날지도 모르는 때예요.", m: { 1: { add: { def: 4 }, text: "전쟁을 앞두고 첩자를 잡아 적의 계획을 알아냈어요." }, 0: { add: { def: -4 }, text: "전쟁 직전에 곳간을 성 공사에 다 써 버렸어요." } } },
+    ],
+    maskdance: [
+      { k: "angry", hint: "흉년이 이어져 백성들의 불만이 쌓여 있어요.", m: { 1: { add: { ppl: 4 }, text: "탈춤으로 속을 푼 백성들이 다시 일터로 나갔어요." }, 0: { add: { ppl: -6 }, text: "웃음까지 빼앗기자 백성들 사이에 험한 말이 돌았어요.", ok: false } } },
+      { k: "king", hint: "요즘 탈춤에는 양반뿐 아니라 왕을 놀리는 대목도 나온대요.", m: { 1: { add: { kp: -5 }, text: "왕을 놀리는 노래가 아이들 입에까지 오르내렸어요." }, 2: { add: { kp: 2, ppl: 2 }, text: "탈춤 속 백성의 불만을 듣고 바로 고쳐 주었어요." } } },
+      { k: "yangban", hint: "양반들이 탈춤패를 잡아 가두라고 왕에게 몰려왔어요.", m: { 3: { p: 0.3 }, 0: { add: { har: 3 }, text: "양반들의 화가 풀렸어요." } } },
+    ],
+    disaster: [
+      { k: "replant", hint: "물이 빠르게 빠지고 있어요. 지금이라도 메밀을 심으면 늦지 않대요.", m: { 0: { add: { gold: 4 }, text: "곡식을 조금만 풀어도 백성들이 다시 씨를 뿌렸어요." }, 3: { add: { ppl: 4 }, text: "다시 심을 수 있어 원망이 조금 덜했어요." } } },
+      { k: "noimport", hint: "이웃 나라도 흉년이라 곡식을 팔지 않겠대요.", m: { 2: { rep: { d: { gold: -6, ppl: -2 }, text: "곡식을 사러 간 배가 빈 배로 돌아왔어요.", ok: false } } } },
+      { k: "hoard", hint: "부자들이 곡식을 쌓아 두고 값을 올리고 있대요.", m: { 1: { add: { ppl: 5, har: 2 }, text: "쌓아 둔 곡식이 풀리자 값이 내려갔어요." }, 0: { add: { gold: -4 }, text: "비싼 값에 곡식을 더 사 와야 했어요." } } },
+    ],
+  };
+
+  // ---------- 8시기 큰 재난: 판마다 다른 재난 ----------
+  Object.assign(EV, {
+    dis_locust: { h: "蝗", title: "하늘을 덮은 메뚜기 떼", base: () => ({ ppl: S.flags.granary ? -2 : -4, gold: -4 }), text: () => "메뚜기 떼가 구름처럼 몰려와 다 익어 가던 벼를 갉아 먹고 있어요." + (S.flags.granary ? " 풍년 때 채워 둔 창고가 있어 조금 든든해요." : ""),
+      choices: () => [
+        C("메뚜기를 잡아 오면 곡식으로 바꿔 준다", () => SR({ ppl: 7, gold: -6 }, "온 마을 사람들이 메뚜기를 자루에 담아 와 곡식과 바꾸었어요(조선에서 실제로 한 방법이에요).", [0, 0, 0.7], "메뚜기 자루를 짊어진 아이들이 관아 앞에 줄을 서니, 관리가 저울을 세 개나 더 꺼냈다.")),
+        C("들판에 불을 놓아 메뚜기를 태운다", () => SR({ ppl: 3, gold: -2 }, "불을 놓아 메뚜기를 쫓았어요.", [0.3, 0, 0.2], "들판에 불을 놓으니, 메뚜기보다 놀란 참새 떼가 먼저 날아올랐다.")),
+        C("메뚜기 귀신에게 제사(포제)를 올린다", () => SR({ ppl: 2, har: 2, gold: -3 }, "제사를 올리자 백성들의 마음은 놓였어요.", [-0.2, -0.2, 0.3], "포제를 올리니, 제사상의 떡에 메뚜기 한 마리가 앉았다 날아갔다.")),
+        GB("닭과 오리를 논에 풀어 메뚜기를 먹게 한다", 0.5, () => SR({ ppl: 9, gold: 2 }, "닭과 오리가 메뚜기를 신나게 잡아먹었어요!", [0, 0, 0.5], "논마다 오리들이 메뚜기를 쫓으니, 농부들이 논두렁에 앉아 구경하였다."), () => SR({ ppl: -3, gold: -3 }, "메뚜기가 너무 많아 닭과 오리가 지쳐 버렸어요.", [0, 0, 0.5], "배부른 오리들이 논두렁에 드러누워 메뚜기를 본체만체하였다.", FAILX), "잘되면 돈을 거의 안 쓰고 피해를 크게 줄여요."),
+      ] },
+    dis_cold: { h: "霜", title: "여름에 내린 서리와 우박", base: () => ({ ppl: S.flags.granary ? -3 : -5, gold: -4 }), text: () => "한여름에 서리가 내리고 주먹만 한 우박이 쏟아져 곡식이 얼어 죽었어요." + (S.flags.granary ? " 풍년 때 채워 둔 창고가 있어 조금 든든해요." : ""),
+      choices: () => [
+        C("메밀 씨앗을 나눠 다시 심게 한다", () => SR({ ppl: 6, gold: -5 }, "빨리 자라는 메밀을 다시 심었어요.", [0, -0.2, 0.6], "얼어붙은 논에 메밀 씨를 뿌리니, 농부들이 손을 호호 불며 웃었다.")),
+        C("올해 세금을 깎아 준다", () => SR({ ppl: 9, gold: -7 }, "세금을 깎아 주자 백성들이 한숨을 돌렸어요.", [-0.2, 0, 0.8], "세금을 깎는다는 방이 붙으니, 장터 국밥집이 오랜만에 붐볐다.")),
+        C("먹을 수 있는 풀뿌리와 나무껍질을 알려 주는 책을 나눈다", () => SR({ ppl: 4, cul: 2, gold: -2 }, "굶주림을 견디는 법을 적은 책(구황 책)을 고을마다 나눴어요.", [0, -0.4, 0.5], "구황 책을 받은 농부가 책을 보며 칡뿌리를 캐다가, 책에 없는 산삼을 캐었다.")),
+        C("평소처럼 세금을 걷는다", () => { tyrUp(1); return SR({ gold: 5, ppl: -10 }, "곳간은 지켰지만 굶주린 백성들의 원망이 하늘을 찔렀어요.", [0.4, 0, -0.8], "세금을 걷으러 간 관리가 빈 쌀독만 보고 돌아왔다."); }),
+      ] },
+    dis_fire: { h: "火", title: "도읍을 덮친 큰불", base: () => ({ ppl: -4, gold: -5, cul: -2 }), text: () => "바람 부는 밤, 도읍에 큰불이 나 집 수천 채가 탔어요. 세종 때(1426) 한양에서도 이런 큰불이 났어요.",
+      choices: () => [
+        C("불에 탄 집마다 쌀과 나무를 나눠 준다", () => SR({ ppl: 9, gold: -8 }, "집을 잃은 사람들이 나라에서 준 나무로 다시 집을 지었어요.", [0, 0, 0.8], "새 집 상량식마다 이웃들이 떡을 돌리니, 도읍에 떡 냄새가 사흘 내내 났다.")),
+        C("불을 끄는 관청을 새로 만든다", () => SR({ ppl: 4, kp: 2, gold: -5 }, "불을 막고 끄는 일을 맡은 관청을 세웠어요(금화도감처럼).", [0.3, 0, 0.4], "새 관청의 군사들이 물통을 메고 훈련하니, 아이들이 물총 놀이를 따라 했다.")),
+        C("길을 넓히고 집 사이에 불막이 담을 쌓게 한다", () => SR({ ppl: 2, cul: 2, gold: -6 }, "길을 넓히고 불막이 담을 쌓았어요. 다음 불은 덜 번질 거예요.", [0.2, 0, 0.3], "불막이 담이 서니, 이웃끼리 담 너머로 이야기하기가 어려워졌다며 투덜거렸다.")),
+        C("불을 낸 사람을 찾아 엄하게 벌한다", () => SR({ kp: 4, ppl: -3 }, "불을 낸 사람을 찾아 벌했어요.", [0.6, 0, -0.3], "범인을 찾느라 관리들이 집집마다 부엌 아궁이를 들여다보았다.")),
+      ] },
+    dis_typhoon: { h: "颱", title: "태풍과 해일", base: () => ({ ppl: -4, def: -3, gold: -3 }), text: () => "큰 태풍이 몰아쳐 바닷가 마을이 물에 잠기고 배들이 부서졌어요.",
+      choices: () => [
+        C("부서진 고깃배와 바닷가 마을을 고쳐 준다", () => SR({ ppl: 7, gold: -7 }, "어부들이 다시 바다로 나갈 수 있게 되었어요.", [0, 0, 0.7], "새로 고친 고깃배가 첫 고기를 잡아 오니, 어부가 첫 물고기를 관아에 보냈다.")),
+        C("바닷가에 튼튼한 둑을 쌓는다", () => { addInc(1); return SR({ ppl: 3, gold: -8 }, "높은 둑을 쌓아 바닷물을 막았어요. 둑 안쪽 땅에 농사도 지을 수 있어요(매 시기 수입 +1).", [0.2, 0, 0.4], "둑이 완성되니, 파도가 둑에 부딪혀 하얗게 부서지는 모습을 구경하러 사람들이 모였다."); }),
+        C("부서진 수군 배부터 고친다", () => SR({ def: 8, gold: -6, ppl: -2 }, "수군 배를 먼저 고쳐 바다를 지킬 힘을 되찾았어요.", [0.4, 0.8, -0.2], "수군 배를 먼저 고치니, 어부들이 '우리 배는 언제 고치나' 하며 바다만 보았다.")),
+        C("피해 고을의 세금과 군역을 면제해 준다", () => SR({ ppl: 6, gold: -5, def: -2 }, "세금과 군역을 면제받은 백성들이 마을을 다시 세웠어요.", [-0.2, 0, 0.7], "면제 소식에 바닷가 마을 사람들이 젖은 이불을 말리며 웃었다.")),
+      ] },
+    dis_cattle: { h: "牛", title: "소 돌림병", base: () => ({ ppl: -3, gold: -5 }), text: () => "소들이 돌림병(우역)으로 쓰러지고 있어요. 소가 없으면 논밭을 갈 수 없어요. 조선에서도 실제로 이 병 때문에 농사를 망친 해가 있었어요.",
+      choices: () => [
+        C("병든 소를 묻고 병난 마을을 막는다", () => SR({ ppl: 2, gold: -3 }, "병든 소를 묻고 마을 사이 길을 막았어요.", [0.3, 0, 0.2], "소를 묻은 자리에 농부들이 막걸리 한 사발씩을 부어 주었다.")),
+        C("이웃 나라에서 소를 사 온다", () => SR({ ppl: 7, gold: -9 }, "이웃 나라에서 소를 사 와 농사를 이어 갔어요.", [0, 0, 0.6], "바다 건너 온 소가 우리 말을 못 알아들어, 농부가 '이랴' 대신 손짓으로 밭을 갈았다.")),
+        C("사람이 쟁기를 끌게 하고 마을끼리 품앗이를 하게 한다", () => SR({ ppl: 3, har: 4 }, "소 대신 이웃끼리 힘을 모아 밭을 갈았어요.", [-0.2, 0, 0.6], "사람 열 명이 쟁기를 끄니, 소 한 마리가 왜 귀했는지 모두 알게 되었다.")),
+        GB("의원에게 소 약을 연구하게 한다", has("school") || has("scholars") ? 0.5 : 0.35, () => SR({ ppl: 8, cul: 4, gold: -3 }, "의원들이 소 병에 듣는 약초를 찾아냈어요!", [0, -0.5, 0.5], "약을 먹은 소가 일어나 '음매' 하니, 의원이 소보다 더 크게 기뻐하였다."), () => SR({ gold: -5, cul: 1 }, "약을 찾지 못하고 돈만 들었어요.", [0, -0.5, 0.5], "의원이 소에게 사람 약을 먹였더니, 소가 사흘 동안 낮잠만 잤다.", FAILX), "나라 학교나 학자가 있으면 확률이 올라요."),
+      ] },
+  });
+  Object.assign(SITU, {
+    dis_locust: [
+      { k: "young", hint: "농부들이 '아직 날개가 안 돋은 새끼 메뚜기'라고 해요.", m: { 1: { add: { ppl: 6 }, text: "날지 못하는 새끼들이라 불길에 대부분 잡혔어요." }, 0: { add: { ppl: 2 } } } },
+      { k: "swarm", hint: "날개 달린 메뚜기 떼가 하늘을 새까맣게 덮었어요.", m: { 1: { add: { ppl: -6, gold: -3 }, text: "메뚜기는 날아가 버리고 논만 탔어요.", ok: false }, 3: { p: 0.25 }, 0: { add: { ppl: -2 }, text: "너무 많아 잡아도 끝이 없었어요." } } },
+      { k: "wind", hint: "관상감이 '사흘 뒤 바다 쪽으로 강한 바람이 분다'고 아뢰어요.", m: { 2: { add: { ppl: 5, kp: 2 }, text: "제사가 끝나자 바람이 불어 메뚜기 떼가 바다로 날아갔어요!" } } },
+    ],
+    dis_cold: [
+      { k: "early", hint: "서리가 일찍 그쳐 아직 씨를 뿌릴 날이 남았대요.", m: { 0: { add: { ppl: 6, gold: 3 }, text: "다시 심은 메밀이 가을에 넉넉히 거두어졌어요." } } },
+      { k: "late", hint: "벌써 늦가을이라 다시 심을 수가 없대요.", m: { 0: { rep: { d: { gold: -5, ppl: -2 }, text: "늦게 뿌린 메밀 씨앗이 싹도 못 틔우고 얼어 버렸어요.", ok: false } }, 2: { add: { ppl: 4 }, text: "구황 책 덕분에 겨울을 버틴 마을이 많았어요." } } },
+      { k: "north", hint: "우박이 북쪽 몇 고을에만 쏟아졌대요.", m: { 1: { add: { gold: 4 }, text: "피해 고을만 세금을 깎아 돈이 적게 들었어요." }, 3: { add: { ppl: 5 }, text: "피해가 일부 고을뿐이라 원망이 크게 번지지는 않았어요." } } },
+    ],
+    dis_fire: [
+      { k: "arson", hint: "누군가 일부러 불을 질렀다는 소문이 돌아요.", m: { 3: { add: { kp: 3, ppl: 6 }, text: "불을 지른 무리를 잡자 백성들이 안심했어요." } } },
+      { k: "wind", hint: "바람이 세서 불씨가 다시 번질 것 같대요.", m: { 1: { add: { ppl: 6 }, text: "새 관청 군사들이 다시 번지던 불을 바로 껐어요." }, 0: { add: { ppl: -4 }, text: "다시 지은 집이 또 불에 탔어요." } } },
+      { k: "poor", hint: "불에 탄 곳은 대부분 가난한 사람들의 마을이래요.", m: { 0: { add: { ppl: 5 }, text: "가장 어려운 사람들을 먼저 도와 칭찬이 자자했어요." }, 3: { add: { ppl: -5 }, text: "'가난한 사람 탓만 한다'는 원망이 일었어요.", ok: false } } },
+    ],
+    dis_typhoon: [
+      { k: "pirate", hint: "해적들이 이 틈을 노리고 있다는 소식이 들어왔어요.", m: { 2: { add: { def: 4, ppl: 4 }, text: "수군이 바로 바다로 나가 해적을 막아 냈어요." }, 0: { add: { def: -4, ppl: -3 }, text: "수군이 없는 틈에 해적이 들이닥쳤어요." } } },
+      { k: "again", hint: "관상감이 '한 달 안에 태풍이 또 온다'고 아뢰어요.", m: { 1: { add: { ppl: 6 }, text: "다음 태풍이 왔지만 둑 덕분에 마을이 무사했어요." }, 0: { add: { ppl: -3, gold: -2 }, text: "고친 배가 다음 태풍에 또 부서졌어요." } } },
+      { k: "fish", hint: "곧 조기잡이 철이 시작된대요.", m: { 0: { add: { gold: 6 }, text: "고친 배로 조기를 가득 잡아 세금이 늘었어요." } } },
+    ],
+    dis_cattle: [
+      { k: "few", hint: "아직 몇 마을에만 퍼졌대요.", m: { 0: { add: { ppl: 7, gold: 2 }, text: "일찍 막은 덕분에 다른 마을 소들은 무사했어요." } } },
+      { k: "all", hint: "온 나라 소가 쓰러지고 있대요.", m: { 0: { add: { ppl: -3 }, text: "이미 너무 늦었어요.", ok: false }, 1: { add: { ppl: 4 }, text: "사 온 소 덕분에 봄갈이를 할 수 있었어요." } } },
+      { k: "book", hint: "옛 의학 책에 소 병을 고친 약초 기록이 있대요.", m: { 3: { p: 0.75 } } },
+    ],
+  });
+  // ---------- '조금만 더'의 전설 사건에도 형편을 ----------
+  Object.assign(SITU, {
+    x_dokkaebi: [
+      { k: "prank", hint: "노인의 눈빛이 장난스럽게 반짝여요. 장난을 좋아하는 도깨비 같아요.", m: { 0: { p: 0.25 }, 1: { p: 0.25 }, 2: { add: { cul: 3 } } } },
+      { k: "humble", hint: "노인이 '욕심 없는 사람에게만 복이 간다'고 혼잣말을 해요.", m: { 0: { p: 0.2 }, 2: { add: { gold: 8, ppl: 2 }, text: "노인이 사라진 다음 날 아침, 곳간 문 앞에 금덩이가 놓여 있었어요!" } } },
+      { k: "wall", hint: "노인이 성벽을 한참 쳐다보며 '튼튼해야지' 하고 중얼거려요.", m: { 1: { p: 0.8 } } },
+    ],
+    x_dragon: [
+      { k: "whale", hint: "어부들이 본 것은 커다란 고래 떼였다는 말도 있어요.", m: { 2: { add: { kp: 2, cul: 3 }, text: "고래였다고 밝히자 소문이 가라앉고, 고래 기록이 남았어요." }, 1: { p: 0.2 } } },
+      { k: "pirate", hint: "해적들이 용 소문을 무서워해 바다에 나오지 않는대요.", m: { 0: { add: { def: 4 }, text: "용 사당을 본 해적들이 겁을 먹고 멀리 달아났어요." }, 2: { add: { def: -4 }, text: "용이 없다는 말에 해적들이 다시 나타났어요." } } },
+      { k: "tomb", hint: "문무왕의 바닷속 무덤(대왕암) 앞에서 이상한 물결이 인대요.", m: { 1: { p: 0.7 } } },
+    ],
+    x_future: [
+      { k: "ours", hint: "학자들이 보니 책 글씨가 우리 나라 글씨체래요.", m: { 1: { p: 0.75 } } },
+      { k: "doom", hint: "책에 '나라가 망한다'는 불길한 예언도 적혀 있대요.", m: { 1: { p: 0.25 }, 2: { add: { ppl: 3, har: 2 }, text: "불길한 예언이 퍼지지 않아 나라가 조용했어요." } } },
+      { k: "tech", hint: "책에 물레방아와 바퀴 그림이 가득하대요.", m: { 0: { add: { cul: 4, gold: 3 }, text: "그림대로 만든 물레방아가 곡식을 빻았어요." } } },
+    ],
+    x_west: [
+      { k: "sick", hint: "상인들 가운데 열이 펄펄 끓는 사람이 있대요.", m: { 0: { rep: { d: { ppl: -8, gold: 2 }, text: "시장을 열자마자 장터에 돌림병이 번졌어요. 상인들도 서둘러 떠났어요.", ok: false } }, 2: { add: { ppl: 3 }, text: "돌려보낸 덕분에 병이 들어오지 않았어요." } } },
+      { k: "scholar", hint: "상인들이 별을 잘 아는 학자를 함께 데려왔대요.", m: { 1: { add: { cul: 10, gold: 2 }, text: "서역 학자가 남아 우리 학자들을 가르쳤어요. 새 달력 덕분에 농사 때를 잘 맞추게 되었어요." } } },
+      { k: "rival", hint: "이웃 나라도 이 상인들을 데려가려고 사람을 보냈대요.", m: { 0: { add: { gold: 4 }, text: "이웃 나라보다 먼저 길을 열어 장사를 독차지했어요." }, 2: { add: { gold: -2, cul: -2 }, text: "상인들은 곧장 이웃 나라로 갔어요." } } },
+    ],
+    x_inventor: [
+      { k: "model", hint: "장인의 모형 비거가 이미 연못 하나를 날아서 건넜대요.", m: { 0: { p: 0.75 } } },
+      { k: "nowing", hint: "학자가 '저 장인은 바람과 날개의 원리를 아직 모른다'고 귀띔해요.", m: { 0: { p: 0.15 }, 1: { add: { cul: 3 }, text: "모형으로 원리부터 차근차근 익혔어요." } } },
+      { k: "war", hint: "적이 쳐들어올 기미가 있어, 하늘에서 적을 살필 눈이 필요해요.", m: { 0: { p: 0.55 }, 2: { add: { def: -3 }, text: "적을 미리 살필 기회를 놓쳤어요." } } },
+    ],
+    x_princes: [
+      { k: "wise", hint: "큰 왕자가 어질어 신하들이 이미 그를 따르고 있대요.", m: { 0: { add: { har: 4 }, text: "모두가 바라던 대로 큰 왕자가 세자가 되었어요." } } },
+      { k: "army", hint: "두 왕자가 모두 개인 군사를 거느리고 있대요.", m: { 1: { add: { kp: 3, def: 2 }, text: "군사를 거느린 왕자들이라 빨리 누르는 수밖에 없었어요." }, 0: { add: { har: -6 }, text: "벼슬을 받은 왕자가 그 힘으로 군사를 더 모았어요.", ok: false } } },
+      { k: "wide", hint: "나라가 넓어져 왕 혼자 다스리기 벅차대요.", m: { 2: { add: { kp: 5, gold: 4 }, text: "왕자들이 먼 고을을 나누어 맡아 나라가 잘 굴러갔어요." } } },
+    ],
+    x_reunite: [
+      { k: "proven", hint: "옛 신하의 계책은 이웃 나라에서 이미 성공한 방법이래요.", m: { 0: { add: { ppl: 3, cul: 2 } } } },
+      { k: "foe", hint: "옛 신하가 반대파 대신들과 몰래 만난다는 소문이 있어요.", m: { 0: { add: { har: -6, kp: -3 }, text: "옛 신하가 반대파와 손잡고 조정을 흔들었어요.", ok: false }, 1: { add: { kp: 2 } } } },
+      { k: "loved", hint: "백성들이 그 옛 신하를 무척 그리워했대요.", m: { 0: { add: { ppl: 5 } }, 1: { add: { ppl: -4 }, text: "백성들이 '그 좋은 분을 왜 돌려보내나' 하며 서운해했어요." } } },
+    ],
+    x_quake: [
+      { k: "border", hint: "이웃 나라가 지진 소식을 듣고 국경에 군대를 모으고 있대요.", m: { 1: { add: { def: 6 }, text: "성벽을 먼저 고쳐 이웃 나라가 넘보지 못했어요." }, 0: { add: { def: -4 }, text: "무너진 성벽 틈으로 이웃 나라 척후가 들어왔어요." } } },
+      { k: "after", hint: "작은 흔들림이 계속돼 백성들이 집에 못 들어가고 있어요.", m: { 0: { add: { ppl: 5 }, text: "튼튼한 새 집에 들어간 백성들이 겨우 잠을 잤어요." } } },
+      { k: "blame", hint: "백성들이 '왕의 덕이 모자라 땅이 흔들린다'고 수군거려요.", m: { 2: { add: { ppl: 4, har: 2 }, text: "왕이 먼저 몸을 낮추자 수군거림이 멈췄어요." } } },
+    ],
+    x_market: [
+      { k: "bandit", hint: "장삿길마다 도적이 들끓는대요.", m: { 1: { p: 0.2 } } },
+      { k: "road", hint: "먼 나라 상단과 이어지는 새 길이 막 열렸대요.", m: { 1: { p: 0.8 } } },
+      { k: "small", hint: "작은 장꾼들이 '나라 상단이 장을 다 먹는다'고 걱정해요.", m: { 0: { add: { ppl: 4 } }, 1: { add: { ppl: -4 }, text: "작은 장꾼들이 문을 닫았어요." } } },
+    ],
+    x_star: [
+      { k: "return", hint: "관상감이 '옛 기록에도 나오는, 다시 돌아온 별'이라고 계산했대요.", m: { 0: { add: { cul: 5, ppl: 3 }, text: "계산대로 별이 움직이자 백성들이 학자들을 믿게 되었어요." } } },
+      { k: "rebel", hint: "반란을 꾀하는 무리가 별을 핑계로 소문을 퍼뜨린대요.", m: { 1: { add: { kp: 3, ppl: 2 } }, 0: { add: { kp: -3 }, text: "학자들이 별을 그리는 동안 반란 소문이 퍼졌어요." } } },
+      { k: "hungry", hint: "흉년이라 백성들이 작은 일에도 불안해해요.", m: { 1: { add: { ppl: 3 } } } },
+    ],
+  });
+  { const b0 = EV.disaster.base; EV.disaster.base = () => { const d = b0(); if (S.flags.granary) d.ppl += 3; return d; }; }
+  const DIS = ["disaster", "dis_locust", "dis_cold", "dis_fire", "dis_typhoon", "dis_cattle"];
+  const DIS_WORLD = ["disaster", "dis_locust", "dis_cold", "dis_cattle"];
+
+  // ---------- 지난 판들 기억 (같은 기기) ----------
+  SEEN.prev = SEEN.prev || []; SEEN.prev2 = SEEN.prev2 || []; SEEN.cur = SEEN.cur || []; SEEN.ctx = SEEN.ctx || {};
+  const recentW = (id) => (SEEN.prev.includes(id) ? 0.08 : SEEN.prev2.includes(id) ? 0.35 : 1);
+  { const b0 = beginReign; beginReign = function () { SEEN.prev2 = SEEN.prev || []; SEEN.prev = SEEN.cur || []; SEEN.cur = []; seenSave(); return b0(); }; }
+  function pickDisaster() {
+    const list = (WORLD() ? DIS_WORLD : DIS).filter((x) => !S.used.includes(x) && !(x === "disaster" && S.used.includes("famine")));
+    return list.length ? wpick(list, (x) => recentW(x) / (1 + 0.5 * (SEEN.ev[x] || 0))) : "disaster";
+  }
+  // ---------- 형편 정하기 (사건이 열릴 때 한 번) ----------
+  function situNow(id) { const L = SITU[id]; return L && S.ctx && S.ctx.id === id && S.ctx.turn === S.turn ? L.find((x) => x.k === S.ctx.k) : null; }
+  { const s0 = showChoices; showChoices = function (id) {
+    const L = SITU[id];
+    if (L && !(S.ctx && S.ctx.id === id && S.ctx.turn === S.turn)) {
+      const ok = L.filter((x) => !x.when || x.when()), last = SEEN.ctx[id];
+      const pool = ok.length > 1 ? ok.filter((x) => x.k !== last) : ok;
+      const x = pool[Math.floor(Math.random() * pool.length)];
+      S.ctx = { id, k: x.k, turn: S.turn }; SEEN.ctx[id] = x.k;
+    }
+    if (S.seenT !== S.turn) { S.seenT = S.turn; if (!SEEN.cur.includes(id)) SEEN.cur.push(id); seenSave(); }
+    return s0(id);
+  }; }
+  // ---------- 사건 글과 선택지에 형편을 입혀요 ----------
+  for (const id of Object.keys(SITU)) {
+    const e = EV[id]; if (!e) continue;
+    const t0 = e.text; e.text = () => { const x = situNow(id); return t0() + (x ? ` 〔조짐〕 ${x.hint}` : ""); };
+    const c0 = e.choices;
+    e.choices = () => { const arr = c0(), x = situNow(id); if (!x) return arr; return arr.map((c, i) => (x.m[i] ? situChoice(c, x.m[i]) : c)); };
+  }
+  function situChoice(c, m) {
+    const o = Object.assign({}, c);
+    if (m.p != null && c.risk) o.risk = Math.max(0.05, Math.min(0.95, m.p));
+    o.run = () => {
+      let r;
+      if (m.rep) r = R({ ...m.rep.d }, m.rep.text, [0, 0, 0], m.rep.ok === false ? { ok: false } : {});
+      else { ROLLP.v = m.p != null && c.risk ? o.risk : null; try { r = c.run(); } finally { ROLLP.v = null; } r.d = { ...r.d }; }
+      if (m.add) for (const [k, v] of Object.entries(m.add)) r.d[k] = (r.d[k] || 0) + v;
+      if (m.inc) addInc(m.inc);
+      if (m.go) m.go();
+      if (m.text) r.text += " " + m.text;
+      if (m.ok === false) r.ok = false;
+      return r;
+    };
+    return o;
+  }
 
   // ================= 화합을 키우는 정책 =================
   PP({ id: "har_council", cat: "men", name: "신하·호족과 함께 정하는 큰 회의", sub: "화백 회의 · 도병마사 · 비변사처럼", kings: "신라 · 고려 · 조선", cost: 1, repeat: 3, eff: { har: 8, kp: -3, cul: 1 }, tags: [-0.8, -0.2, 0],

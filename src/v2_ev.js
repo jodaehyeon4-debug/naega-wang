@@ -2,7 +2,9 @@
   const tyrUp = (n) => { S.tyr += n; };
   const C = (label, run, hint) => ({ label, run, hint });
   // 모험 선택지: p 확률로 성공. 성공·실패 모두 크게 움직여요.
-  const roll = (p) => Math.random() < p;
+  // 사건의 형편(v2_situ.js)이 모험 확률을 바꿀 때 ROLLP.v를 잠깐 씌워요
+  const ROLLP = { v: null };
+  const roll = (p) => Math.random() < (ROLLP.v != null ? ROLLP.v : p);
   const GB = (label, p, ok, fail, hint) => ({ label, hint, risk: Math.max(0.05, Math.min(0.95, p)), run: () => (roll(p) ? ok() : fail()) });
   const EV = {
     // ---------- 첫 사건 ----------
@@ -357,7 +359,7 @@
     if (S.scen === "G") { const g = { 2: "g2", 3: "g3", 5: "g5", 7: "g7", 8: "dzud", 9: "g9" }[t]; if (g) return g; }
     if (S.scen === "H") { const h = { 2: "h2", 3: "h3", 4: "h4", 6: "h6", 9: "h9" }[t]; if (h) return h; if (t === 7 && S.flags.napoleon && S.st.kp < 60) return "h7"; }
     if (!"EFGH".includes(S.scen) && !(SCEN[S.scen] && SCEN[S.scen].noInv) && t === 5) return "invasion";
-    if (t === 8) return "disaster";
+    if (t === 8) return pickDisaster();
     return freeEvent();
   }
   function freeEvent() {
@@ -373,5 +375,5 @@
     if (!tried("buddhism") && t <= 4 && !u("monk") && !"EFHJKLMTUV".includes(S.scen) && Math.random() < 0.4) return "monk";
     const pool = POOL.filter((x) => !u(x) && poolOk(x) && !(S.scen === "G" && x === "pirates"));
     // 지난 판들에서 덜 본 사건이 더 자주 나와요
-    return pool.length ? wpick(pool, (x) => 1 / (1 + 0.8 * (SEEN.ev[x] || 0))) : "harvest";
+    return pool.length ? wpick(pool, (x) => recentW(x) / (1 + 0.8 * (SEEN.ev[x] || 0))) : "harvest";
   }

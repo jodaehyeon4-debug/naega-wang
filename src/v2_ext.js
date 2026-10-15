@@ -267,5 +267,7 @@
   // 최종 도전에 성공하면 결말이 바뀌어요
   for (const [sc, E] of Object.entries(FXEND)) { const f0 = FATE5[sc]; FATE5[sc] = (s, avg, min) => (S.ext && S.flags[E.id] ? { t: E.t, l: E.l, h: E.h, big: true } : f0 ? f0(s, avg, min) : null); }
 
+  // 고구려의 후연 압박은 광개토대왕 시대에 끝나요(다음 시대에는 이어지지 않아요)
+  { const p0 = DRIFT5.P; if (p0) DRIFT5.P = (dr, parts, L) => { if (S.ext && S.turn > 10) return; p0(dr, parts, L); }; }
   // ---------- 새 왕 즉위 사건에 '시대가 바뀌었어요' 알림 ----------
   { const t0 = EV.x_crown.text; EV.x_crown.text = () => t0() + (XE[S.scen] ? ` 시대가 바뀌었어요: '${XE[S.scen].label}'. 정책 카드가 새 시대에 맞게 바뀌고, 성 쌓기·외교 같은 기본 정책도 새 시대의 이름으로 다시 펼칠 수 있어요. '역사 판타지' 카드는 성공하기 어렵지만, 이루면 새로운 역사가 열려요.` : ""); }

@@ -21,7 +21,7 @@
     const crisis = [["ppl", 22, "revolt"], ["gold", 16, "empty"], ["def", 20, "breach"], ["kp", 20, "weakking"], ["har", 22, "rebel"]].filter(([k, lim, id]) => S.st[k] < lim && !u(id + "_x"));
     if (crisis.length && Math.random() < 0.5) { S.used.push(crisis[0][2] + "_x"); return crisis[0][2]; }
     if (t === 15 && !u("x_mend")) return "x_mend";
-    const pool = ["x_dokkaebi", "x_dragon", "x_future", "x_west", "x_inventor", "x_princes", "x_reunite", "x_quake", "x_market", "x_star"].filter((x) => !u(x));
+    const pool = ["x_dokkaebi", "x_dragon", "x_future", "x_west", "x_inventor", "x_princes", "x_reunite", "x_quake", "x_market", "x_star", "dis_locust", "dis_cold", "dis_fire", "dis_typhoon", "dis_cattle"].filter((x) => !u(x) && poolOk(x));
     return pool.length ? pool[Math.floor(Math.random() * pool.length)] : "x_mend";
   }
   const SNK = (k) => SN[k];
